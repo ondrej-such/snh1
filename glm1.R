@@ -9,17 +9,27 @@ files <- c( "dna",
             "usps", 
             "waveform")
 
+my_pmap <- function(l, f = rbind.data.frame) {
+    stopifnot(is.list(l))
+    stopifnot(is.list(l[[1]]))
+    lapply (1:length(l[[1]]), function(i) {
+        ml <- lapply(1:length(l), function(j) l[[j]][[i]])
+        do.call(f, ml)
+    })
+}
+
 glm1 <- function(files = files, workers = 12) {
     plan(multicore, workers = workers)
 
     map (files, function(file) {
         map (c(300, 800), function(n) {
             future_map (0:19, ~ {
-                dfs <- read_wlw(n, dataset = file, .)
+                print(.)
+                dfs <- read_wlws(n, dataset = file, .)
                 model_glm1(dfs)
-            }) |> future_map_dfr(~ . )
-        }) |> list_rbind()
-    }) |> list_rbind()
+            }) |> my_pmap()
+        }) |> my_pmap()
+    }) |> my_pmap()
 }
 
 e <- new.env(parent = emptyenv()) 
@@ -45,6 +55,12 @@ model_glm1 <- function(dfs, alpha = 0) {
 
     min_lambda <- Inf
     max_lambda <- -Inf
+
+    binary = data.frame(i = vector("integer", 0),
+                        j = vector("integer", 0),
+                        lambda = vector("numeric", 0)
+                        )
+                        
     for (i in 1:(K-1)) {
         for (j in (i+1):K) {
             df_ij <- filter(df, class_id %in% c(i,j))
@@ -61,7 +77,7 @@ model_glm1 <- function(dfs, alpha = 0) {
 
             y <- as.matrix(cbind(v2, v1))
             # y <- as.numeric(df$class_id == i) * (1 - 1/ nrow(df)) + 0.5 /nrow(df)
-            cv1  <- cv.glmnet(x, y, family = binomial(), alpha = alpha)
+            cv1  <- cv.glmnet(x, y, family = binomial(), alpha = alpha, standardize = F)
             lambda <- cv1$lambda.min
             if (lambda == min(cv1$lambda)) {
                 print(sprintf("lower too large %d %d", i, j))
@@ -70,13 +86,15 @@ model_glm1 <- function(dfs, alpha = 0) {
                 print(sprintf("upper too small %d %d", i, j))
             }
             print(lambda)
-            model <- glmnet(x, y, family = binomial(), alpha = 0, lambda = lambda, nlambda = 1)
+            model <- glmnet(x, y, family = binomial(), alpha = 0, lambda = lambda, nlambda = 1, standardize = F)
             print("model")
             yt <- as.matrix(select(dft, -class_id))
             r[i,j, ] = predict(model, yt, type = "link")
+
+            binary[nrow(binary) + 1, ] <- data.frame(i = i, j = j, lambda = lambda)
         } # end loop j
     } # end loop i 
-    map (ls(e), function(m) {
+    multi = map (ls(e), function(m) {
         p <- sapply(1:N, function(k) {
                 fn <- e[[m]]
                 vecp <- fn(r[,,k])
@@ -84,4 +102,5 @@ model_glm1 <- function(dfs, alpha = 0) {
                 })
         data.frame(n = n, method = m, dataset = dataset, run = run, lambda = lambda,  correct = sum(p == dft$class_id))
     } )|> list_rbind()
+    list(multi = multi, binary = binary)
 }
