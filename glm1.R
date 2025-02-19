@@ -56,9 +56,13 @@ model_glm1 <- function(dfs, alpha = 0) {
     min_lambda <- Inf
     max_lambda <- -Inf
 
-    binary = data.frame(i = vector("integer", 0),
+    binary = data.frame(n = vector("integer", 0),
+                        i = vector("integer", 0),
                         j = vector("integer", 0),
-                        lambda = vector("numeric", 0)
+                        lambda = vector("numeric", 0),
+                        lambda_min = vector("numeric", 0),
+                        lambda_max = vector("numeric", 0),
+                        bacc = vector("numeric", 0)
                         )
                         
     for (i in 1:(K-1)) {
@@ -91,7 +95,19 @@ model_glm1 <- function(dfs, alpha = 0) {
             yt <- as.matrix(select(dft, -class_id))
             r[i,j, ] = predict(model, yt, type = "link")
 
-            binary[nrow(binary) + 1, ] <- data.frame(i = i, j = j, lambda = lambda)
+            dfb_ij <- filter(dft, class_id %in% c(i,j))
+            xb <- as.matrix(select(dfb_ij, -class_id))
+            bacc <- mean((dfb_ij$class_id == i)==  (predict(model, xb, type = "link")> 0.5))
+
+
+            binary[nrow(binary) + 1, ] <- data.frame(
+                n = n, 
+                i = i, 
+                j = j, 
+                lambda = lambda, 
+                lambda_min = min(cv1$lambda),
+                lambda_max = max(cv1$lambda), 
+                bacc = bacc)
         } # end loop j
     } # end loop i 
     multi = map (ls(e), function(m) {
