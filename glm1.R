@@ -1,5 +1,6 @@
 source("msvm.R")
 library(glmnet)
+library(CalibratR)
 
 files <- c( "dna", 
             "letter", 
@@ -62,7 +63,8 @@ model_glm1 <- function(dfs, alpha = 0) {
                         lambda = vector("numeric", 0),
                         lambda_min = vector("numeric", 0),
                         lambda_max = vector("numeric", 0),
-                        bacc = vector("numeric", 0)
+                        bacc = vector("numeric", 0),
+                        ece = vector("numeric", 0)
                         )
                         
     for (i in 1:(K-1)) {
@@ -97,7 +99,8 @@ model_glm1 <- function(dfs, alpha = 0) {
 
             dfb_ij <- filter(dft, class_id %in% c(i,j))
             xb <- as.matrix(select(dfb_ij, -class_id))
-            bacc <- mean((dfb_ij$class_id == i)==  (predict(model, xb, type = "link")> 0.5))
+            bacc <- mean((dfb_ij$class_id == i)==  (predict(model, xb, type = "link")> 0))
+            ece <- getECE(dfb_ij$class_id == i, predict(model, xb, type = "response"))
 
 
             binary[nrow(binary) + 1, ] <- data.frame(
@@ -107,7 +110,8 @@ model_glm1 <- function(dfs, alpha = 0) {
                 lambda = lambda, 
                 lambda_min = min(cv1$lambda),
                 lambda_max = max(cv1$lambda), 
-                bacc = bacc)
+                bacc = bacc, 
+                ece = ece)
         } # end loop j
     } # end loop i 
     multi = map (ls(e), function(m) {
