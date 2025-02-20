@@ -13,10 +13,22 @@ files <- c( "dna",
 my_pmap <- function(l, f = rbind.data.frame) {
     stopifnot(is.list(l))
     stopifnot(is.list(l[[1]]))
-    lapply (1:length(l[[1]]), function(i) {
+    r <- lapply (1:length(l[[1]]), function(i) {
         ml <- lapply(1:length(l), function(j) l[[j]][[i]])
         do.call(f, ml)
     })
+    names(r) <- names(l[[1]])
+    r
+}
+
+save_glm1 <- function(... ) {
+    l <- glm1(...)
+    dir <- "data"
+    prefix <- sprintf("%s/glm1-", dir)
+    where <- sprintf("%s%s.csv", prefix, c("binary", "multi"))
+    print(where)
+    write_csv(l$binary, file = where[[1]])
+    write_csv(l$multi, file = where[[2]])
 }
 
 glm1 <- function(files = files, workers = 12) {
@@ -58,8 +70,11 @@ model_glm1 <- function(dfs, alpha = 0) {
     max_lambda <- -Inf
 
     binary = data.frame(n = vector("integer", 0),
+                        dataset = vector("character", 0),
+                        run = vector("integer", 0),
                         i = vector("integer", 0),
                         j = vector("integer", 0),
+                        alpha = vector("numeric", 0),
                         lambda = vector("numeric", 0),
                         lambda_min = vector("numeric", 0),
                         lambda_max = vector("numeric", 0),
@@ -105,8 +120,11 @@ model_glm1 <- function(dfs, alpha = 0) {
 
             binary[nrow(binary) + 1, ] <- data.frame(
                 n = n, 
+                dataset = dataset,
+                run = run,
                 i = i, 
                 j = j, 
+                alpha =alpha,
                 lambda = lambda, 
                 lambda_min = min(cv1$lambda),
                 lambda_max = max(cv1$lambda), 
