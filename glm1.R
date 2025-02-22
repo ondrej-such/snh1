@@ -51,7 +51,7 @@ e[["normal"]] = normal_ld
 e[["radial"]] = stratified_ld
 
 
-model_glm1 <- function(dfs, alpha = 0) {
+model_binary <- function(dfs, alpha = 0) {
     df <- dfs$train
     dft <- dfs$test
     n <- dfs$n
@@ -66,8 +66,6 @@ model_glm1 <- function(dfs, alpha = 0) {
     r <- array(0, dim = c(K, K, N))
     print('done')
 
-    min_lambda <- Inf
-    max_lambda <- -Inf
 
     binary = data.frame(n = vector("integer", 0),
                         dataset = vector("character", 0),
@@ -106,11 +104,11 @@ model_glm1 <- function(dfs, alpha = 0) {
             if (lambda == max(cv1$lambda)) {
                 print(sprintf("upper too small %d %d", i, j))
             }
-            print(lambda)
+            # print(lambda)
             model <- glmnet(x, y, family = binomial(), alpha = 0, lambda = lambda, nlambda = 1, standardize = F)
-            print("model")
             yt <- as.matrix(select(dft, -class_id))
             r[i,j, ] = predict(model, yt, type = "link")
+            r[j,i, ] = -r[i,j,]
 
             dfb_ij <- filter(dft, class_id %in% c(i,j))
             xb <- as.matrix(select(dfb_ij, -class_id))
@@ -132,13 +130,61 @@ model_glm1 <- function(dfs, alpha = 0) {
                 ece = ece)
         } # end loop j
     } # end loop i 
+    return(list(r = r, binary = binary))
+}
+
+model_triple <- function(dfs, alpha  = 0) {
+    v <- model_binary(dfs, alpha)
+    K <- max(v$binary$j)
+
+    res <- data.frame(
+            i = vector("integer", 0),
+            j = vector("integer", 0),
+            k = vector("integer", 0),
+            method = vector("character", 0),
+            acc = vector("numeric", 0))
+
+
+    for (i in 1:(K-2)) {
+        for (j in (i+1):(K-1)) {
+            for (k in (j+1):K) {
+                triple <- c(i,j,k)
+                truth <- dfs$test$class_id
+                r <- v$r[triple, triple, truth %in% triple]
+                N <- dim(r)[3]
+                map (ls(e), function(m) {
+                    p <- sapply(1:N, function(k) {
+                        fn <- e[[m]]
+                        vecp <- fn(r[,,k])
+                        which.max(vecp)
+                    })
+                    t2 <- truth[truth %in% triple]
+                    q <- sapply(1:length(t2), function(k) {
+                        which(t2[k] == triple) 
+                    })
+                    res[nrow(res) + 1,] <<- list(i = i, j = j , k = k, 
+                          method = m, 
+                          acc = mean(p == q))
+                })
+            } # loop k
+        } # loop j
+    } #loop i 
+    res
+}
+ 
+
+model_glm1 <- function(dfs, alpha = 0) {
+    dft <- dfs$test
+    v <- model_binary(dfs, alpha )
+    r <- v$r
+
     multi = map (ls(e), function(m) {
         p <- sapply(1:N, function(k) {
                 fn <- e[[m]]
                 vecp <- fn(r[,,k])
                 which.max(vecp)
                 })
-        data.frame(n = n, method = m, dataset = dataset, run = run, lambda = lambda,  correct = sum(p == dft$class_id))
+        data.frame(n = n, K = K, method = m, dataset = dataset, run = run, lambda = lambda,  correct = sum(p == dft$class_id))
     } )|> list_rbind()
-    list(multi = multi, binary = binary)
+    list(multi = multi, binary = v$binary)
 }
