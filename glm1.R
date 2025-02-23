@@ -45,10 +45,46 @@ glm1 <- function(files = files, workers = 12) {
     }) |> my_pmap()
 }
 
+
+omit1 <- function(M_logits, idx) {
+    inverse_logit <- function(x) {
+          return(1 / (1 + exp(-x)))
+    }
+    M <- matrix(0, nrow = 3, ncol = 3)
+
+    for (i in 1:3) {
+        for (j in 1:3) {
+            if (i != j)
+                M[i,j] = exp(M_logits[i,j])
+        }
+    }
+
+    p1 <- 1 
+    if (idx != 3) {
+        p2 <- p1 * M[2, 1] 
+    } 
+    if (idx != 2) {
+        p3 <- p1 * M[3, 1] 
+    } else {
+        p3 <- p2 * M[3, 1] 
+    }
+
+    if (idx == 3) {
+        p2 <- p3 * M[2, 3] 
+    }
+    p <- c(p1, p2, p3)
+    p / (sum(p))
+}
+
 e <- new.env(parent = emptyenv()) 
 e[["wlw2"]] = wu2_ld
 e[["normal"]] = normal_ld
 e[["radial"]] = stratified_ld
+
+e3 <- new.env(parent = emptyenv())
+e3[["omit1"]] = function(x) omit1(x, 1)
+e3[["omit2"]] = function(x) omit1(x, 2)
+e3[["omit3"]] = function(x) omit1(x, 3)
 
 
 model_binary <- function(dfs, alpha = 0) {
@@ -155,6 +191,20 @@ model_triple <- function(dfs, alpha  = 0) {
                 map (ls(e), function(m) {
                     p <- sapply(1:N, function(k) {
                         fn <- e[[m]]
+                        vecp <- fn(r[,,k])
+                        which.max(vecp)
+                    })
+                    t2 <- truth[truth %in% triple]
+                    q <- sapply(1:length(t2), function(k) {
+                        which(t2[k] == triple) 
+                    })
+                    res[nrow(res) + 1,] <<- list(i = i, j = j , k = k, 
+                          method = m, 
+                          acc = mean(p == q))
+                })
+                map (ls(e3), function(m) {
+                    p <- sapply(1:N, function(k) {
+                        fn <- e3[[m]]
                         vecp <- fn(r[,,k])
                         which.max(vecp)
                     })
