@@ -21,8 +21,10 @@
 %
 % \usepackage[abbrvbib, preprint]{jmlr2e}
 
+\usepackage{amsmath, amsthm, amssymb}
 \usepackage{jmlr2e}
-\usepackage{amsmath}
+
+\newtheorem{prop}{Proposition}
 
 % Definitions of handy macros can go here
 
@@ -87,12 +89,23 @@ Suppose that $K$ classes $C_1, \ldots, C_K$ are distributed according to probabi
 $$
 r_{ij}(x)= \frac {p_i(x)}{p_i(x) + p_j(x)}.
 $$
-Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_ij$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
+
+
+The system of equations is called Bradley--Terry equations.  The equations in \eqref{eq:bt}  can be transformed to a system of linear equations. The theoretical basis for one-vs-one classification framework is provided by the following result.
+
+\begin{prop}
+Suppose $p_i(x) >0$ so that all $r_{ij}(x)$ are defined. The system of linear equations \eqref{eq:bt}  has a unique solution which is the multi-class Bayes classifier.
+\end{prop}
+\begin{proof}
+TODO	
+\end{proof}
+
+Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_{ij}$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
 \begin{equation}
-\hat{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt}
+	\hat{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt}
 \end{equation}
 
-Clearly, the equations in \eqref{eq:bt} can be transformed to a system of linear equations. One should note that 
+ One should note that 
 \begin{itemize}
 \item the resulting system of equations will usually not be consistent, because $\hat{r}_{ij}$ are only estimates of true values $r_{ij}$,
 \item when probabilities are parametrized in other ways (e.g. other common parametrizations are as odds, or log-odds), the system of equations \eqref{eq:bt} is non-linear.
@@ -133,13 +146,13 @@ Let us outline what kind of conditions may be desirable in a coupling method.
 
 
 
-\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describingLDA he had confirmed usefulness of his method not only on the famous iris dataset, but also on two other collaborations with archaeologists. 
+\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
 
 \emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtained unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. This is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
-Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of classifiers.
+Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
 
 
 The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
