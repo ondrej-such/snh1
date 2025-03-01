@@ -21,8 +21,10 @@
 %
 % \usepackage[abbrvbib, preprint]{jmlr2e}
 
+\usepackage{amsmath, amsthm, amssymb}
 \usepackage{jmlr2e}
-\usepackage{amsmath}
+
+\newtheorem{prop}{Proposition}
 
 % Definitions of handy macros can go here
 
@@ -73,29 +75,93 @@ Multi-class classification is considered to be a more challenging problem than b
 
 One popular method belonging to  this paradigm uses probabilistic modelling for one-vs-one series of binary problems. Notably, it is used as the basis for multi-class classification models using support vector machines (SVM) in LIBSVM library. However one can use the approach more generally,  because it can be applied to any probabilistic binary classification method. 
 
-A key step in probabilistic one-vs-one modelling is the aggregation of results of individual binary classifiers - so-called \emph{coupling method}. The most commonly used coupling method is that proposed by Wu-Lin-Weng. As noted in \cite{dohau}, the method is (one of) non-canonical decisions used in multi-class SVM modelling. The goal of this paper is to compare its behavior with canonical methods. 
+A key step in probabilistic one-vs-one modelling is the aggregation of results of individual binary classifiers - so-called \emph{coupling method}. The most commonly used coupling method is that proposed by Wu-Lin-Weng. As noted in \cite{dohau}, the method is one of several non-canonical decisions used in multi-class SVM modelling. The goal of this paper is to compare its behavior with canonical methods. 
 
 
 \section{Theoretical basis of coupling methods}
 
+Many different coupling methods have been proposed 
 
 
+\subsection{Bradley-Terry equations}
 
 Suppose that $K$ classes $C_1, \ldots, C_K$ are distributed according to probability distributions $p_i$ on a  space $X$. Let us denote the $r_{ij}(x)$ the output of Bayes (binary) classifier for $x$ in $X$ yielding the probability $p(x \in C_i \mid x\in C_i \cup C_j )$. Then we have
 $$
 r_{ij}(x)= \frac {p_i(x)}{p_i(x) + p_j(x)}.
 $$
-Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_ij$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
-$$
-\hat{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt}
-$$
 
-Clearly, the equations in \eqref{eq:bt} can be transformed to a system of linear equations. One should note that 
+
+The system of equations is called Bradley--Terry equations.  The equations in \eqref{eq:bt}  can be transformed to a system of linear equations. The theoretical basis for one-vs-one classification framework is provided by the following result.
+
+\begin{prop}
+Suppose $p_i(x) >0$ so that all $r_{ij}(x)$ are defined. The system of linear equations \eqref{eq:bt}  has a unique solution which is the multi-class Bayes classifier.
+\end{prop}
+\begin{proof}
+TODO	
+\end{proof}
+
+Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_{ij}$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
+\begin{equation}
+	\hat{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt}
+\end{equation}
+
+ One should note that 
 \begin{itemize}
 \item the resulting system of equations will usually not be consistent, because $\hat{r}_{ij}$ are only estimates of true values $r_{ij}$,
 \item when probabilities are parametrized in other ways (e.g. other common parametrizations are as odds, or log-odds), the system of equations \eqref{eq:bt} is non-linear.
 \end{itemize}
 
+\subsection{Desiderata on coupling method}
+
+Let us outline what kind of conditions may be desirable in a coupling method.
+
+%\begin{itemize}
+%\item a coupling method should should always provide a unique solution, at least when all $r_{ij}>0$,
+%\item Bradley-Terry consistency,
+%\item canonicity,
+%\item symmetry,
+%\item Bayes covariance,
+%
+%\item good accuracy on benchmark tasks,
+%\item lack of parameters, or at least having a small number of parameters,
+%\item Hinton's minimality,
+%\item simplicity of computation.
+%\end{itemize}
+
+
+
+\emph{Unique solution} refers to the fact that the procedure to compute a multi-class probabilistic prediction always converges to a unique solution. One way to satisfy this condition would be that it amounts to a linear system of equations in $K$ variables, and the matrix of the system would be invertible. Another example would be when the procedure amounts to finding the minimum of a strongly convex function. 
+
+\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that shouldwe apply the coupling procedure to binary Bayes classifiers, then the result is the output of multi-class Bayes classifier i.e. satisfies \eqref{eq:bt}.
+
+\emph{Canonicity} refers to requirement that the method should be in a natural way unique. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to build a regression model. Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. 
+
+\emph{Symmetry} refers to the action of the permutation group which acts both on the classes as well as on predictions. The action of a permutation $\sigma$ extends to the action on pairwise matrix by 
+\begin{equation}
+	\hat r^\sigma_{i,j} = \hat r_{\sigma(i), \sigma(j)}
+\end{equation}
+
+\emph{Bayes covariance} is a notion introduced in work \cite{BarredaSuch}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier changes its prediction when the priors change. The change happens according to Bayes theorem.
+
+
+
+
+\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
+
+\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtained unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. This is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
+
+\emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
+
+Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
+
+
+The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
+
+\subsection{Linear kernel}
+
+%\begin{tabular}
+\input{glm1-multi.tex}
+%\end{tabular}
 
 Here is a citation \cite{chow:68}.
 
