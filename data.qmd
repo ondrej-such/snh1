@@ -1,0 +1,71 @@
+---
+title: "Dataset properties"
+author: "Ondrej Such"
+date: "2025-03-01"
+format: html
+---
+
+## Number of classes
+
+
+First, let us retrieve the number of classes for each dataset 
+```{r number of classes}
+source("glm1.R")
+library(purrr)
+library(knitr)
+
+df <- map(files, function(f) {
+# df <- map("dna", function(f) {
+    dfs <- read_wlws(800, f, 0)  
+    data.frame(dataset = f, K = max(dfs$train$class_id))
+}) |> list_rbind()
+
+e = new.env(parent= emptyenv())
+for (i in 1:nrow(df)) {
+    e[[df$dataset[i] ]] = df$K[i]
+}
+
+kable(df)
+```
+
+Now we check for linear separation of classes
+
+```{r separation}
+library(CVXR)
+
+df_sep <- map(1:nrow(df), function(r) {
+    map(0:19, function(run) {
+        dfs <- read_wlws(800, df$dataset[r], run)
+        dft <- dfs$train
+        X <- as.matrix(dplyr::select(dft, -class_id))
+        K <- df$K[r]
+
+        w <- Variable(ncol(dft) - 1, cols = 1)
+        b <- Variable(1)
+
+        tot <- 0 
+        for (i in 1:(K-1)) {
+            for (j in (i+1):K) {
+                X1 <- X[dft$class_id == i,]
+                X2 <- X[dft$class_id == j,]
+                objective <- Minimize(sum_squares(w))
+                constraints <- list (X1 %*% w + b <= -1,
+                                     X2 %*% w + b >= 1)
+                problem  <- Problem(objective, 
+                        constraints = constraints)
+                result <- solve(problem, "ECOS")
+                if(result$status == "optimal") {
+                    tot <- tot + 1
+                }
+            }
+        }
+#        stopifnot(F)
+        data.frame(dataset = df$dataset[r], K = K, tot = tot)
+    }) |> list_rbind()
+}) |> list_rbind()
+
+kable(df_sep |> group_by(dataset, K ) |> summarize(mean(tot)))
+
+
+```
+
