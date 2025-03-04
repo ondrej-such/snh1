@@ -34,19 +34,38 @@ eval_soft <- function(r) {
     #print(c(d2, l1, ld2))
     return(d2 *  ( l1 - ld2)^2)
   }
-  integrate(f, -5, 5)$value
+  f1 <- function(x) {
+    t <- b* x + a
+    k1 <- 1 / (1 + exp(-t))
+    k2 <- 1 / (1 + exp(t))
+    l1 <- -log1p( exp(-t))
+    l2 <- -log1p( exp(t))
+   
+    d1 <- dnorm(x, -0.5)
+    d2 <- dnorm(x, 0.5)
+    lp1 <- -log1p(exp(-x))
+    lp2 <- -log1p(exp(x))
+    p1 <- 1 / (1 + exp(-x))
+    p2 <- 1 / (1 + exp(x))
+    #print(c(d2, l1, ld2))
+    return(d2 * (p1 *  ( lp1 - l1) + p2 * (lp2 - l2)))
+  }
+  
+  integrate(f1, -5, 5)$value
 }
 ```
 
 ```{r eval1}
-M <- 2000
-s <- seq(0.75, 1, length.out = M)
+M <- 10000
+s <- seq(0.9, 1, length.out = M)
 sv <- lapply(s, eval_soft)
 #print(sv)
 #plot(1:200, as.numeric(sv))
 df <- data.frame(x = s, y = as.numeric(sv))
 library(ggplot2)
 
-ggplot(df, aes(x =x , y =y )) + geom_point() + geom_smooth()
+ggplot(df, aes(x =x , y =y )) + 
+ # geom_point() +
+  geom_smooth()
 ```
 
