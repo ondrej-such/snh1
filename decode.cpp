@@ -14,6 +14,7 @@ using namespace Eigen;
 
 static int max_iter = 1000;
 static int max_used = 0;
+static NumericMatrix max_matrix;
 
 
 template <typename D> class Decoder {
@@ -180,9 +181,11 @@ NumericVector Decoder<D>::stratified(NumericMatrix logits, bool verbose)
     Eigen::Matrix<D, Dynamic, 1> p2 = p1 / p1.sum();
 
     D delta1, delta = (Q * p2 - p2).squaredNorm();
+    delta1 = delta;
     int iter = 0;
 
     do {
+       delta = delta1;
        Eigen::Matrix<D, Dynamic, 1> p3 = Q * p2;
        Eigen::Matrix<D, Dynamic, 1> p4 = p3 / p3.sum();
        delta1 = (Q * p4 - p4).squaredNorm();
@@ -193,7 +196,6 @@ NumericVector Decoder<D>::stratified(NumericMatrix logits, bool verbose)
        }
        iter++;
        p2 = p4;
-       delta = delta1;
     } while(iter < max_iter);
     
     if (iter > max_used) {
@@ -201,7 +203,9 @@ NumericVector Decoder<D>::stratified(NumericMatrix logits, bool verbose)
     }
 
     if (iter == max_iter) {
-        warning("stratified() : Maximum number of iterations reached without convergence");
+        warning("stratified() : Maximum number of iterations reached without convergence \n delta =%lg\n delta1= %lg\n",
+        delta, delta1);
+        max_matrix = logits;
     }
 
     if (verbose) {
@@ -327,6 +331,7 @@ NumericVector wu2_ld(NumericMatrix logits, bool verbose = false) {
 int set_max_iter(int new_iter) {
     int old_iter = max_iter;
     max_iter = new_iter;
+    max_used = 0;
     return old_iter;
 }
 
@@ -340,4 +345,10 @@ int get_max_iter() {
 //
 int get_max_used() {
     return max_used;
+}
+
+// [[Rcpp::export]]
+//
+NumericMatrix get_max_matrix() {
+    return max_matrix;
 }
