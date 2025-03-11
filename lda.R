@@ -1,7 +1,7 @@
 source("msvm.R")
 library(glmnet)
 library(CalibratR)
-library(MASS)
+suppressPackageStartupMessages(library(MASS))
 
 files <- c( "dna", 
             "letter", 
@@ -46,8 +46,46 @@ glm1 <- function(files = files, workers = 12) {
     }) |> my_pmap()
 }
 
-
 omit1 <- function(M_logits, idx) {
+    M <- M_logits
+
+    if (idx != 1) {
+        perm <- if (idx == 2) c(2,1,3) else c(3,2,1)
+        M <- M[perm, perm]
+    }
+
+        if (M[1,2] >= 0) {
+            # p1 >= p2
+        if (M[1,3] >=0) {
+            # p1 is the largets
+            p <- c(1, exp(M[2,1]), exp(M[3,1]))
+        } else {
+            # p3 is the largest
+            p <- c(exp(M[1,3]), exp(M[1,3] + M[2,1]), 1)
+        }
+    } else {
+        # p2 >= p1
+        if (M[1,3] >= 0) {
+            # p2 is the largest
+            p <- c(exp(M[1,2]), 1, exp(M[1,2] + M[3,1]))
+        } else {
+            # p3 is larger than p1, but unsure yet what is the largest
+            if (M[1,3] + M[2,1] >= 0) {
+                # p2 is the largest
+                p <- c(exp(M[1,2]), 1, exp(M[1,2] + M[3,1]))
+            } else {
+                # p3 is the largest
+                p <- c(exp(M[1,3]), exp(M[1,3] + M[2,1]), 1)
+            }
+        }
+    }
+    stopifnot(max(p) <= 1)
+    r <- p / sum(p)
+    if (idx != 1) r[perm] else r
+}
+
+
+omit2 <- function(M_logits, idx) {
     inverse_logit <- function(x) {
           return(1 / (1 + exp(-x)))
     }
@@ -67,14 +105,22 @@ omit1 <- function(M_logits, idx) {
     if (idx != 2) {
         p3 <- p1 * M[3, 1] 
     } else {
-        p3 <- p2 * M[3, 1] 
+        p3 <- p2 * M[3, 2] 
     }
 
     if (idx == 3) {
         p2 <- p3 * M[2, 3] 
     }
     p <- c(p1, p2, p3)
-    p / (sum(p))
+    res <- p / (sum(p))
+    if (sum(is.na(res) > 0)) {
+            print(M_logits)
+            print(idx)
+            print(p)
+            print(res)
+            stopifnot(F)
+    }
+    res
 }
 
 e <- new.env(parent = emptyenv()) 
@@ -83,9 +129,9 @@ e[["normal"]] = normal_ld
 e[["radial"]] = stratified_ld
 
 e3 <- new.env(parent = emptyenv())
-e3[["omit1"]] = function(x) omit1(x, 1)
-e3[["omit2"]] = function(x) omit1(x, 2)
-e3[["omit3"]] = function(x) omit1(x, 3)
+e3[["omit23"]] = function(x) omit1(x, 1)
+e3[["omit13"]] = function(x) omit1(x, 2)
+e3[["omit12"]] = function(x) omit1(x, 3)
 
 # Function to identify columns constant within groups
 remove_constant_within_groups <- function(data, group_col) {
@@ -136,11 +182,29 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
 
         bacc <- mean((dfb_ij$class_id == i) ==  pred_ij$class)
         ece <- getECE(dfb_ij$class_id == i, pred_ij$posterior[,2])
-        pr = predict(model, dft )$posterior
+        pr = predict(model, dft )
+        prp <- pr$posterior
+        n1 <- sum(cleaned_data$class_id == i)
+        n2 <- sum(cleaned_data$class_id == j)
+        m1 <- mean(predict(model, cleaned_data)$x[cleaned_data$class_id == i])
+        m2 <- mean(predict(model, cleaned_data)$x[cleaned_data$class_id == j])
+        v1 <- var(predict(model, cleaned_data)$x[cleaned_data$class_id == i])
+        v2 <- var(predict(model, cleaned_data)$x[cleaned_data$class_id == j])
+        # print(c(i,j))
+        # print(c(m1,m2, (m1*n1 + m2* n2)/ (n1 + n2)))
+        r <- log(prp[,2]) - log(prp[,1])
+        r1 <- (m1  - m2) * pr$x + (m2^2 - m1^2)/2 + log(n1/n2)
+        if (1e-9 < abs(max(r -  r1))) {
+            print(c(i,j, abs(max(r - r1))))
+
+        }
+        # print(abs(max(prp[,2] - 1 / (1 + exp( - 2* m1 * pr$x)))))
         
         list(i = i, 
              j = j, 
-             r = log(pr[,2]) - log(pr[,1]),
+             r = r1,
+             # r = r,
+             col_used = length(non_constant_cols),
              bacc = bacc,
              ece = ece)
         })
@@ -156,14 +220,14 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
         R[li$i, li$j,] <<- logis_r
         R[li$j, li$i,] <<- -logis_r
         data.frame(n = n, dataset = dataset, run = run, 
-                i = li$i, j = li$j, bacc = li$bacc, ece = li$ece)
+                i = li$i, j = li$j, bacc = li$bacc, ece = li$ece, col_used = li$col_used)
     }) |> list_rbind()
 
     return(list(r = R, binary = binary, subclasses = subclasses))
 }
 
-lda_triple <- function(dfs) {
-    v <- model_binary(dfs)
+lda_triples <- function(dfs) {
+    v <- lda_binary(dfs)
     K <- max(v$binary$j)
 
     res <- data.frame(
@@ -216,7 +280,7 @@ lda_triple <- function(dfs) {
 }
 
 mix_triple <- function(wlws, i, j, k, alpha = 0) {
-    v <- model_binary(dfs, alpha)
+    v <- lda_binary(dfs, alpha)
     K <- max(v$binary$j)
     triple <- c(i,j,k)
     truth <- dfs$test$class_id

@@ -12,6 +12,10 @@
 using namespace Rcpp;
 using namespace Eigen;
 
+static int max_iter = 1000;
+static int max_used = 0;
+
+
 template <typename D> class Decoder {
 
     // static int last_k;
@@ -190,7 +194,15 @@ NumericVector Decoder<D>::stratified(NumericMatrix logits, bool verbose)
        iter++;
        p2 = p4;
        delta = delta1;
-    } while(1);
+    } while(iter < max_iter);
+    
+    if (iter > max_used) {
+        max_used = iter;
+    }
+
+    if (iter == max_iter) {
+        warning("stratified() : Maximum number of iterations reached without convergence");
+    }
 
     if (verbose) {
         std::cout << iter << " extra iterations" << std::endl;
@@ -308,4 +320,24 @@ NumericVector wu2_d(NumericMatrix logits, bool verbose = false) {
 //
 NumericVector wu2_ld(NumericMatrix logits, bool verbose = false) {
     return Decoder<long double>::wu2(logits, verbose);
+}
+
+// [[Rcpp::export]]
+//
+int set_max_iter(int new_iter) {
+    int old_iter = max_iter;
+    max_iter = new_iter;
+    return old_iter;
+}
+
+// [[Rcpp::export]]
+//
+int get_max_iter() {
+    return max_iter;
+}
+
+// [[Rcpp::export]]
+//
+int get_max_used() {
+    return max_used;
 }
