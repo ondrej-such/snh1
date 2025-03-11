@@ -1,0 +1,246 @@
+source("msvm.R")
+library(glmnet)
+library(CalibratR)
+library(MASS)
+
+files <- c( "dna", 
+            "letter", 
+            "mnist", 
+            "satimage", 
+            "segment", 
+            "usps", 
+            "waveform")
+
+my_pmap <- function(l, f = rbind.data.frame) {
+    stopifnot(is.list(l))
+    stopifnot(is.list(l[[1]]))
+    r <- lapply (1:length(l[[1]]), function(i) {
+        ml <- lapply(1:length(l), function(j) l[[j]][[i]])
+        do.call(f, ml)
+    })
+    names(r) <- names(l[[1]])
+    r
+}
+
+save_glm1 <- function(... ) {
+    l <- glm1(...)
+    dir <- "data"
+    prefix <- sprintf("%s/glm1-", dir)
+    where <- sprintf("%s%s.csv", prefix, c("binary", "multi"))
+    print(where)
+    write_csv(l$binary, file = where[[1]])
+    write_csv(l$multi, file = where[[2]])
+}
+
+glm1 <- function(files = files, workers = 12) {
+    plan(multicore, workers = workers)
+
+    map (files, function(file) {
+        map (c(300, 800), function(n) {
+            future_map (0:19, ~ {
+                print(.)
+                dfs <- read_wlws(n, dataset = file, .)
+                model_glm1(dfs)
+            }) |> my_pmap()
+        }) |> my_pmap()
+    }) |> my_pmap()
+}
+
+
+omit1 <- function(M_logits, idx) {
+    inverse_logit <- function(x) {
+          return(1 / (1 + exp(-x)))
+    }
+    M <- matrix(0, nrow = 3, ncol = 3)
+
+    for (i in 1:3) {
+        for (j in 1:3) {
+            if (i != j)
+                M[i,j] = exp(M_logits[i,j])
+        }
+    }
+
+    p1 <- 1 
+    if (idx != 3) {
+        p2 <- p1 * M[2, 1] 
+    } 
+    if (idx != 2) {
+        p3 <- p1 * M[3, 1] 
+    } else {
+        p3 <- p2 * M[3, 1] 
+    }
+
+    if (idx == 3) {
+        p2 <- p3 * M[2, 3] 
+    }
+    p <- c(p1, p2, p3)
+    p / (sum(p))
+}
+
+e <- new.env(parent = emptyenv()) 
+e[["wlw2"]] = wu2_ld
+e[["normal"]] = normal_ld
+e[["radial"]] = stratified_ld
+
+e3 <- new.env(parent = emptyenv())
+e3[["omit1"]] = function(x) omit1(x, 1)
+e3[["omit2"]] = function(x) omit1(x, 2)
+e3[["omit3"]] = function(x) omit1(x, 3)
+
+# Function to identify columns constant within groups
+remove_constant_within_groups <- function(data, group_col) {
+  # Extract the grouping variable
+  groups <- data[[group_col]]
+  # Get numeric predictors (exclude the group column)
+  predictors <- data[, !names(data) %in% group_col, drop = FALSE]
+          
+  # Check each column for constancy within groups
+  constant_cols <- sapply(predictors, function(col) {
+  # Split column by group and check if variance is 0 (or near 0) in any group
+  by_group <- tapply(col, groups, function(x) var(x, na.rm = TRUE))
+  any(by_group == 0 | is.na(by_group))  # NA variance occurs if all values are identical
+                                })
+  # Return names of non-constant columns
+  names(predictors)[!constant_cols]
+}
+
+
+lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
+    df <- dfs$train
+    stopifnot(min(df$class_id) == 1)
+    pairs <- expand.grid(i = subclasses, j = subclasses) |> 
+                dplyr::filter(i < j)
+    dft <- dfs$test
+    N <- nrow(dft)
+
+    res1 <- map(1:nrow(pairs), function (r) {
+        i <- pairs$i[r]
+        j <- pairs$j[r]
+
+        df_ij <- filter(df, class_id %in% c(i,j))
+        df_ij$class_id = factor(df_ij$class_id)
+
+        # Identify non-constant columns
+        group_col <- "class_id"
+        non_constant_cols <- remove_constant_within_groups(df_ij, group_col)
+
+        # Subset the data to keep only non-constant columns + group column
+        cleaned_data <- df_ij[, c(group_col, non_constant_cols)]
+
+
+        model <- lda(class_id == i ~ ., data = cleaned_data)
+        dft <- dfs$test[, c(group_col, non_constant_cols)]
+        pred <- predict(model, dft)
+        dfb_ij <- filter(dft, class_id %in% c(i,j))
+        pred_ij <- predict(model, dfb_ij)
+
+        bacc <- mean((dfb_ij$class_id == i) ==  pred_ij$class)
+        ece <- getECE(dfb_ij$class_id == i, pred_ij$posterior[,2])
+        pr = predict(model, dft )$posterior
+        
+        list(i = i, 
+             j = j, 
+             r = log(pr[,2]) - log(pr[,1]),
+             bacc = bacc,
+             ece = ece)
+        })
+
+    n <- dfs$n
+    dataset <- dfs$dataset
+    run <- dfs$run
+    K <- length(subclasses)
+    R <- array(0, dim = c(K, K, N))
+
+    binary = map(res1, function(li) {
+        logis_r <- li$r
+        R[li$i, li$j,] <<- logis_r
+        R[li$j, li$i,] <<- -logis_r
+        data.frame(n = n, dataset = dataset, run = run, 
+                i = li$i, j = li$j, bacc = li$bacc, ece = li$ece)
+    }) |> list_rbind()
+
+    return(list(r = R, binary = binary, subclasses = subclasses))
+}
+
+lda_triple <- function(dfs) {
+    v <- model_binary(dfs)
+    K <- max(v$binary$j)
+
+    res <- data.frame(
+            i = vector("integer", 0),
+            j = vector("integer", 0),
+            k = vector("integer", 0),
+            method = vector("character", 0),
+            acc = vector("numeric", 0))
+
+
+    for (i in 1:(K-2)) {
+        for (j in (i+1):(K-1)) {
+            for (k in (j+1):K) {
+                triple <- c(i,j,k)
+                truth <- dfs$test$class_id
+                r <- v$r[triple, triple, truth %in% triple]
+                N <- dim(r)[3]
+                map (ls(e), function(m) {
+                    p <- sapply(1:N, function(k) {
+                        fn <- e[[m]]
+                        vecp <- fn(r[,,k])
+                        which.max(vecp)
+                    })
+                    t2 <- truth[truth %in% triple]
+                    q <- sapply(1:length(t2), function(k) {
+                        which(t2[k] == triple) 
+                    })
+                    res[nrow(res) + 1,] <<- list(i = i, j = j , k = k, 
+                          method = m, 
+                          acc = mean(p == q))
+                })
+                map (ls(e3), function(m) {
+                    p <- sapply(1:N, function(k) {
+                        fn <- e3[[m]]
+                        vecp <- fn(r[,,k])
+                        which.max(vecp)
+                    })
+                    t2 <- truth[truth %in% triple]
+                    q <- sapply(1:length(t2), function(k) {
+                        which(t2[k] == triple) 
+                    })
+                    res[nrow(res) + 1,] <<- list(i = i, j = j , k = k, 
+                          method = m, 
+                          acc = mean(p == q))
+                })
+            } # loop k
+        } # loop j
+    } #loop i 
+    res
+}
+
+mix_triple <- function(wlws, i, j, k, alpha = 0) {
+    v <- model_binary(dfs, alpha)
+    K <- max(v$binary$j)
+    triple <- c(i,j,k)
+    truth <- dfs$test$class_id
+}
+ 
+lda_multi <- function(dfs) {
+    dft <- dfs$test
+    v <- lda_binary(dfs)
+    r <- v$r
+    N <- nrow(dft)
+    K <- max(dft$class_id)
+    dataset <- dfs$dataset
+    run = dfs$run
+    n = dfs$n
+
+    print("binary done")
+    multi = map (ls(e), function(m) {
+        print(m)
+        p <- sapply(1:N, function(k) {
+                fn <- e[[m]]
+                vecp <- fn(r[,,k])
+                which.max(vecp)
+                })
+        data.frame(n = n, K = K, method = m, dataset = dataset, run = run,  correct = sum(p == dft$class_id))
+    } )|> list_rbind()
+    list(multi = multi, binary = v$binary)
+}

@@ -14,7 +14,7 @@ source("glm1.R")
 library(purrr)
 library(knitr)
 
-df <- map(files, function(f) {
+df <- map(files[1], function(f) {
 # df <- map("dna", function(f) {
     dfs <- read_wlws(800, f, 0)  
     data.frame(dataset = f, K = max(dfs$train$class_id))
@@ -34,7 +34,9 @@ Now we check for linear separation of classes
 library(CVXR)
 
 df_sep <- map(1:nrow(df), function(r) {
+# df_sep <- map(1:1, function(r) {
     map(0:19, function(run) {
+        print(sprintf("%s %d", df$dataset[r], run))
         dfs <- read_wlws(800, df$dataset[r], run)
         dft <- dfs$train
         X <- as.matrix(dplyr::select(dft, -class_id))
@@ -56,6 +58,8 @@ df_sep <- map(1:nrow(df), function(r) {
                 result <- solve(problem, "ECOS")
                 if(result$status == "optimal") {
                     tot <- tot + 1
+                } else {
+                    stopifnot(result$status == "infeasible")
                 }
             }
         }
@@ -63,9 +67,18 @@ df_sep <- map(1:nrow(df), function(r) {
         data.frame(dataset = df$dataset[r], K = K, tot = tot)
     }) |> list_rbind()
 }) |> list_rbind()
+```
 
-kable(df_sep |> group_by(dataset, K ) |> summarize(mean(tot)))
+Now we output the summary statistics to a table
 
+```{r output)
+library(xtable)
 
+df_sep_sum <- df_sep |> group_by(dataset, K ) |> summarize(mean(tot * 2 / (K * (K-1))))
+
+sink("data-tbl.tex")
+print(xtable(df_sep_sum, label = "tab:sep-sum", digits = 2,
+    caption = "Average number of binary subproblems that are separable for a given dataset"), include.rownames = FALSE)
+sink()
 ```
 
