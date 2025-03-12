@@ -1,5 +1,5 @@
 source("msvm.R")
-library(glmnet)
+# library(glmnet)
 library(CalibratR)
 suppressPackageStartupMessages(library(MASS))
 
@@ -134,7 +134,7 @@ e3[["omit13"]] = function(x) omit1(x, 2)
 e3[["omit12"]] = function(x) omit1(x, 3)
 
 # Function to identify columns constant within groups
-remove_constant_within_groups <- function(data, group_col) {
+remove_constant_within_groups <- function(data, group_col, tol = 0) {
   # Extract the grouping variable
   groups <- data[[group_col]]
   # Get numeric predictors (exclude the group column)
@@ -143,8 +143,10 @@ remove_constant_within_groups <- function(data, group_col) {
   # Check each column for constancy within groups
   constant_cols <- sapply(predictors, function(col) {
   # Split column by group and check if variance is 0 (or near 0) in any group
+  # by_group <- tapply(col, groups, function(x) var(x, na.rm = TRUE))
+  # any(by_group == 0 | is.na(by_group))  # NA variance occurs if all values are identical
   by_group <- tapply(col, groups, function(x) var(x, na.rm = TRUE))
-  any(by_group == 0 | is.na(by_group))  # NA variance occurs if all values are identical
+  sum(by_group <= tol)
                                 })
   # Return names of non-constant columns
   names(predictors)[!constant_cols]
@@ -162,19 +164,35 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
     res1 <- map(1:nrow(pairs), function (r) {
         i <- pairs$i[r]
         j <- pairs$j[r]
+        print(c(i,j))
 
         df_ij <- filter(df, class_id %in% c(i,j))
         df_ij$class_id = factor(df_ij$class_id)
 
         # Identify non-constant columns
         group_col <- "class_id"
-        non_constant_cols <- remove_constant_within_groups(df_ij, group_col)
+        tol <- 0
+        model <- NULL
 
-        # Subset the data to keep only non-constant columns + group column
-        cleaned_data <- df_ij[, c(group_col, non_constant_cols)]
+        while (is.null(model)) {
+            non_constant_cols <- remove_constant_within_groups(df_ij, group_col, tol)
+
+            # Subset the data to keep only non-constant columns + group column
+            cleaned_data <- df_ij[, c(group_col, non_constant_cols)]
 
 
-        model <- lda(class_id == i ~ ., data = cleaned_data)
+            m1 <- NULL
+            m1 <- tryCatch(lda(class_id == i ~ ., 
+                                data = cleaned_data), 
+            error = function(e) {
+                tol <<- if (tol == 0) 1e-8 else 2 * tol
+                print
+                return(NULL)
+            }, 
+            finally = if (tol > 0) print(sprintf("Tol increased to %g for %d %d", tol, i,j)))
+            print(is.null(m1))
+            model <- m1
+        }
         dft <- dfs$test[, c(group_col, non_constant_cols)]
         pred <- predict(model, dft)
         dfb_ij <- filter(dft, class_id %in% c(i,j))
@@ -217,13 +235,50 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
 
     binary = map(res1, function(li) {
         logis_r <- li$r
-        R[li$i, li$j,] <<- logis_r
-        R[li$j, li$i,] <<- -logis_r
+        row <- which(li$i == subclasses)
+        col <- which(li$j == subclasses)
+        R[row, col,] <<- logis_r
+        R[col, row, ] <<- -logis_r
         data.frame(n = n, dataset = dataset, run = run, 
                 i = li$i, j = li$j, bacc = li$bacc, ece = li$ece, col_used = li$col_used)
     }) |> list_rbind()
 
     return(list(r = R, binary = binary, subclasses = subclasses))
+}
+
+lda_pred3 <- function(dfs, i, j, k) {
+    triple <- c(i,j,k)
+    v <- lda_binary(dfs, subclasses = triple)
+    K <- max(v$binary$j)
+    truth <- dfs$test$class_id
+    r <- v$r
+    idx <- truth %in% triple
+    dft <- dfs$test
+    N <- nrow(dft)
+    t2 <- truth[idx]
+    q <- sapply(1:length(t2), function(k) {
+            which(t2[k] == triple) 
+        })
+    map (c(ls(e), ls(e3)), function(m) {
+        p <- sapply(1:N, function(k) {
+            fn <- e[[m]]
+            if (is.null(fn)) fn<- e3[[m]]
+            fn(r[,,k])
+        }) |> t()
+        colnames(p) <- c("p1", "p2", "p3")
+        data.frame(p[idx,], truth = q, method = m, original = truth[idx])
+    }) |>  list_rbind()
+    # print(dim(df1))
+    # df2 <- map (ls(e3), function(m) {
+        # p <- sapply(1:N, function(k) {
+            # fn <- e3[[m]]
+            # fn(r[,,k])
+        # }) |> t()
+        # colnames(p) <- c("p1", "p2", "p3")
+        # data.frame(p[idx,], truth = q, method = m)
+        # }) |> list_rbind()
+# 
+    # rbind(df1, df2)
 }
 
 lda_triples <- function(dfs) {
@@ -306,5 +361,12 @@ lda_multi <- function(dfs) {
                 })
         data.frame(n = n, K = K, method = m, dataset = dataset, run = run,  correct = sum(p == dft$class_id))
     } )|> list_rbind()
+    # Now, let's do Hinton's oracle
+    mr <- sapply(1:N, function(i) 
+        sum(r[dft$class_id[i],,i] > 0))
+    # print(mr)
+    multi <- rbind(multi,
+        data.frame(n = n, K = K, method = "oracle", dataset = dataset, run = run, correct = sum(mr == K-1)))
+        
     list(multi = multi, binary = v$binary)
 }

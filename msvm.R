@@ -6,7 +6,7 @@ suppressPackageStartupMessages(library(furrr))
 library(future)
 library(magrittr)
 library(readr)
-library(purrr)
+suppressPackageStartupMessages(library(purrr))
 
 sourceCpp("decode.cpp")
 
