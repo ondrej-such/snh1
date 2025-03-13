@@ -49,8 +49,15 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
         for (int j = 0; j < k; j++) {
             if (i == j)
                 r(i, j) = 0;
-            else
-                r(i, j) = 1 / (1 + _exp(-logits(i, j)));
+            else {
+                D x = logits(i,j);
+                if (x >= 0) {
+                    r(i, j) = 1 / (1 + _exp(-x));
+                } else {
+                    r(i,j) = _exp(x) / (1 + _exp(x));
+                }
+
+            }
         }
     }
     // std::cout << r << std::endl;
@@ -58,9 +65,14 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
     for (int i = 0; i < k; i++) {
         for (int j = 0; j < k; j++) {
             if (i == j) {
-                D s = 0;
+                D s = 0; // Kahan summation
+                D c = 0;
                 for (int m = 0; m < k; m++) {
-                    s += r(m, i) * r(m, i);
+                    D y = r(m, i) * r(m, i) - c;
+                    D t = s + y;
+                    c = (t - s) - y;
+                    s = t;
+                    // s += r(m, i) * r(m, i);
                 }
                 Q(i,j) = s;
                 Q1(i,j) = s;
@@ -82,16 +94,29 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
     v(k, 0) = 1;
     Eigen::Matrix<D, Dynamic, 1> p1 = 
         Q1.colPivHouseholderQr().solve(v);
+ 
+    p1 = p1.cwiseAbs(); // replaces negative entries by their absolute values
+    p1 = p1 / p1.sum();
     // Eigen::Matrix<D, Dynamic, 1> p2 = p1 / p1.sum();
     D delta1, delta = (Q1 * p1 - v).squaredNorm();
     int iter = 0;
 
     do {
+        int c;
+        if ( (c = (p1.head(k).array() < 0).count()) > 0) {
+            std::cout << "matrix has " << c ;
+            std::cout << " negative entries in iter " ;
+            std::cout << iter << std::endl;
+            if (c > 0) {
+                std::cout << p1.head(k)  << std::endl;
+            }
+
+        }
         Eigen::Matrix<D, Dynamic, 1> p2(k, 1); 
         Eigen::Matrix<D, Dynamic, 1> p3(k + 1, 1); 
-        Eigen::Matrix<D, Dynamic, 1> p = p1.head(k);
-        D newb = p.transpose() * (Q * p);
         for (int t = 0; t < k; t++) {
+            Eigen::Matrix<D, Dynamic, 1> p = p1.head(k);
+            D newb = p.transpose() * (Q * p);
             D s = newb;
             D c = 0;
             for (int j = 0; j < k; j++) {
@@ -106,25 +131,25 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
                 s = t;
             }
             p2(t, 0) = s / Q(t, t);
-        }
-        // Eigen::Matrix<D, Dynamic, 1> p4 = p3 / p3.sum();
-        p3(k, 0) = -newb;
-        D s = p2.sum();
-        for (int i = 0; i < k; i++) {
-            p3(i,0) = p2(i,0) / s;
+            // Eigen::Matrix<D, Dynamic, 1> p4 = p3 / p3.sum();
+            p3(k, 0) = -newb;
+            D sum = p2.sum();
+            for (int i = 0; i < k; i++) {
+                p3(i,0) = p2(i,0) / sum;
+            }
+            p1 = p3;
         }
         delta1 = (Q1 * p3 - v).squaredNorm();
-        if (delta1 >= delta) {
+        if ((iter > 6) && (delta1 >= delta)) {
             // printf("%lf %lf\n", delta1, delta);
             if (verbose) {
             }
             // std::cout << delta1 << " " << delta << std::endl;
             break;
         }
-        p1 = p3;
         delta = delta1;
         iter++;
-    } while(iter < 10);
+    } while(iter < max_iter);
 
     if (verbose) {
         std::cout << iter << " extra iterations in wu " << std::endl;
