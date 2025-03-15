@@ -164,7 +164,7 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
     res1 <- map(1:nrow(pairs), function (r) {
         i <- pairs$i[r]
         j <- pairs$j[r]
-        print(c(i,j))
+        # print(c(i,j))
 
         df_ij <- filter(df, class_id %in% c(i,j))
         df_ij$class_id = factor(df_ij$class_id)
@@ -186,11 +186,10 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
                                 data = cleaned_data), 
             error = function(e) {
                 tol <<- if (tol == 0) 1e-8 else 2 * tol
-                print
                 return(NULL)
             }, 
             finally = if (tol > 0) print(sprintf("Tol increased to %g for %d %d", tol, i,j)))
-            print(is.null(m1))
+            # print(is.null(m1))
             model <- m1
         }
         dft <- dfs$test[, c(group_col, non_constant_cols)]
@@ -351,26 +350,38 @@ lda_multi <- function(dfs) {
     r <- v$r
     N <- nrow(dft)
     K <- max(dft$class_id)
-    dataset <- dfs$dataset
     run = dfs$run
     n = dfs$n
 
-    print("binary done")
+    # print("binary done")
     multi = map (ls(e), function(m) {
-        print(m)
+        # print(m)
         p <- sapply(1:N, function(k) {
                 fn <- e[[m]]
                 vecp <- fn(r[,,k])
                 which.max(vecp)
                 })
-        data.frame(n = n, K = K, method = m, dataset = dataset, run = run,  correct = sum(p == dft$class_id))
+        data.frame(n = n, K = K, method = m, correct = sum(p == dft$class_id))
     } )|> list_rbind()
     # Now, let's do Hinton's oracle
     mr <- sapply(1:N, function(i) 
         sum(r[dft$class_id[i],,i] > 0))
     # print(mr)
     multi <- rbind(multi,
-        data.frame(n = n, K = K, method = "oracle", dataset = dataset, run = run, correct = sum(mr == K-1)))
-        
+        data.frame(n = n, K = K, method = "oracle", correct = sum(mr == K-1)))
+
+    multi$dataset = dfs$dataset
+    multi$run = run
     list(multi = multi, binary = v$binary)
+}
+
+write_multi <- function(runs = 20, workers = 11) {
+    plan(multicore, workers = workers)
+    df <- map(files, function(f) {
+        future_map(0:(runs - 1), function (r) {
+            dfs <- read_wlws(800, f, r)
+            lda_multi(dfs)$multi
+        }) |> list_rbind()
+    }) |> list_rbind()
+    write.csv(df, file = "data/multi.csv")
 }
