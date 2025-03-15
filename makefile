@@ -51,6 +51,9 @@ data:
 data/separation.csv: data separation.R
 		Rscript -e "source('separation.R'); df <- map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
 
+data/multi.csv: data lda.R
+		Rscript -e "source('lda.R'); write_multi(1)"
+
 data/ex2-%-300.csv: unzips data
 
 exp1/%-300.csv: exp1
