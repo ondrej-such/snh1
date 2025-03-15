@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
+#include <cmath> 
 // #include "../../Rcpp11/inst/include/Rcpp/Array.h"
 
 
@@ -87,6 +88,7 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
         Q1(i, k) = 1;
     }
     Q1(k, k) = 0;
+    // std::cout << "Q1 \n" << Q1 << std::endl;
 
     Eigen::Matrix<D, Dynamic, 1> v(k + 1, 1);
     for ( int i = 0; i < k; i++) {
@@ -109,6 +111,7 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
 
     do {
         bool changed = false;
+        // std::cout << "p1 \n" << p1 << std::endl;;
         for (int i = 0; i < k; i++) {
             if (p1[i] < 0) {
                 if (p1[i] < -1e-9) {
@@ -141,11 +144,15 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
                 s = t;
             }
             D newVal = s / Q(t,t);
+            if (std::isnan(newVal)) {
+                p3 = p1;
+                break; // We divide by zero
+            }
             assert(newVal > -1e-9);
             if (newVal < -1e-9) {
                 Rcpp::stop("newVal too small");
             }
-            p2(t, 0) = s >=0 ? newVal : 0 ;
+            p2(t, 0) = newVal >=0 ? newVal : 0 ;
             // Eigen::Matrix<D, Dynamic, 1> p4 = p3 / p3.sum();
             p3(k, 0) = -newb;
             D sum = p2.sum();
@@ -206,23 +213,45 @@ NumericVector Decoder<D>::stratified(NumericMatrix logits, bool verbose)
 
     for (int i = 0; i < k; i++) {
         D s = 0;
-        for (int j = 0; j < k; j++) {
-            if (j != i) {
-                s = s + _exp(logits(j, i));
+        D maxVal = logits(0, i);
+        int idxVal = 0;
+        for (int j = 1; j < k; j++) {
+            if (maxVal < logits(j,i))  {
+                maxVal = logits(j,i) ;
+                idxVal = j;
             }
         }
-        D pmain = 1 / ( 1 + s);
+
+        Eigen::Matrix<D, Dynamic, 1> q(k, 1);
+        for (int j = 0; j < k; j++) {
+            q(j, 0) = _exp(logits(j, i) - maxVal);
+        }
+        q = q / q.sum();
+
+    /*
+        for (int j = 0; j < k; j++) {
+            if (j != i) {
+                s = s + _exp(logits(j, i) - maxVal);
+            }
+        }
+        */
+        // D pmain = _exp(-maxVal) / ( _exp(-maxVal) + s);
+        // D pmain = 1 / ( _exp(-maxVal) + s);
+        // D pmain = 1 / (1 + s)
+        // std::cout << "pmain = " << pmain << std::endl; 
         for (int j = 0; j < k; j++) {
             if (i == j) {
-                Q(j,i) = pmain;
-                Q1(j,i) = pmain - 1;
+                Q(j,i) = q(j, 0);
+                Q1(j,i) = q(j, 0) - 1;
             } else {
-                Q(j,i) = pmain * _exp(logits(j, i));
+                Q(j,i) = q(j, 0); // pmain * _exp(logits(j, i) - maxVal);
                 Q1(j,i) = Q(j, i);
             }
         }
     }
     // std::cout << Q << std::endl;
+    // std::cout << "--------- Q1 ---" << std::endl;
+    // std::cout << Q1 << std::endl;
 
     Eigen::Matrix<D, Dynamic, 1> b(k + 1, 1);
     for ( int i = 0; i < k; i++) {
@@ -333,13 +362,16 @@ NumericVector Decoder<D>::normal(NumericMatrix logits)
     Eigen::Matrix<D, Dynamic, 1> res = Minv * (M * v);
     // std::cout << res << std::endl;
     Eigen::Matrix<D, Dynamic, 1> r(k, 1);
-    r(0, 0) = 1;
+    r(0, 0) = 1;  // not needed any longer
+    D maxVal = res.maxCoeff();
+    maxVal = maxVal >= 0 ? maxVal: 0; /// let's do it stably
+    r(0, 0) = _exp(-maxVal);
     for (int i = 0; i < k1; i ++) {
-        r(i + 1, 0) = _exp(res(i, 0));
+        r(i + 1, 0) = _exp(res(i, 0) - maxVal);
     }
-    // std::cout << r << std::endl;
+    //  std::cout << r << std::endl;
     D s = r.sum();
-    // std::cout << s << std::endl;
+    // std::cout << "s= " << s << std::endl;
     NumericVector res2(k);
     for (int i = 0; i < k; i++) {
         res2(i) = static_cast<double>(r(i, 0) / s);
