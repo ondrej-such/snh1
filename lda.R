@@ -266,7 +266,11 @@ lda_pred3 <- function(dfs, i, j, k) {
             fn(r[,,k])
         }) |> t()
         colnames(p) <- c("p1", "p2", "p3")
-        data.frame(p[idx,], truth = q, method = m, original = truth[idx])
+        pred <- apply(p[idx,],1, which.max)
+        data.frame(p[idx,], 
+                    id = 1:sum(idx), orig_id = (1:N)[idx], 
+                    truth = q, pred = pred, method = m, 
+                    orig_truth = truth[idx])
     }) |>  list_rbind()
     # print(dim(df1))
     # df2 <- map (ls(e3), function(m) {
