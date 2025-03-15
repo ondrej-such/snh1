@@ -15,6 +15,7 @@ using namespace Eigen;
 static int max_iter = 1000;
 static int max_used = 0;
 static NumericMatrix max_matrix;
+static NumericMatrix A,b, vecx;
 
 
 template <typename D> class Decoder {
@@ -94,25 +95,34 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
     v(k, 0) = 1;
     Eigen::Matrix<D, Dynamic, 1> p1 = 
         Q1.colPivHouseholderQr().solve(v);
+
+    if ( ((p1.head(k).array() < 0).count()) > 0) {
+        A = NumericMatrix(Q1.rows(), Q1.cols(), Q1.data());
+        b = NumericMatrix(v.rows(), v.cols(), v.data());
+    }
  
-    p1 = p1.cwiseAbs(); // replaces negative entries by their absolute values
-    p1 = p1 / p1.sum();
+    // std::cout << p1 << std::endl;
+    // std::cout << "----------------" << std::endl;
     // Eigen::Matrix<D, Dynamic, 1> p2 = p1 / p1.sum();
     D delta1, delta = (Q1 * p1 - v).squaredNorm();
     int iter = 0;
 
     do {
-        int c;
-        if ( (c = (p1.head(k).array() < 0).count()) > 0) {
-            std::cout << "matrix has " << c ;
-            std::cout << " negative entries in iter " ;
-            std::cout << iter << std::endl;
-            if (c > 0) {
-                std::cout << p1.head(k)  << std::endl;
+        bool changed = false;
+        for (int i = 0; i < k; i++) {
+            if (p1[i] < 0) {
+                if (p1[i] < -1e-9) {
+                    Rcpp::stop("Unexpectedly negative probability component");
+                }
+                p1[i] = 0;
+                changed = true;
             }
+        }
+        if (changed) {
 
         }
-        Eigen::Matrix<D, Dynamic, 1> p2(k, 1); 
+        Eigen::Matrix<D, Dynamic, 1> p2(k, 1);
+        p2 = p1.head(k); 
         Eigen::Matrix<D, Dynamic, 1> p3(k + 1, 1); 
         for (int t = 0; t < k; t++) {
             Eigen::Matrix<D, Dynamic, 1> p = p1.head(k);
@@ -130,7 +140,12 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
                 c = (t - s) - y;
                 s = t;
             }
-            p2(t, 0) = s / Q(t, t);
+            D newVal = s / Q(t,t);
+            assert(newVal > -1e-9);
+            if (newVal < -1e-9) {
+                Rcpp::stop("newVal too small");
+            }
+            p2(t, 0) = s >=0 ? newVal : 0 ;
             // Eigen::Matrix<D, Dynamic, 1> p4 = p3 / p3.sum();
             p3(k, 0) = -newb;
             D sum = p2.sum();
@@ -140,6 +155,15 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
             p1 = p3;
         }
         delta1 = (Q1 * p3 - v).squaredNorm();
+        // std::cout << "Delta1 = " << delta1 << std::endl;
+        if (false && std::isnan(delta1)) {
+            A = NumericMatrix(Q1.rows(), Q1.cols(), Q1.data());
+            b = NumericMatrix(v.rows(), v.cols(), v.data());
+            vecx = NumericMatrix(p3.rows(), p3.cols(), p3.data());
+            std::cout << "Delta = " << delta <<  " iter " << iter << std::endl;
+            Rcpp::stop("Bad delta1");
+
+        }
         if ((iter > 6) && (delta1 >= delta)) {
             // printf("%lf %lf\n", delta1, delta);
             if (verbose) {
@@ -150,6 +174,14 @@ NumericVector Decoder<D>::wu2(NumericMatrix logits, bool verbose)
         delta = delta1;
         iter++;
     } while(iter < max_iter);
+
+    if (delta > 1e-10) {
+
+        A = NumericMatrix(Q1.rows(), Q1.cols(), Q1.data());
+        b = NumericMatrix(v.rows(), v.cols(), v.data());
+        std::cout << "Delta = " << delta <<  " iter " << iter << std::endl;
+        Rcpp::stop("too big error");
+    }
 
     if (verbose) {
         std::cout << iter << " extra iterations in wu " << std::endl;
@@ -376,4 +408,11 @@ int get_max_used() {
 //
 NumericMatrix get_max_matrix() {
     return max_matrix;
+}
+
+
+// [[Rcpp::export]]
+//
+List get_Ab() {
+    return List::create(A,b, vecx);
 }
