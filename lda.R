@@ -436,7 +436,7 @@ write_triples <- function(runs = 20, workers = 11) {
     write.csv(df, file = "data/triples.csv", row.names = F, quote = F)
 }
 
-try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10) {
+try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10, predictors = 1:4) {
     pred <- lda_pred3(dfs, i, j, k)
     truth <- pred$truth[pred$method =="normal"]
     folds <- make_folds(truth)
@@ -444,37 +444,59 @@ try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10) {
     q2 <- as.matrix(filter(pred, method =="omit12") |> dplyr::select(1:3))
     q3 <- as.matrix(filter(pred, method =="omit13") |> dplyr::select(1:3))
     q4 <- as.matrix(filter(pred, method =="omit23") |> dplyr::select(1:3))
+    ql <- list(q1, q2, q3, q4)[predictors]
+    names <- list("normal", "omit12", "omit13", "omit23")[predictors]
+    qL <- length(ql)
+    print(qL)
 
     W <- sapply( 1:n,  function(i) { 
-                    s <- sample(0:div , 3, replace = T) |> sort()
+                    s <- sample(0:div , qL - 1, replace = T) |> 
+                            sort()
+                    if (qL == 2)
+                        c(s[1], div - s[1]) / div
+                    else 
+                        c(s[1], 
+                        sapply(1:(qL - 2), function(i) (s[i + 1] - s[i])),
+                        (div - s[qL - 1])) / div
+                    })  |> t()
 
-                    c(s[1] / div, 
-                            (s[2] - s[1]) / div, 
-                            (s[3] - s[2]) / div,
-                            (div - s[3]) / div) }) |> t()
-    colnames(W) <- c("w1", "w2", "w3", "w4")
+                    # c(s[1] / div, 
+                            # (s[2] - s[1]) / div, 
+                            # (s[3] - s[2]) / div,
+                            # (div - s[3]) / div) }) |> t()
+    colnames(W) <- sprintf("w_%s", names)
     wp <- sapply(1:n, function(i) {
-            p <- W[i,1] * q1 + W[i,2] * q2 + W[i,3] * q3 + W[i,4] * q4
+            # p <- W[i,1] * q1 + W[i,2] * q2 + W[i,3] * q3 + W[i,4] * q4
+            p <- W[i,1] * ql[[1]]
+            for (j in 2:qL) {
+                p <- p + W[i,j] * ql[[j]]
+            }
+            # p <- sum(lapply(1:qL, function(j) W[i, j] * ql[[j]]))
             r <- apply(p, 1, which.max) 
             r
             } ) # |> t()
 
-    wbest <- data.frame(w1 = 0, w2 = 0, w3 = 0, w4 = 0, truth = truth, 
+    wbest <- data.frame(truth = truth, 
                 fold = folds, 
                 acc1 = 0, 
                 acc2 = 0, 
                 pred = 0)
-    for (j in 1:f) {
+    ws <- map (1:f, function(j) {
         ix = folds != j
         acc1 <- apply(wp, 2, function(i) mean(truth[ix] == wp[ix, i]))
         macc1 <- max(acc1)
         s <- sample(which(acc1 == macc1), 1)
         iy = folds == j
         acc2 <- mean(truth[iy] == wp[iy, s])
+        print(c(macc1, acc2))
         for (i in which(iy)) {
-            wbest[i,] <- list(w1 = W[s,1], w2 = W[s,2], w3 = W[s,3], w4 = W[s,4],
-                truth = truth[i], fold = j, acc1 = macc1, acc2 = acc2, pred = wp[i, s])
+            wbest[i,] <<- list(truth = truth[i], fold = j, acc1 = macc1, acc2 = acc2, pred = wp[i, s])
         }
-    }
-    wbest
+        v = as.data.frame(t(W[s,]))
+        v$acc1 = macc1
+        v$acc2 = acc2
+        v$samples = sum(iy)
+        v
+    }) |> list_rbind()
+    list(wbest, W = ws)
 }
