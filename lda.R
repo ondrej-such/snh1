@@ -2,6 +2,8 @@ source("msvm.R")
 # library(glmnet)
 library(CalibratR)
 suppressPackageStartupMessages(library(MASS))
+library(dplyr)
+suppressPackageStartupMessages(library(tidyr))
 
 files <- c( "dna", 
             "letter", 
@@ -10,6 +12,31 @@ files <- c( "dna",
             "segment", 
             "usps", 
             "waveform")
+
+make_folds <- function(grp, f = 5) {
+    gs <- unique(grp)
+    K <- length(gs)
+    res <- vector("integer", length(grp))
+    for (g in gs) {
+        N <- sum(grp == g)
+        N5 <- N %/% f
+        ubds <- N5 * seq(1, f)
+        R5 <- N %% f
+        v <- as.integer(rep(0, f))
+        if (R5 > 0) {
+            pos <- sample(1:f, size = R5, replace = F)
+            v[pos] <- 1
+        }
+        cumv <- cumsum(v)
+        cubds <- ubds + cumv
+        idx <- grp == g
+        perm <- sample(1:N, replace = F, size = N)  - 1
+        folds <- sapply(perm, function(x) sum(x >= cubds)) + 1
+        res[idx] <- folds
+    }
+    res
+}
+
 
 my_pmap <- function(l, f = rbind.data.frame) {
     stopifnot(is.list(l))
@@ -60,7 +87,7 @@ omit1 <- function(M_logits, idx) {
             # p1 is the largets
             p <- c(1, exp(M[2,1]), exp(M[3,1]))
         } else {
-            # p3 is the largest
+# p3 is the largest
             p <- c(exp(M[1,3]), exp(M[1,3] + M[2,1]), 1)
         }
     } else {
@@ -304,9 +331,16 @@ lda_triples <- function(dfs) {
                 r <- v$r[triple, triple, truth %in% triple]
                 N <- dim(r)[3]
                 map (ls(e), function(m) {
-                    p <- sapply(1:N, function(k) {
+                    p <- sapply(1:N, function(s) {
                         fn <- e[[m]]
-                        vecp <- fn(r[,,k])
+                        vecp <- fn(r[,,s])
+                        if (sum(is.na(vecp)) > 0) {
+                            print(sprintf("Triple %d %d %d is bad for %s", 
+                                            i, j, k, m))
+                            print(r[,,s])
+                            print(vecp)
+                            stopifnot(F)
+                        }
                         which.max(vecp)
                     })
                     t2 <- truth[truth %in% triple]
@@ -382,6 +416,65 @@ write_multi <- function(runs = 20, workers = 11) {
             dfs <- read_wlws(800, f, r)
             lda_multi(dfs)$multi
         }) |> list_rbind()
-    }) |> list_rbind()
-    write.csv(df, file = "data/multi.csv")
+    }) |> list_rbind() |> 
+        pivot_wider(names_from = "method", values_from = "correct")
+    write.csv(df, file = "data/multi.csv", row.names = F, quote = F)
+}
+
+write_triples <- function(runs = 20, workers = 11) {
+    plan(multicore, workers = workers)
+    df <- map(files, function(f) {
+        future_map(0:(runs - 1), function (r) {
+            dfs <- read_wlws(800, f, r)
+            df1 <- lda_triples(dfs) |> 
+                pivot_wider(names_from = "method", values_from = "acc")
+            df1$dataset = f
+            df1$run = r
+            df1
+        }) |> list_rbind()
+    }) |> list_rbind() 
+    write.csv(df, file = "data/triples.csv", row.names = F, quote = F)
+}
+
+try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10) {
+    pred <- lda_pred3(dfs, i, j, k)
+    truth <- pred$truth[pred$method =="normal"]
+    folds <- make_folds(truth)
+    q1 <- as.matrix(filter(pred, method =="normal") |> dplyr::select(1:3))
+    q2 <- as.matrix(filter(pred, method =="omit12") |> dplyr::select(1:3))
+    q3 <- as.matrix(filter(pred, method =="omit13") |> dplyr::select(1:3))
+    q4 <- as.matrix(filter(pred, method =="omit23") |> dplyr::select(1:3))
+
+    W <- sapply( 1:n,  function(i) { 
+                    s <- sample(0:div , 3, replace = T) |> sort()
+
+                    c(s[1] / div, 
+                            (s[2] - s[1]) / div, 
+                            (s[3] - s[2]) / div,
+                            (div - s[3]) / div) }) |> t()
+    colnames(W) <- c("w1", "w2", "w3", "w4")
+    wp <- sapply(1:n, function(i) {
+            p <- W[i,1] * q1 + W[i,2] * q2 + W[i,3] * q3 + W[i,4] * q4
+            r <- apply(p, 1, which.max) 
+            r
+            } ) # |> t()
+
+    wbest <- data.frame(w1 = 0, w2 = 0, w3 = 0, w4 = 0, truth = truth, 
+                fold = folds, 
+                acc1 = 0, 
+                acc2 = 0, 
+                pred = 0)
+    for (j in 1:f) {
+        ix = folds != j
+        acc1 <- apply(wp, 2, function(i) mean(truth[ix] == wp[ix, i]))
+        macc1 <- max(acc1)
+        s <- sample(which(acc1 == macc1), 1)
+        iy = folds == j
+        acc2 <- mean(truth[iy] == wp[iy, s])
+        for (i in which(iy)) {
+            wbest[i,] <- list(w1 = W[s,1], w2 = W[s,2], w3 = W[s,3], w4 = W[s,4],
+                truth = truth[i], fold = j, acc1 = macc1, acc2 = acc2, pred = wp[i, s])
+        }
+    }
+    wbest
 }
