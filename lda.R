@@ -288,7 +288,7 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
 lda_pred3 <- function(dfs, i, j, k) {
     triple <- c(i,j,k)
     v <- lda_binary(dfs, subclasses = triple)
-    K <- max(v$binary$j)
+    K <- max(dfs$train$class_id)
     truth <- dfs$test$class_id
     r <- v$r
     idx <- truth %in% triple
@@ -326,7 +326,8 @@ lda_pred3 <- function(dfs, i, j, k) {
 
 lda_triples <- function(dfs) {
     v <- lda_binary(dfs)
-    K <- max(v$binary$j)
+    K <- max(dfs$train$class_id)
+    print(K)
 
     res <- data.frame(
             i = vector("integer", 0),
@@ -419,7 +420,7 @@ lda_multi <- function(dfs) {
 
     multi$dataset = dfs$dataset
     multi$run = run
-    list(multi = multi, binary = v$binary)
+    list(multi = multi, binary = v$summary)
 }
 
 write_multi <- function(runs = 20, workers = 11) {
@@ -449,36 +450,35 @@ write_triples <- function(runs = 20, workers = 11) {
     write.csv(df, file = "data/triples.csv", row.names = F, quote = F)
 }
 
-try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10, predictors = 1:4) {
+gen_W <- function(n = 200, div = 10, qL = 4) {
+  sapply( 1:n,  function(i) { 
+    s <- sample(0:div , qL - 1, replace = T) |> 
+            sort()
+    if (qL == 2)
+        c(s[1], div - s[1]) / div
+    else 
+        c(s[1], 
+        sapply(1:(qL - 2), function(i) (s[i + 1] - s[i])),
+        (div - s[qL - 1])) / div
+    })  |> t()
+}
+
+stack_acc <- function(dfs, i, j, k, W = gen_W(), f = 10, predictors = 1:4) {
+    stopifnot(ncol(W) == length(predictors))
     pred <- lda_pred3(dfs, i, j, k)
     truth <- pred$truth[pred$method =="normal"]
-    folds <- make_folds(truth)
-    q1 <- as.matrix(filter(pred, method =="normal") |> dplyr::select(1:3))
-    q2 <- as.matrix(filter(pred, method =="omit12") |> dplyr::select(1:3))
-    q3 <- as.matrix(filter(pred, method =="omit13") |> dplyr::select(1:3))
-    q4 <- as.matrix(filter(pred, method =="omit23") |> dplyr::select(1:3))
-    ql <- list(q1, q2, q3, q4)[predictors]
+    folds <- make_folds(truth, f)
+    q1 <- filter(pred, method =="normal") 
+    q2 <- filter(pred, method =="omit12") 
+    q3 <- filter(pred, method =="omit13") 
+    q4 <- filter(pred, method =="omit23") 
+    ql <- lapply(list(q1, q2, q3, q4), function(df) 
+            as.matrix(dplyr::select(df, 1:3)))[predictors]
     names <- list("normal", "omit12", "omit13", "omit23")[predictors]
     qL <- length(ql)
-    stopifnot(qL >=2)
-    # print(qL)
-
-    W <- sapply( 1:n,  function(i) { 
-                    s <- sample(0:div , qL - 1, replace = T) |> 
-                            sort()
-                    if (qL == 2)
-                        c(s[1], div - s[1]) / div
-                    else 
-                        c(s[1], 
-                        sapply(1:(qL - 2), function(i) (s[i + 1] - s[i])),
-                        (div - s[qL - 1])) / div
-                    })  |> t()
-
-                    # c(s[1] / div, 
-                            # (s[2] - s[1]) / div, 
-                            # (s[3] - s[2]) / div,
-                            # (div - s[3]) / div) }) |> t()
+    stopifnot(qL >= 2)
     colnames(W) <- sprintf("w_%s", names)
+    n <- nrow(W)
     wp <- sapply(1:n, function(i) {
             # p <- W[i,1] * q1 + W[i,2] * q2 + W[i,3] * q3 + W[i,4] * q4
             p <- W[i,1] * ql[[1]]
@@ -498,11 +498,12 @@ try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10, predictors = 1:4) 
     ws <- map (1:f, function(j) {
         ix = folds != j
         acc1 <- apply(wp, 2, function(i) mean(truth[ix] == wp[ix, i]))
+        stopifnot(length(acc1) == ncol(wp))
         macc1 <- max(acc1)
         s <- sample(which(acc1 == macc1), 1)
         iy = folds == j
         acc2 <- mean(truth[iy] == wp[iy, s])
-        print(c(macc1, acc2))
+        # print(c(macc1, acc2))
         for (i in which(iy)) {
             wbest[i,] <<- list(truth = truth[i], fold = j, acc1 = macc1, acc2 = acc2, pred = wp[i, s])
         }
@@ -512,5 +513,50 @@ try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10, predictors = 1:4) 
         v$samples = sum(iy)
         v
     }) |> list_rbind()
-    list(p = wbest, W = ws, acc = mean(wbest$truth == wbest$pred))
+    list(acc = mean(wbest$truth == wbest$pred), W = ws, p = wbest )
+}
+
+stack_score <- function(dfs, i, j, k, W = gen_W(), ratio=0.2, rep = 10, predictors = 1:4) {
+    stopifnot(ncol(W) == length(predictors))
+    pred <- lda_pred3(dfs, i, j, k)
+    truth <- pred$truth[pred$method =="normal"]
+    # folds <- make_folds(truth, f)
+    q1 <- filter(pred, method =="normal") 
+    q2 <- filter(pred, method =="omit12") 
+    q3 <- filter(pred, method =="omit13") 
+    q4 <- filter(pred, method =="omit23") 
+    ql <- lapply(list(q1, q2, q3, q4), function(df) 
+            as.matrix(dplyr::select(df, 1:3)))[predictors]
+    names <- list("normal", "omit12", "omit13", "omit23")[predictors]
+    qL <- length(ql)
+    stopifnot(qL >= 2)
+    colnames(W) <- sprintf("w_%s", names)
+    m <- nrow(W)
+    # ix0 <- dfs$test$class_id %in% c(i,j,k)
+    scores <- sapply(1:m, function(i) {
+            p <- W[i,1] * ql[[1]]
+            for (j in 2:qL) {
+                p <- p + W[i,j] * ql[[j]]
+            }
+            data.factor <- as.factor(truth)
+            onehot <- model.matrix(~ data.factor - 1)
+            # M <- (p - onehot)[ix0,] 
+            apply(p - onehot, 1, function(x) sum(x * x))
+            } ) # |> t()
+    print(dim(scores))
+
+    # triple <- c(i, j, k)
+    Nsamp <- round(nrow(q1) * ratio)
+    res <- vector("integer", nrow(W))
+    print(Nsamp)
+
+    for (r in 1:rep) {
+        ix = sample(1:nrow(q1), Nsamp)
+        score1 <- apply(scores, 2, function(i) sum(scores[ix,i]))
+        max_score = max(score1)
+        r <- sample(which(max_score == score1), 1)
+        res[r] <- res[r] + 1
+    }
+    print(res)
+    cbind(res, W)
 }
