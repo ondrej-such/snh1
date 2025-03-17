@@ -203,14 +203,23 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
 
         while (is.null(model)) {
             non_constant_cols <- remove_constant_within_groups(df_ij, group_col, tol)
-
             # Subset the data to keep only non-constant columns + group column
-            cleaned_data <- df_ij[, c(group_col, non_constant_cols)]
-
+            cleaned_data <- df_ij[, non_constant_cols]
+            pca <- prcomp(cleaned_data, 
+                                        tol = 0.001, 
+                                        scale. = F,
+                                        center = F)
+            newd <- as.data.frame(predict(pca, cleaned_data))
+            # print(head(newd))
+            # print(class(newd))
+            newd$class_id = df_ij$class_id
+            # print(dim(newd))
+            # print(head(newd))
+            # stopifnot(F)
 
             m1 <- NULL
             m1 <- tryCatch(lda(class_id == i ~ ., 
-                                data = cleaned_data), 
+                                data = newd), 
             error = function(e) {
                 tol <<- if (tol == 0) 1e-8 else 2 * tol
                 return(NULL)
@@ -219,7 +228,9 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
             # print(is.null(m1))
             model <- m1
         }
-        dft <- dfs$test[, c(group_col, non_constant_cols)]
+        dft <- predict(pca, dfs$test[, non_constant_cols]) |> as.data.frame()
+        dft$class_id = dfs$test$class_id
+        
         pred <- predict(model, dft)
         dfb_ij <- filter(dft, class_id %in% c(i,j))
         pred_ij <- predict(model, dfb_ij)
@@ -228,12 +239,12 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
         ece <- getECE(dfb_ij$class_id == i, pred_ij$posterior[,2])
         pr = predict(model, dft )
         prp <- pr$posterior
-        n1 <- sum(cleaned_data$class_id == i)
-        n2 <- sum(cleaned_data$class_id == j)
-        m1 <- mean(predict(model, cleaned_data)$x[cleaned_data$class_id == i])
-        m2 <- mean(predict(model, cleaned_data)$x[cleaned_data$class_id == j])
-        v1 <- var(predict(model, cleaned_data)$x[cleaned_data$class_id == i])
-        v2 <- var(predict(model, cleaned_data)$x[cleaned_data$class_id == j])
+        n1 <- sum(newd$class_id == i)
+        n2 <- sum(newd$class_id == j)
+        m1 <- mean(predict(model, newd)$x[newd$class_id == i])
+        m2 <- mean(predict(model, newd)$x[newd$class_id == j])
+        v1 <- var(predict(model, newd)$x[newd$class_id == i])
+        v2 <- var(predict(model, newd)$x[newd$class_id == j])
         # print(c(i,j))
         # print(c(m1,m2, (m1*n1 + m2* n2)/ (n1 + n2)))
         r <- log(prp[,2]) - log(prp[,1])
@@ -248,7 +259,8 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
              j = j, 
              r = r1,
              # r = r,
-             col_used = length(non_constant_cols),
+             col_nonconstant = length(non_constant_cols),
+             col_used = ncol(dft) - 1,
              bacc = bacc,
              ece = ece)
         })
@@ -269,7 +281,8 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
                 i = li$i, j = li$j, bacc = li$bacc, ece = li$ece, col_used = li$col_used)
     }) |> list_rbind()
 
-    return(list(r = R, binary = binary, subclasses = subclasses))
+
+    return(list(r = R, truth = dfs$test$class_id, summary = binary, subclasses = subclasses))
 }
 
 lda_pred3 <- function(dfs, i, j, k) {
@@ -447,7 +460,8 @@ try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10, predictors = 1:4) 
     ql <- list(q1, q2, q3, q4)[predictors]
     names <- list("normal", "omit12", "omit13", "omit23")[predictors]
     qL <- length(ql)
-    print(qL)
+    stopifnot(qL >=2)
+    # print(qL)
 
     W <- sapply( 1:n,  function(i) { 
                     s <- sample(0:div , qL - 1, replace = T) |> 
@@ -498,5 +512,5 @@ try_stack <- function(dfs, i, j, k, n = 200, f = 5, div = 10, predictors = 1:4) 
         v$samples = sum(iy)
         v
     }) |> list_rbind()
-    list(wbest, W = ws)
+    list(p = wbest, W = ws, acc = mean(wbest$truth == wbest$pred))
 }
