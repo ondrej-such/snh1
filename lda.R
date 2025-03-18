@@ -560,3 +560,45 @@ stack_score <- function(dfs, i, j, k, W = gen_W(), ratio=0.2, rep = 10, predicto
     print(res)
     cbind(res, W)
 }
+
+eval_scores <- function(dfs, i = 1, j = 2 , k = 3, 
+    predictors = 1:4,
+    W = gen_W(n = 200, div = 20, qL = 4), score = "brier") {
+    stopifnot(ncol(W) == length(predictors))
+    pred <- lda_pred3(dfs, i, j, k)
+    truth <- pred$truth[pred$method =="normal"]
+    # folds <- make_folds(truth, f)
+    q1 <- filter(pred, method =="normal") 
+    q2 <- filter(pred, method =="omit12") 
+    q3 <- filter(pred, method =="omit13") 
+    q4 <- filter(pred, method =="omit23") 
+    ql <- lapply(list(q1, q2, q3, q4), function(df) 
+            as.matrix(dplyr::select(df, 1:3)))[predictors]
+    names <- list("normal", "omit12", "omit13", "omit23")[predictors]
+    qL <- length(ql)
+    stopifnot(qL >= 2)
+    colnames(W) <- sprintf("w_%s", names)
+    m <- nrow(W)
+    # ix0 <- dfs$test$class_id %in% c(i,j,k)
+    scores <- sapply(1:m, function(i) {
+            p <- W[i,1] * ql[[1]]
+            for (j in 2:qL) {
+                p <- p + W[i,j] * ql[[j]]
+            }
+            if (score == "brier") {
+                data.factor <- as.factor(truth)
+                onehot <- model.matrix(~ data.factor - 1)
+                # M <- (p - onehot)[ix0,] 
+                apply(p - onehot, 1, function(x) sum(x * x))
+            } else if (score == "log") {
+                idx = cbind(1:length(truth), truth)
+                -log(p[idx])
+            } else if (score == "acc") {
+                as.numeric(apply(p, 1, which.max) == truth)
+            } else {
+                stopifnot(F)
+            }
+        
+            } ) # |> t()
+    scores
+}
