@@ -205,11 +205,11 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
             non_constant_cols <- remove_constant_within_groups(df_ij, group_col, tol)
             # Subset the data to keep only non-constant columns + group column
             cleaned_data <- df_ij[, non_constant_cols]
-            pca <- prcomp(cleaned_data, 
+            pca <- prcomp(cleaned_data,          # we do PCA to try to remove collinearity
                                         tol = 0.001, 
                                         scale. = F,
                                         center = F)
-            newd <- as.data.frame(predict(pca, cleaned_data))
+            newd <- as.data.frame(predict(pca, cleaned_data)) # project data to lower dim space
             # print(head(newd))
             # print(class(newd))
             newd$class_id = df_ij$class_id
@@ -228,6 +228,7 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
             # print(is.null(m1))
             model <- m1
         }
+        # project using the same projection as in training
         dft <- predict(pca, dfs$test[, non_constant_cols]) |> as.data.frame()
         dft$class_id = dfs$test$class_id
         
@@ -450,7 +451,9 @@ write_triples <- function(runs = 20, workers = 11) {
     write.csv(df, file = "data/triples.csv", row.names = F, quote = F)
 }
 
-gen_W <- function(n = 200, div = 10, qL = 4) {
+# Generate probability distributions on qL classses with denominators = div
+#
+gen_W <- function(n = 200, div = 100, qL = 4) {
   sapply( 1:n,  function(i) { 
     s <- sample(0:div , qL - 1, replace = T) |> 
             sort()
@@ -463,124 +466,92 @@ gen_W <- function(n = 200, div = 10, qL = 4) {
     })  |> t()
 }
 
-stack_acc <- function(dfs, i, j, k, W = gen_W(), f = 10, predictors = 1:4) {
-    stopifnot(ncol(W) == length(predictors))
+# Get a list of Bayes-covariant methods's predictions for a triple
+#
+get_bcp <- function(dfs, i, j, k) {
     pred <- lda_pred3(dfs, i, j, k)
-    truth <- pred$truth[pred$method =="normal"]
-    folds <- make_folds(truth, f)
     q1 <- filter(pred, method =="normal") 
     q2 <- filter(pred, method =="omit12") 
     q3 <- filter(pred, method =="omit13") 
     q4 <- filter(pred, method =="omit23") 
     ql <- lapply(list(q1, q2, q3, q4), function(df) 
-            as.matrix(dplyr::select(df, 1:3)))[predictors]
-    names <- list("normal", "omit12", "omit13", "omit23")[predictors]
-    qL <- length(ql)
-    stopifnot(qL >= 2)
-    colnames(W) <- sprintf("w_%s", names)
-    n <- nrow(W)
-    wp <- sapply(1:n, function(i) {
-            # p <- W[i,1] * q1 + W[i,2] * q2 + W[i,3] * q3 + W[i,4] * q4
-            p <- W[i,1] * ql[[1]]
-            for (j in 2:qL) {
-                p <- p + W[i,j] * ql[[j]]
-            }
-            # p <- sum(lapply(1:qL, function(j) W[i, j] * ql[[j]]))
-            r <- apply(p, 1, which.max) 
-            r
-            } ) # |> t()
-
-    wbest <- data.frame(truth = truth, 
-                fold = folds, 
-                acc1 = 0, 
-                acc2 = 0, 
-                pred = 0)
-    ws <- map (1:f, function(j) {
-        ix = folds != j
-        acc1 <- apply(wp, 2, function(i) mean(truth[ix] == wp[ix, i]))
-        stopifnot(length(acc1) == ncol(wp))
-        macc1 <- max(acc1)
-        s <- sample(which(acc1 == macc1), 1)
-        iy = folds == j
-        acc2 <- mean(truth[iy] == wp[iy, s])
-        # print(c(macc1, acc2))
-        for (i in which(iy)) {
-            wbest[i,] <<- list(truth = truth[i], fold = j, acc1 = macc1, acc2 = acc2, pred = wp[i, s])
-        }
-        v = as.data.frame(t(W[s,]))
-        v$acc1 = macc1
-        v$acc2 = acc2
-        v$samples = sum(iy)
-        v
-    }) |> list_rbind()
-    list(acc = mean(wbest$truth == wbest$pred), W = ws, p = wbest )
+            as.matrix(dplyr::select(df, 1:3)))
+    names <- list("normal", "omit12", "omit13", "omit23")
+    list(names = names, pl = ql, truth  = q1$truth)
 }
 
-stack_score <- function(dfs, i, j, k, W = gen_W(), ratio=0.2, rep = 10, predictors = 1:4) {
-    stopifnot(ncol(W) == length(predictors))
-    pred <- lda_pred3(dfs, i, j, k)
-    truth <- pred$truth[pred$method =="normal"]
-    # folds <- make_folds(truth, f)
-    q1 <- filter(pred, method =="normal") 
-    q2 <- filter(pred, method =="omit12") 
-    q3 <- filter(pred, method =="omit13") 
-    q4 <- filter(pred, method =="omit23") 
-    ql <- lapply(list(q1, q2, q3, q4), function(df) 
-            as.matrix(dplyr::select(df, 1:3)))[predictors]
-    names <- list("normal", "omit12", "omit13", "omit23")[predictors]
-    qL <- length(ql)
-    stopifnot(qL >= 2)
-    colnames(W) <- sprintf("w_%s", names)
-    m <- nrow(W)
-    # ix0 <- dfs$test$class_id %in% c(i,j,k)
-    scores <- sapply(1:m, function(i) {
-            p <- W[i,1] * ql[[1]]
-            for (j in 2:qL) {
-                p <- p + W[i,j] * ql[[j]]
-            }
-            data.factor <- as.factor(truth)
-            onehot <- model.matrix(~ data.factor - 1)
-            # M <- (p - onehot)[ix0,] 
-            apply(p - onehot, 1, function(x) sum(x * x))
-            } ) # |> t()
+# Select a subset of Bayes-covariant methods
+# 
+select_bcp <- function(bcp, predictors = 1:2) {
+    list(pl = bcp$pl[predictors], 
+         names = bcp$pl[predictors],
+         truth = bcp$truth)
+}
+
+# Use cross-validation to estimate accuracy of stacking ensemble
+# 
+cv_stack <- function(bcp,  W = gen_W(qL = length(bcp$pl)), 
+                    f = 5, reps = 20, score = "brier") {
+    scores <- eval_scores(bcp, W = W, score = score)$scores
+    acc <- eval_scores(bcp, W = W, score = "acc")$scores
+    truth <- bcp$truth
     print(dim(scores))
 
+    df <- map (1:reps, function(rep) {
+        folds <- make_folds(truth, f)
+        ws <- map (1:f, function(j) {
+            ix = folds != j
+            score1 <- apply(scores[ix,], 2, mean)
+            stopifnot(length(score1) == nrow(W))
+            mscore1 <- max(score1)
+            s <- sample(which(score1 == mscore1), 1)
+            iy = folds == j
+            correct2 <- sum(acc[iy, s])
+            acc2 <- mean(acc[iy, s])
+            data.frame(rep = rep, best_w = s, score1 = mscore1, acc2 = acc2, correct2 = correct2)
+        }) |> list_rbind()
+    }) |> list_rbind()
+}
+
+# computes crossvalidation accuracy of stacking ensemble
+#
+distW <- function(bcp, W = gen_W(qL = length(bcp$pl)), ratio = 0.2, reps = 10, score = "score") {
+    # stopifnot(ncol(W) == length(predictors))
+    truth <- bcp$truth
+    scores <- eval_scores(bcp, W = W, score = score)$scores
+
     # triple <- c(i, j, k)
-    Nsamp <- round(nrow(q1) * ratio)
+    Nsamp <- round(nrow(scores) * ratio)
     res <- vector("integer", nrow(W))
     print(Nsamp)
 
-    for (r in 1:rep) {
-        ix = sample(1:nrow(q1), Nsamp)
+    for (r in 1:reps) {
+        ix = sample(1:nrow(scores), Nsamp)
         score1 <- apply(scores, 2, function(i) sum(scores[ix,i]))
         max_score = max(score1)
         r <- sample(which(max_score == score1), 1)
         res[r] <- res[r] + 1
     }
     print(res)
-    cbind(res, W)
+    cbind(dist = res, W = W)
 }
 
-eval_scores <- function(dfs, i = 1, j = 2 , k = 3, 
-    predictors = 1:4,
-    W = gen_W(n = 200, div = 20, qL = 4), score = "brier") {
-    stopifnot(ncol(W) == length(predictors))
-    pred <- lda_pred3(dfs, i, j, k)
-    truth <- pred$truth[pred$method =="normal"]
-    # folds <- make_folds(truth, f)
-    q1 <- filter(pred, method =="normal") 
-    q2 <- filter(pred, method =="omit12") 
-    q3 <- filter(pred, method =="omit13") 
-    q4 <- filter(pred, method =="omit23") 
-    ql <- lapply(list(q1, q2, q3, q4), function(df) 
-            as.matrix(dplyr::select(df, 1:3)))[predictors]
-    names <- list("normal", "omit12", "omit13", "omit23")[predictors]
+eval_scores <- function(bcp, W = gen_W(qL = length(bcp$pl)), score = "brier") {
+
+    # We use convention from
+    # https://www.tandfonline.com/doi/abs/10.1198/016214506000001437
+    # in particular, it's better to have higher score
+
+    truth <- bcp$truth # note that this is 1,2, or 3, 
+    stopifnot(all(truth %in% c(1,2,3)))
+    stopifnot(length(bcp$names) == ncol(W))
+
+    colnames(W) <- bcp$names
+    ql <- bcp$pl
     qL <- length(ql)
-    stopifnot(qL >= 2)
-    colnames(W) <- sprintf("w_%s", names)
-    m <- nrow(W)
-    # ix0 <- dfs$test$class_id %in% c(i,j,k)
-    scores <- sapply(1:m, function(i) {
+
+    # Computation of scores for each sample
+    scores <- sapply(1:nrow(W), function(i) {
             p <- W[i,1] * ql[[1]]
             for (j in 2:qL) {
                 p <- p + W[i,j] * ql[[j]]
@@ -588,11 +559,10 @@ eval_scores <- function(dfs, i = 1, j = 2 , k = 3,
             if (score == "brier") {
                 data.factor <- as.factor(truth)
                 onehot <- model.matrix(~ data.factor - 1)
-                # M <- (p - onehot)[ix0,] 
-                apply(p - onehot, 1, function(x) sum(x * x))
+                apply(p - onehot, 1, function(x) -sum(x * x))
             } else if (score == "log") {
                 idx = cbind(1:length(truth), truth)
-                -log(p[idx])
+                log(p[idx])
             } else if (score == "acc") {
                 as.numeric(apply(p, 1, which.max) == truth)
             } else {
@@ -600,5 +570,5 @@ eval_scores <- function(dfs, i = 1, j = 2 , k = 3,
             }
         
             } ) # |> t()
-    scores
+    list(scores = scores, W = W, score = score)
 }
