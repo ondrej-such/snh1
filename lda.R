@@ -73,7 +73,7 @@ glm1 <- function(files = files, workers = 12) {
     }) |> my_pmap()
 }
 
-omit1 <- function(M_logits, idx) {
+log_omit1 <- function(M_logits, idx) {
     M <- M_logits
 
     if (idx != 1) {
@@ -85,31 +85,37 @@ omit1 <- function(M_logits, idx) {
             # p1 >= p2
         if (M[1,3] >=0) {
             # p1 is the largets
-            p <- c(1, exp(M[2,1]), exp(M[3,1]))
+            p <- c(0, M[2,1], M[3,1])
         } else {
 # p3 is the largest
-            p <- c(exp(M[1,3]), exp(M[1,3] + M[2,1]), 1)
+            p <- c(M[1,3], M[1,3] + M[2,1], 0)
         }
     } else {
         # p2 >= p1
         if (M[1,3] >= 0) {
             # p2 is the largest
-            p <- c(exp(M[1,2]), 1, exp(M[1,2] + M[3,1]))
+            p <- c(M[1,2], 0, M[1,2] + M[3,1])
         } else {
             # p3 is larger than p1, but unsure yet what is the largest
             if (M[1,3] + M[2,1] >= 0) {
                 # p2 is the largest
-                p <- c(exp(M[1,2]), 1, exp(M[1,2] + M[3,1]))
+                p <- c(M[1,2], 0, M[1,2] + M[3,1])
             } else {
                 # p3 is the largest
-                p <- c(exp(M[1,3]), exp(M[1,3] + M[2,1]), 1)
+                p <- c(M[1,3], M[1,3] + M[2,1], 0)
             }
         }
     }
-    stopifnot(max(p) <= 1)
-    r <- p / sum(p)
-    if (idx != 1) r[perm] else r
+    stopifnot(max(p) <= 0)
+    if (idx != 1) p[perm] else p
 }
+
+omit1 <- function(M_logits, idx) {
+    lp <- log_omit1(M_logits, idx)
+    p <- exp(lp)
+    p / sum(p)
+}
+
 
 
 omit2 <- function(M_logits, idx) {
@@ -159,6 +165,11 @@ e3 <- new.env(parent = emptyenv())
 e3[["omit23"]] = function(x) omit1(x, 1)
 e3[["omit13"]] = function(x) omit1(x, 2)
 e3[["omit12"]] = function(x) omit1(x, 3)
+
+log3 <- new.env(parent = emptyenv())
+log3[["omit23"]] = function(x) log_omit1(x, 1)
+log3[["omit13"]] = function(x) log_omit1(x, 2)
+log3[["omit12"]] = function(x) log_omit1(x, 3)
 
 # Function to identify columns constant within groups
 remove_constant_within_groups <- function(data, group_col, tol = 0) {
@@ -312,17 +323,34 @@ lda_pred3 <- function(dfs, i, j, k) {
                     truth = q, pred = pred, method = m, 
                     orig_truth = truth[idx])
     }) |>  list_rbind()
-    # print(dim(df1))
-    # df2 <- map (ls(e3), function(m) {
-        # p <- sapply(1:N, function(k) {
-            # fn <- e3[[m]]
-            # fn(r[,,k])
-        # }) |> t()
-        # colnames(p) <- c("p1", "p2", "p3")
-        # data.frame(p[idx,], truth = q, method = m)
-        # }) |> list_rbind()
-# 
-    # rbind(df1, df2)
+}
+
+log_pred3 <- function(dfs, i, j, k) {
+    triple <- c(i,j,k)
+    v <- lda_binary(dfs, subclasses = triple)
+    K <- max(dfs$train$class_id)
+    truth <- dfs$test$class_id
+    r <- v$r
+    idx <- truth %in% triple
+    dft <- dfs$test
+    N <- nrow(dft)
+    t2 <- truth[idx]
+    q <- sapply(1:length(t2), function(k) {
+            which(t2[k] == triple) 
+        })
+    map (c(ls(log3)), function(m) {
+        p <- sapply(1:N, function(k) {
+            fn <- log3[[m]]
+            # print("done 3")
+            fn(r[,,k])
+        }) |> t()
+        colnames(p) <- c("p1", "p2", "p3")
+        pred <- apply(p[idx,],1, which.max)
+        data.frame(p[idx,], 
+                    id = 1:sum(idx), orig_id = (1:N)[idx], 
+                    truth = q, pred = pred, method = m, 
+                    orig_truth = truth[idx])
+    }) |>  list_rbind()
 }
 
 lda_triples <- function(dfs) {
@@ -466,18 +494,45 @@ gen_W <- function(n = 200, div = 100, qL = 4) {
     })  |> t()
 }
 
+
+gen_W2 <- function(div = 50) {
+    df <- expand.grid(w1 = 0:div, w2 = 0:div) |>
+                filter(w1 + w2 <= div) |> 
+                filter((w1 + w2 > 0)) |>
+                filter((div - w2) > 0) |>
+                filter((div - w1) > 0) 
+    W <- matrix(0, nrow = nrow(df), ncol = 3)
+    W[,c(1:2)] = as.matrix(df)
+    W[,3] = div - W[,1] - W[,2]
+    W / div
+}
+
+gen_W3 <- function(n = 1000, lbd = 0, ubd = 1) {
+    d = ubd - lbd
+    matrix((runif(3 * n) + lbd /d) * (ubd - lbd),
+        nrow = n, ncol = 3)
+
+
+}
+
 # Get a list of Bayes-covariant methods's predictions for a triple
 #
 get_bcp <- function(dfs, i, j, k) {
-    pred <- lda_pred3(dfs, i, j, k)
-    q1 <- filter(pred, method =="normal") 
+    pred <- log_pred3(dfs, i, j, k)
+    # q1 <- filter(pred, method =="normal") 
     q2 <- filter(pred, method =="omit12") 
     q3 <- filter(pred, method =="omit13") 
     q4 <- filter(pred, method =="omit23") 
-    ql <- lapply(list(q1, q2, q3, q4), function(df) 
+    ql <- lapply(list(q2, q3, q4), function(df) 
             as.matrix(dplyr::select(df, 1:3)))
-    names <- list("normal", "omit12", "omit13", "omit23")
-    list(names = names, pl = ql, truth  = q1$truth)
+
+    # ql <- map(ls(log3), function(fnn) {
+        # filter(pred, method == fnn) |> as.matrix(dplyr
+
+    # })
+    names <- list("omit12", "omit13", "omit23")
+    list(names = names, pl = ql, truth  = q2$truth, 
+        dataset = dfs$dataset, run = dfs$run, triple = c(i,j,k))
 }
 
 # Select a subset of Bayes-covariant methods
@@ -491,11 +546,13 @@ select_bcp <- function(bcp, predictors = 1:2) {
 # Use cross-validation to estimate accuracy of stacking ensemble
 # 
 cv_stack <- function(bcp,  W = gen_W(qL = length(bcp$pl)), 
-                    f = 5, reps = 20, score = "brier") {
-    scores <- eval_scores(bcp, W = W, score = score)$scores
-    acc <- eval_scores(bcp, W = W, score = "acc")$scores
+                    f = 5, reps = 20, score = "brier", acc = NULL) {
+    if (is.null(acc))
+        acc <- eval_scores(bcp, W = W, score = "acc")$scores
+    scores <- if(score == "acc") acc else
+                eval_scores(bcp, W = W, score = score)$scores
     truth <- bcp$truth
-    print(dim(scores))
+    # print(dim(scores))
 
     df <- map (1:reps, function(rep) {
         folds <- make_folds(truth, f)
@@ -511,6 +568,10 @@ cv_stack <- function(bcp,  W = gen_W(qL = length(bcp$pl)),
             data.frame(rep = rep, best_w = s, score1 = mscore1, acc2 = acc2, correct2 = correct2)
         }) |> list_rbind()
     }) |> list_rbind()
+}
+
+cv_acc <- function(...) {
+    cv_stack(..., score = "acc")
 }
 
 # computes crossvalidation accuracy of stacking ensemble
@@ -552,9 +613,26 @@ eval_scores <- function(bcp, W = gen_W(qL = length(bcp$pl)), score = "brier") {
 
     # Computation of scores for each sample
     scores <- sapply(1:nrow(W), function(i) {
-            p <- W[i,1] * ql[[1]]
+            logp <- W[i,1] * ql[[1]]
             for (j in 2:qL) {
-                p <- p + W[i,j] * ql[[j]]
+                logp <- logp + W[i,j] * ql[[j]]
+            }
+            # cp <- exp(logp)
+            m = apply(logp, 1, max)
+            p1 <- exp(logp - m)
+            sums <- apply(p1, 1, sum)
+            p <- p1 / sums
+            # p <- apply(logp, 1, function(r) {
+                #m = max(r)
+                #p1 <- exp(r - m)
+                #p1 / sum(p1)
+            #}) |> t()
+            # if (i == 1) print(dim(p))
+            if (sum(is.na(p)) > 0) {
+                print(logp)
+                print(cp)
+                print(p)
+                stopifnot(F)
             }
             if (score == "brier") {
                 data.factor <- as.factor(truth)
@@ -562,7 +640,7 @@ eval_scores <- function(bcp, W = gen_W(qL = length(bcp$pl)), score = "brier") {
                 apply(p - onehot, 1, function(x) -sum(x * x))
             } else if (score == "log") {
                 idx = cbind(1:length(truth), truth)
-                log(p[idx])
+                log(p[idx]) # TODO: replac with logsumexp
             } else if (score == "acc") {
                 as.numeric(apply(p, 1, which.max) == truth)
             } else {
@@ -571,4 +649,40 @@ eval_scores <- function(bcp, W = gen_W(qL = length(bcp$pl)), score = "brier") {
         
             } ) # |> t()
     list(scores = scores, W = W, score = score)
+}
+
+par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
+    df <- read.csv("data/triples.csv")
+    df1 <- df |> mutate(m = pmax(normal, omit12, omit13, omit23)) |> 
+            filter(wlw2 > m)
+    print(sprintf("Remains %d out of %d", nrow(df1), nrow(df)))
+    # print(head(df1))
+    
+    W <- gen_W2(div)
+
+    #df2 <- map(1:nrow(df1), function(i) {
+    plan(multicore, workers = workers)
+    rows <- if (nrow(df1) > limit) {
+        sample(1:nrow(df1), limit)
+    } else 1:nrow(df1)
+    df2 <- future_map(rows, function(i) {
+        dfs <- read_wlws(800, df1$dataset[i], df1$run[i]) 
+        bcp <- get_bcp(dfs, df1$i[i], df1$j[i], df1$k[i])
+        acc <- eval_scores(bcp, W = W, score = "acc")$scores
+        df3 <- cv_stack(bcp, W = W, score = score, acc = acc)
+        df4 <- df3 |> group_by(rep) |> summarize(m = sum(correct2)) |> 
+                    summarize(cv_acc = mean(m) / nrow(bcp$pl[[1]]))
+        df5 <- df3 |> group_by(best_w) |> summarize(n = n())|> arrange(desc(n))
+
+        df4$dataset = df1$dataset[i]
+        df4$i = df1$i[i]
+        df4$j = df1$j[i]
+        df4$k = df1$k[i]
+        df4$run = df1$run[i]
+        df4$wlw2 = df1$wlw2[i]
+        df4$best_w = df5$best_w[1]
+        df4$best_n = df5$n[1]
+        df4$max_bc = max(apply(acc, 2, mean))
+        df4
+    }) |> list_rbind()
 }
