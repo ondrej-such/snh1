@@ -686,3 +686,54 @@ par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
         df4
     }) |> list_rbind()
 }
+
+bc_triple <- function(dfs, i, j, k, add = 2) {
+    K <- max(dfs$train$class_id)
+    triples <- combn(K, 3)
+    df1 <- dfs$train
+    df2 <- dfs$test
+    map(1:ncol(triples), function(m) {
+        triple <- triples[,m]
+        dfbc <- dfs
+        dfbc$train = dfs$train |> filter(class_id %in% triple)
+        dfbc$test = dfs$test |> filter(class_id %in% triple)
+        dfbc$train$class_id = sapply(dfbc$train$class_id, function(s) which(s == triple))
+        dfbc$test$class_id = sapply(dfbc$test$class_id, function(s) which(s == triple))
+        pred <- lda_pred3(dfbc, triple[1], triple[2], triple[3])
+        p <- as.matrix(pred[,1:3])
+
+        # TODO 
+
+        res1 <- map(triple, function(n) {
+
+            ix1 <- dfs$train$class_id == n
+            ix2 <- dfs$test$class_id == n
+            # bc1 <- rbind(df1, df1[sample(which(ix1), factor*sum(ix1), replace = T), ])
+            # bc2 <- rbind(df2, df2[sample(which(ix2), factor*sum(ix2), replace = T), ])
+            for( w in 1:add) {
+                dfbc$train <- rbind(dfbc$train, dfbc$train[ix1,])
+                dfbc$test <- rbind(dfbc$test, dfbc$test[ix2,])
+            }
+            dfm <- lda_triples(dfbc)
+            dfm$enlarged = n
+            dfm$bc = "binary"
+            w <- rep(1,3)
+            w[which(n == triple)] = (1 + add)
+            p <- w * p
+            for (method in unique(pred$method))  {
+                pm <- p[pred$method == method, ]
+                predictions <- apply(pm, 1, which.max)
+                weight <- if_else (pred$truth == n, 1 + add, 1)
+                acc <- sum(weight * (predictions == pred$truth)) / sum(weight)
+                dfm[nrow(dfm) + 1, ] = list(i = triple[1], j = triple[2], k = triple[3], 
+                        method = method, acc = acc, 
+                        enlarged = n, bc = "multi")
+
+            }
+            dfm
+        }) |> list_rbind()
+    }) |> list_rbind()
+}
+
+
+
