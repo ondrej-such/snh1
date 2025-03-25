@@ -14,8 +14,8 @@ source("glm1.R")
 library(purrr)
 library(knitr)
 
-df <- map(files, function(f) {
-# df <- map("dna", function(f) {
+# df <- map(files[1], function(f) {
+df <- map("dna", function(f) {
     dfs <- read_wlws(800, f, 0)  
     data.frame(dataset = f, K = max(dfs$train$class_id))
 }) |> list_rbind()
@@ -62,6 +62,8 @@ df_sep <- map(1:nrow(df), function(r) {
                     if(result$status != "infeasible") {
                         print(result$status)
                     }
+ #                 stopifnot(result$status == "infeasible")
+
                 }
             }
         }

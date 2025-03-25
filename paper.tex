@@ -86,15 +86,15 @@ Many different coupling methods have been proposed
 \subsection{Bradley-Terry equations}
 
 Suppose that $K$ classes $C_1, \ldots, C_K$ are distributed according to probability distributions $p_i$ on a  space $X$. Let us denote the $r_{ij}(x)$ the output of Bayes (binary) classifier for $x$ in $X$ yielding the probability $p(x \in C_i \mid x\in C_i \cup C_j )$. Then we have
-$$
-r_{ij}(x)= \frac {p_i(x)}{p_i(x) + p_j(x)}.
-$$
+\begin{equation}
+r_{ij}(x)= \frac {p_i(x)}{p_i(x) + p_j(x)}. \label{eq:bt1}
+\end{equation}
 
 
-The system of equations is called Bradley--Terry equations.  The equations in \eqref{eq:bt}  can be transformed to a system of linear equations. The theoretical basis for one-vs-one classification framework is provided by the following result.
+The system of equations is called Bradley--Terry equations.  The equations in \eqref{eq:bt1}  can be transformed to a system of linear equations. The theoretical basis for one-vs-one classification framework is provided by the following result.
 
 \begin{prop}
-Suppose $p_i(x) >0$ so that all $r_{ij}(x)$ are defined. The system of linear equations \eqref{eq:bt}  has a unique solution which is the multi-class Bayes classifier.
+Suppose $p_i(x) >0$ so that all $r_{ij}(x)$ are defined. The system of linear equations \eqref{eq:bt1}  has a unique solution which is the multi-class Bayes classifier.
 \end{prop}
 \begin{proof}
 TODO	
@@ -102,7 +102,7 @@ TODO
 
 Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_{ij}$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
 \begin{equation}
-	\hat{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt}
+	\hat{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt2}
 \end{equation}
 
  One should note that 
@@ -111,7 +111,7 @@ Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_{ij}$ for all 
 \item when probabilities are parametrized in other ways (e.g. other common parametrizations are as odds, or log-odds), the system of equations \eqref{eq:bt} is non-linear.
 \end{itemize}
 
-\subsection{Desiderata on coupling method}
+\subsection{Exact desiderata on coupling method}
 
 Let us outline what kind of conditions may be desirable in a coupling method.
 
@@ -132,7 +132,7 @@ Let us outline what kind of conditions may be desirable in a coupling method.
 
 \emph{Unique solution} refers to the fact that the procedure to compute a multi-class probabilistic prediction always converges to a unique solution. One way to satisfy this condition would be that it amounts to a linear system of equations in $K$ variables, and the matrix of the system would be invertible. Another example would be when the procedure amounts to finding the minimum of a strongly convex function. 
 
-\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that shouldwe apply the coupling procedure to binary Bayes classifiers, then the result is the output of multi-class Bayes classifier i.e. satisfies \eqref{eq:bt}.
+\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multi-class Bayes classifier i.e. satisfies \eqref{eq:bt1}.
 
 \emph{Canonicity} refers to requirement that the method should be in a natural way unique. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to build a regression model. Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. 
 
@@ -144,7 +144,7 @@ Let us outline what kind of conditions may be desirable in a coupling method.
 \emph{Bayes covariance} is a notion introduced in work \cite{BarredaSuch}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier changes its prediction when the priors change. The change happens according to Bayes theorem.
 
 
-
+\subsection{Inexact desiderata for coupling methods}
 
 \emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
 
@@ -156,6 +156,57 @@ Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported 
 
 
 The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
+
+
+\section{Examples of coupling methods}
+
+
+\subsection{Arboreal coupling methods}
+
+This coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes 1 and 3. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
+\begin{equation}
+\begin{split}
+\frac{\hat p_1}{\hat p_2} &= \vec{r}_{12}\\
+\frac{\hat p_2}{\hat p_3} &= \vec{r}_{23}\\
+\hat p_1 + \hat p_2 + \hat p_3 &= 0
+\end{split}
+\end{equation}
+
+For $K=3$, there are three different arboreal coupling methods, which we shall call $omit12$, $omit13$, $omit23$. 
+
+In order to obtain a regular system of equations for  larger values of $K$ , the resulting classifiers must form a tree within the complete graph on all classes. 
+
+This method is non-canonical, because there is no natural way to choose a tree in a complete graph.
+
+\subsection{Hinton's oracle}
+
+This oracle method assumes it has the access to the ground truth $y = C_i$. It outputs probabilities by solving only the equations
+$$
+\frac{p_i}{p_j} = \vec{r}_{ij},\quad \textrm{for }i\not = j,
+$$
+together  with total sum equation
+$$
+\sum_{i=1}^K  \hat p_i = 1.
+$$
+
+It is thus an arboreal method where the underlying tree forms a star. This method is clearly the optimal one with respect to Hinton's minimality criterion. It is not a true classification method, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
+
+%\subsection{Radial coupling}
+%
+%This coupling method aims to convert Hinton's oracle to a practical method. Denote by $\hat{\boldsymbol{h}}_i$ the prediction of Hinton's oracle method, if the true class was $C_i$. These predictions will generally span the simplex $\sum_i \hat p_i = 1$. In that case the prediction $\boldsymbol{r}$ of the method  can be expressed as a linear combination of $\hat{\boldsymbol{h}}_i$. The radial coupling method requires that for  weights we could in fact use the components of $\boldsymbol{r}$ i.e.
+%\begin{equation}
+%	\boldsymbol{r} = \sum_{i=1}^K r_i \hat{\boldsymbol{h}}_i. \label{eq:radial}
+%\end{equation}
+%
+%The intuition behind \eqref{eq:radial} is that if some component of $\boldsymbol{r}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\boldsymbol{r}$ should be close to the prediction of Hinton's oracle $\hat{\boldsymbol{h}}_i$.
+
+\subsection{Normal coupling}
+
+
+
+\subsection{Wu-Lin-Weng's method}
+
+
 
 \subsection{Linear kernel}
 
