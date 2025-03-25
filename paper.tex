@@ -24,12 +24,20 @@
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage{jmlr2e}
 
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{rotating}
+
 \newtheorem{prop}{Proposition}
 
 % Definitions of handy macros can go here
 
 \newcommand{\dataset}{{\cal D}}
 \newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+\DeclareMathOperator*{\divm}{div}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 
 % Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
 
@@ -80,10 +88,38 @@ A key step in probabilistic one-vs-one modelling is the aggregation of results o
 
 \section{Theoretical basis of coupling methods}
 
-Many different coupling methods have been proposed 
+Suppose we have $K$ classes of objects, each distributed according to a probability distribution $p_i$, $i=1,\ldots, K$ on a feature space $X$. In a multi-class classification problem we are provided with the prior probabilities $\Pi = (P_1, \ldots, P_k)$ of each class. Given $x$ in $X$ we aim to find the probability that $x$ belongs to $i$-th class. 
+
+An exact solution to this problem is provided by the Bayes classifier. To simplify the discussion we will assume that $p_i(x) > 0$ for all $x$ and $P_i = 0$ for all $i$. Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines The Bayes classifier predicts that the probability of $x$ belonging to the $i$-th class is
+\begin{align}
+ p^\Pi_i = \frac{p_i(x) P_i}{\sum_{k=1}^K p_k(x)P_k}.
+\end{align}
+
+Besides the multi-class classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of classes. Assuming prior on the two classes is proportional to $(P_i, P_j)$, the binary Bayes classifier predicts the probability of $i$-th class as 
+
+\begin{align}
+	r_{ij}(x) = \frac{p_i(x) P_1}{p_i(x)P_1 + p_j(x)P_2}.
+\end{align}
+
+Knowledge of vector $\boldsymbol{p}^\Pi$ is essentially equivalent to knowing the function $r_{ij}(x)$. Indeed, if $p_{i}> 0$ for all $x$, then we have
+\begin{align}
+r_{ij}(x) = \frac{p_i^\Pi}{p_i^\Pi + p_j^\Pi}. \label{eq:bt1}
+\end{align}
+
+Conversely, it is easy to show that  the system of equations \label{eq:bt1} has a unique solution.
+
+\begin{prop} \label{prop:binary2multi}
+The system of linear equations \eqref{eq:bt1}  has a unique solution which is the multi-class Bayes classifier.
+\end{prop}
+\begin{proof}
+Indeed, we have 
+\begin{align*}
+\frac{1}{r_{ij}(x)} - 1 = \frac{p_j^\Pi}{p_i^\Pi}
+\end{align*}
+\end{proof}
 
 
-\subsection{Bradley-Terry equations}
+\subsection{One-vs-one classification }
 
 Suppose that $K$ classes $C_1, \ldots, C_K$ are distributed according to probability distributions $p_i$ on a  space $X$. Let us denote the $r_{ij}(x)$ the output of Bayes (binary) classifier for $x$ in $X$ yielding the probability $p(x \in C_i \mid x\in C_i \cup C_j )$. Then we have
 \begin{equation}
@@ -93,12 +129,7 @@ r_{ij}(x)= \frac {p_i(x)}{p_i(x) + p_j(x)}. \label{eq:bt1}
 
 The system of equations is called Bradley--Terry equations.  The equations in \eqref{eq:bt1}  can be transformed to a system of linear equations. The theoretical basis for one-vs-one classification framework is provided by the following result.
 
-\begin{prop}
-Suppose $p_i(x) >0$ so that all $r_{ij}(x)$ are defined. The system of linear equations \eqref{eq:bt1}  has a unique solution which is the multi-class Bayes classifier.
-\end{prop}
-\begin{proof}
-TODO	
-\end{proof}
+
 
 Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_{ij}$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
 \begin{equation}
@@ -134,7 +165,7 @@ Let us outline what kind of conditions may be desirable in a coupling method.
 
 \emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multi-class Bayes classifier i.e. satisfies \eqref{eq:bt1}.
 
-\emph{Canonicity} refers to requirement that the method should be in a natural way unique. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to build a regression model. Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. 
+\emph{Canonicity} refers to requirement that the method should be in a natural way unique. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. 
 
 \emph{Symmetry} refers to the action of the permutation group which acts both on the classes as well as on predictions. The action of a permutation $\sigma$ extends to the action on pairwise matrix by 
 \begin{equation}
@@ -146,41 +177,82 @@ Let us outline what kind of conditions may be desirable in a coupling method.
 
 \subsection{Inexact desiderata for coupling methods}
 
-\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
+\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
 
-\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtained unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. This is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
+\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
-Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
+Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction \cite[p.~467]{hastie1998classification}. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
 
 
 The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
 
 
-\section{Examples of coupling methods}
+\section{Examples of coupling methods} \label{sec:coupling}
+
+There is a plethora of methods available for coupling. Let us describe four major categories.
 
 
-\subsection{Arboreal coupling methods}
 
-This coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes 1 and 3. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
+
+\subsection{Optimizing binary divergence}
+
+A multi-class estimate $\hat{\boldsymbol{p}}$ obtained by a coupling method implies via \eqref{eq:bt1} probability distributions on each pair of classes:
+\begin{align*}
+	\hat D_{ij}^\textrm{multi}= \biggl(\frac{\hat{p_i}}{\hat p_i + \hat p_j},\frac{\hat{p_j}}{\hat p_i + \hat p_j}\biggr)	
+\end{align*}
+On the other hand, binary classifiers provide another distribution for each pair of  classes, namely
+\begin{align*}
+\hat D_{ij}^\textrm{binary} = (\hat r_{ij}, \hat r_{ji}).
+\end{align*}
+
+A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional incorporating divergence measures between these distributions
+\begin{align*}
+\hat{\boldsymbol{p}} = \argmax_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\hat D_{ij}^\textrm{multi}, \hat D_{ij}^\textrm{binary})
+\end{align*}
+
+A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback-Leibler divergence $\divm_\textrm{KL}$
+\begin{align*}
+	\divm\nolimits_\textrm{KL} (\boldsymbol{p}, \boldsymbol{q})= \sum p_i \log (p_i/ q_i)
+\end{align*}
+
+Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score.
+ 
+For instance, a popular alternative is divergence arising from the quadratic  score (also called Brier score).  This divergence takes the form
+$$
+\divm\nolimits_\textrm{quad} (\boldsymbol{p}, \boldsymbol{q})= \sum (p_i - q_i)^2.
+$$
+Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method \cite{wu2004probability}. 
+
+Their method use an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
+\begin{align*}
+\hat{\boldsymbol{p}} = \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
+\end{align*}
+
+We note that the method is symmetric, but the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we cannot view Wu-Lin-Weng's method as canonical.
+
+\subsection{Arboreal-based methods}
+
+
+Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
+
+An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes 1 and 3. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
 \begin{equation}
-\begin{split}
-\frac{\hat p_1}{\hat p_2} &= \vec{r}_{12}\\
-\frac{\hat p_2}{\hat p_3} &= \vec{r}_{23}\\
-\hat p_1 + \hat p_2 + \hat p_3 &= 0
-\end{split}
+	\begin{split}
+		\frac{\hat p_1}{\hat p_2} &= \vec{r}_{12}\\
+		\frac{\hat p_2}{\hat p_3} &= \vec{r}_{23}\\
+		\hat p_1 + \hat p_2 + \hat p_3 &= 0
+	\end{split}
 \end{equation}
 
 For $K=3$, there are three different arboreal coupling methods, which we shall call $omit12$, $omit13$, $omit23$. 
 
-In order to obtain a regular system of equations for  larger values of $K$ , the resulting classifiers must form a tree within the complete graph on all classes. 
+In order to obtain a regular system of equations for  larger values of $K$ , the resulting classifiers must represent a connected tree within the complete graph on all classes. Any arboreal method is non-canonical, because there is no natural way to choose a tree in a complete graph.
 
-This method is non-canonical, because there is no natural way to choose a tree in a complete graph.
+\subsection{Methods emphasizing Hinton's minimality}
 
-\subsection{Hinton's oracle}
-
-This oracle method assumes it has the access to the ground truth $y = C_i$. It outputs probabilities by solving only the equations
+A variant on arboreal methods is the following oracle method which we shall call Hinton's oracle. It  assumes it has the access to the ground truth $y = C_i$. It outputs probabilities by solving only the equations
 $$
 \frac{p_i}{p_j} = \vec{r}_{ij},\quad \textrm{for }i\not = j,
 $$
@@ -189,29 +261,54 @@ $$
 \sum_{i=1}^K  \hat p_i = 1.
 $$
 
-It is thus an arboreal method where the underlying tree forms a star. This method is clearly the optimal one with respect to Hinton's minimality criterion. It is not a true classification method, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
+For any sample, its result is identical to the arboreal method where the underlying tree forms a star. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-%\subsection{Radial coupling}
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\hat{\boldsymbol{T}}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the simplex $\sum_i \hat p_i = 1$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\hat{\boldsymbol{T}}_i$. Let us now define \emph{radial} coupling method. The  method requires that for  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
+\begin{equation}
+	\hat {\boldsymbol{p}} = \sum_{i=1}^K p_i \hat{\boldsymbol{T}}_i. \label{eq:radial}
+\end{equation}
 %
-%This coupling method aims to convert Hinton's oracle to a practical method. Denote by $\hat{\boldsymbol{h}}_i$ the prediction of Hinton's oracle method, if the true class was $C_i$. These predictions will generally span the simplex $\sum_i \hat p_i = 1$. In that case the prediction $\boldsymbol{r}$ of the method  can be expressed as a linear combination of $\hat{\boldsymbol{h}}_i$. The radial coupling method requires that for  weights we could in fact use the components of $\boldsymbol{r}$ i.e.
-%\begin{equation}
-%	\boldsymbol{r} = \sum_{i=1}^K r_i \hat{\boldsymbol{h}}_i. \label{eq:radial}
-%\end{equation}
-%
-%The intuition behind \eqref{eq:radial} is that if some component of $\boldsymbol{r}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\boldsymbol{r}$ should be close to the prediction of Hinton's oracle $\hat{\boldsymbol{h}}_i$.
+The intuition behind \eqref{eq:radial} is that if some component of $\hat{\boldsymbol{p}}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by $\hat{\boldsymbol{T}}_i$.
 
 \subsection{Normal coupling}
 
 
-
-\subsection{Wu-Lin-Weng's method}
-
+\subsection{Properties of coupling methods}
 
 
-\subsection{Linear kernel}
+The following table indicates which properties are enjoyed by each coupling method we described in this section.
+
+\begin{table}[!ht]
+\begin{tabular}{cm{2.5cm}cccm{1.5cm}m{1.5cm}}
+&property & Wu-Lin-Weng & radial & normal & arboreal & Hinton's oracle \\
+\hline 
+\multirow{4}{*}{\begin{turn}{90}\makecell{exact}\end{turn}}
+&uniqueness & yes & yes & yes & yes & yes \\
+&Bradley-Terry consistency & yes & yes & yes & yes & yes \\
+&canonicity & no & yes & yes & no & yes \\
+&symmetry & yes & yes & yes & no & yes \\
+\hline
+\multirow{5}{*}{\begin{turn}{90}\makecell{non-exact}\end{turn}}
+&Hinton's minimality & ?  & ++ & ?  & ? & +++ \\
+&lack of parameters & yes & yes & yes & yes & yes \\
+& amounts to a linear system & yes & yes & yes & yes & yes\\
+& linear system of special form & no & yes & yes & yes & yes \\
+& iterative method & yes & yes & no & not needed & not needed\\
+\hline
+\end{tabular}
+\caption{Summary of properties of coupling methods described in Section \ref{sec:coupling}.}
+\label{tab:summaryCoupling}
+\end{table}
+
+
+%\subsection{Wu-Lin-Weng's method}
+
+
+
+%\subsection{Linear kernel}
 
 %\begin{tabular}
-\input{glm1-multi.tex}
+%\input{glm1-multi.tex}
 %\end{tabular}
 
 Here is a citation \cite{chow:68}.
@@ -268,7 +365,7 @@ by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
 {\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
 
 
-\vskip 0.2in
-\bibliography{sample}
+\vskip 0.2in 
+\bibliography{paper}
 
 \end{document}
