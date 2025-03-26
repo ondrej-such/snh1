@@ -116,7 +116,7 @@ p_{ij}^\Pi(x) = \frac{p_i^\Pi(x)}{p_i^\Pi(x) + p_j^\Pi(x)}. \label{eq:bt1}
 Conversely, it is easy to show that  the system of equations \eqref{eq:bt1} has a unique solution.
 
 \begin{prop} \label{prop:binary2multi}
-The system of  equations \eqref{eq:bt1}  has a unique solution which is the multi-class Bayes classifier.
+The system of  equations \eqref{eq:bt1} in unknowns $p_i^\Pi(x)$ has a unique solution which is the multi-class Bayes classifier.
 \end{prop}
 %\begin{proof}
 %Indeed, we have 
@@ -253,20 +253,20 @@ A notable example which uses this principle is the coupling method introduced in
 	\divm\nolimits_\textrm{KL} (\boldsymbol{p}, \boldsymbol{q})= \sum p_i \log (p_i/ q_i)
 \end{align*}
 
-Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly}.
+Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score [\cite{gneiting2007strictly, buja2005loss}].
  
-For instance, a popular alternative is divergence arising from the quadratic  score (also known as Brier score) \cite{gneiting2007strictly}. This divergence takes the form
+For instance, a popular alternative is divergence arising from the quadratic  score [\cite{gneiting2007strictly}] (also known as Brier score [\cite{brier1950verification}]). This divergence takes the form
 $$
 \divm\nolimits_\textrm{quad} (\boldsymbol{p}, \boldsymbol{q})= \sum (p_i - q_i)^2.
 $$
-Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method \cite{wu2004probability}. 
+Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method [\cite{wu2004probability}]. 
 
 Their method use an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
 \begin{align*}
 \hat{\boldsymbol{p}} = \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
 \end{align*}
 
-We note that the method is symmetric, but the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we cannot view Wu-Lin-Weng's method as canonical.
+We note that the method is symmetric. The choice of quadratic scoring rule can also be viewed as canonical in view of axiomatic characterization given in  [\cite{selten1998axiomatic}].  However the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we do not view Wu-Lin-Weng's method as canonical.
 
 \subsection{Arboreal methods}
 
