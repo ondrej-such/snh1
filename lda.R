@@ -75,13 +75,17 @@ glm1 <- function(files = files, workers = 12) {
 
 log_omit1 <- function(M_logits, idx) {
     M <- M_logits
+    stopifnot(nrow(M_logits) ==  3)
+    stopifnot(nrow(M_logits) ==  3)
+    stopifnot(idx >= 1)
+    stopifnot(idx <= 3)
 
     if (idx != 1) {
         perm <- if (idx == 2) c(2,1,3) else c(3,2,1)
         M <- M[perm, perm]
     }
 
-        if (M[1,2] >= 0) {
+    if (M[1,2] >= 0) {
             # p1 >= p2
         if (M[1,3] >=0) {
             # p1 is the largets
@@ -113,6 +117,17 @@ log_omit1 <- function(M_logits, idx) {
 omit1 <- function(M_logits, idx) {
     lp <- log_omit1(M_logits, idx)
     p <- exp(lp)
+    p / sum(p)
+}
+
+half1 <- function(M_logits, idx) {
+    s = rep(0, 3)
+    for (j in which(idx != c(1,2,3))) {
+        s = s +  log_omit1(M_logits, j)
+    }
+    s = s / 2
+    s <- s - max(s)
+    p <- exp(s)
     p / sum(p)
 }
 
@@ -165,6 +180,10 @@ e3 <- new.env(parent = emptyenv())
 e3[["omit23"]] = function(x) omit1(x, 1)
 e3[["omit13"]] = function(x) omit1(x, 2)
 e3[["omit12"]] = function(x) omit1(x, 3)
+e3[["half1"]] = function(x) half1(x, 1)
+e3[["half2"]] = function(x) half1(x, 2)
+e3[["half3"]] = function(x) half1(x, 3)
+
 
 log3 <- new.env(parent = emptyenv())
 log3[["omit23"]] = function(x) log_omit1(x, 1)
@@ -356,7 +375,7 @@ log_pred3 <- function(dfs, i, j, k) {
 lda_triples <- function(dfs) {
     v <- lda_binary(dfs)
     K <- max(dfs$train$class_id)
-    print(K)
+    # print(K)
 
     res <- data.frame(
             i = vector("integer", 0),
@@ -513,6 +532,28 @@ gen_W3 <- function(n = 1000, lbd = 0, ubd = 1) {
         nrow = n, ncol = 3)
 
 
+}
+
+# use triangular grid (same as gen_W2)
+# probably should remove in order not to confuse 
+#
+gen_W4 <- function(div = 40) {
+    M <- matrix(0, nrow = (div + 2) * (div + 1) /2, ncol = 3)
+    A <- c(1, 0, 0)
+    u <- c(-1, 0, 1) / div 
+    v <- c(-1, 1, 0) / div 
+    row <- 1
+    for (i in 0:div ) {
+        for (j in 0: div ) {
+            if (i + j > div )
+                next
+            stopifnot(row <= nrow(M))
+            M[row, ] = A + i * u + j * v
+            row <- row + 1
+        }
+    }
+    s <- apply(M, 1, sum)
+    M / s
 }
 
 # Get a list of Bayes-covariant methods's predictions for a triple
@@ -687,53 +728,192 @@ par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
     }) |> list_rbind()
 }
 
-bc_triple <- function(dfs, i, j, k, add = 2) {
+bc_all <- function(dfs, add = 2) {
     K <- max(dfs$train$class_id)
     triples <- combn(K, 3)
-    df1 <- dfs$train
-    df2 <- dfs$test
+
     map(1:ncol(triples), function(m) {
-        triple <- triples[,m]
-        dfbc <- dfs
-        dfbc$train = dfs$train |> filter(class_id %in% triple)
-        dfbc$test = dfs$test |> filter(class_id %in% triple)
-        dfbc$train$class_id = sapply(dfbc$train$class_id, function(s) which(s == triple))
-        dfbc$test$class_id = sapply(dfbc$test$class_id, function(s) which(s == triple))
-        pred <- lda_pred3(dfbc, triple[1], triple[2], triple[3])
-        p <- as.matrix(pred[,1:3])
-
-        # TODO 
-
-        res1 <- map(triple, function(n) {
-
-            ix1 <- dfs$train$class_id == n
-            ix2 <- dfs$test$class_id == n
-            # bc1 <- rbind(df1, df1[sample(which(ix1), factor*sum(ix1), replace = T), ])
-            # bc2 <- rbind(df2, df2[sample(which(ix2), factor*sum(ix2), replace = T), ])
-            for( w in 1:add) {
-                dfbc$train <- rbind(dfbc$train, dfbc$train[ix1,])
-                dfbc$test <- rbind(dfbc$test, dfbc$test[ix2,])
-            }
-            dfm <- lda_triples(dfbc)
-            dfm$enlarged = n
-            dfm$bc = "binary"
-            w <- rep(1,3)
-            w[which(n == triple)] = (1 + add)
-            p <- w * p
-            for (method in unique(pred$method))  {
-                pm <- p[pred$method == method, ]
-                predictions <- apply(pm, 1, which.max)
-                weight <- if_else (pred$truth == n, 1 + add, 1)
-                acc <- sum(weight * (predictions == pred$truth)) / sum(weight)
-                dfm[nrow(dfm) + 1, ] = list(i = triple[1], j = triple[2], k = triple[3], 
-                        method = method, acc = acc, 
-                        enlarged = n, bc = "multi")
-
-            }
-            dfm
-        }) |> list_rbind()
+        bc_triple(dfs, triples[1,m], triples[2,m], triples[3,m], add)
     }) |> list_rbind()
 }
 
+bc_triple <- function(dfs, i, j, k, add = 2) {
+    print(sprintf("%s %d %d %d", dfs$dataset, i, j, k))
+    df1 <- dfs$train
+    df2 <- dfs$test
+    # pred <- lda_pred3(dfs, i, j, k)
+    # p <- as.matrix(pred[,1:3])
+    K <- max(dfs$train$class_id)
+
+    triple <- c(i,j,k)
+    # dfbc <- dfs
+    # dfbc$train = dfs$train |> filter(class_id %in% triple)
+    # dfbc$test = dfs$test |> filter(class_id %in% triple)
+
+    v <- lda_binary(dfs, subclasses = triple)
+
+    res1 <- map(triple, function(n) {
+        {
+            truth <- dfs$test$class_id
+            r <- v$r
+            idx <- truth %in% triple
+            dft <- dfs$test
+            N <- nrow(dft)
+            t2 <- truth[idx]
+            q <- sapply(1:length(t2), function(k) {
+                    which(t2[k] == triple) 
+                })
+            map (c(ls(e), ls(e3)), function(m) {
+                fn <- e[[m]]
+                if (is.null(fn)) fn<- e3[[m]]
+                p <- sapply(1:N, function(k) {
+                    fn(r[,,k])
+                }) |> t()
+
+                # colnames(p) <- c("p1", "p2", "p3")
+                w <- rep(1,3)
+                w[which(n == triple)] = (1 + add)
+                # p <- w * p
+                wp <- p
+                it <- which(n == triple)     
+                wp[, it] = (1 + add) * wp[,it]
+                # also could use t(w * t(p))
+                predictions <- apply(wp, 1, which.max)
+                weight <- if_else (t2 == n, 1 + add, 1)
+                # TODO: fix pred$truth
+                # correct <- weight * (predictions == pred$truth)
+                correct <- weight * (predictions[idx] == q)
+                acc <- sum(correct) / sum(weight[idx])
+
+                p2 <- sapply(1:N, function(k) {
+                    r2 <- r[,,k]
+                    for (s in 1:3) {
+                        if (s == it) 
+                            next
+                        r2[it, s] = r2[it,s] + log((1 + add))
+                        r2[s, it] = -r2[it,s]
+                    }
+                    fn(r2)
+                }) |> t()
+                # colnames(p2) <- c("p1", "p2", "p3")
+
+                pred <- apply(p2[idx,],1, which.max)
+                correct2 <- weight * (pred == q)
+                acc2 <- sum(correct2) / sum(weight[idx])
+                # acc2 <- mean(pred == q)
+                data.frame(changed = n, factor = (1 + acc) , binary = acc2, multi = acc, method = m)
+                # data.frame(p[idx,], 
+                        # id = 1:sum(idx), orig_id = (1:N)[idx], 
+                        # truth = q, pred = pred, method = m, 
+                    # orig_truth = truth[idx])
+            }) |>  list_rbind()
+        }
+        # ix1 <- dfs$train$class_id == n
+        # ix2 <- dfs$test$class_id == n
+        # for( w in 1:add) {
+            # dfbc$train <- rbind(dfbc$train, dfs$train[ix1,])
+            # dfbc$test <- rbind(dfbc$test, dfs$test[ix2,])
+        # }
+        # stopifnot(sum(dfbc$train$class_id %in% triple) == nrow(dfbc$train))
+        # dfbc$train$class_id = sapply(dfbc$train$class_id, function(s) which(s == triple))
+        # dfbc$test$class_id = sapply(dfbc$test$class_id, function(s) which(s == triple))
+        # dfm <- lda_triples(dfbc)
+        # stopifnot(0 == sum(is.na(dfm$acc)))
+        # dfm$enlarged = n
+        # dfm$bc = "binary"
+        # dfm$i = triple[1]
+        # # stopifnot(F)
+        # dfm$j = triple[2]
+        # dfm$k = triple[3]
+        # w <- rep(1,3)
+        # w[which(n == triple)] = (1 + add)
+        # p <- w * p
+        # predictions <- apply(p, 1, which.max)
+        # weight <- if_else (pred$truth == n, 1 + add, 1)
+        # correct <- weight * (predictions == pred$truth)
+        # for (method in unique(pred$method))  {
+            # ix = pred$method == method
+            # acc <- sum(correct[ix]) / sum(weight[ix])
+            # dfm[nrow(dfm) + 1, ] = list(i = triple[1], j = triple[2], k = triple[3], 
+                    # method = method, acc = acc, 
+                    # enlarged = n, bc = "multi")
+        # }
+        # dfm
+    }) |> list_rbind() 
+}
 
 
+# Function to evaluate deviation from Hinton's oracle
+#
+hinton_triple <- function(dfs, i = 1 , j = 2 ,k = 3) {
+    triple <- c(i,j,k)
+    print(sprintf("%s %d %d %d", dfs$dataset, i, j, k))
+    v <- lda_binary(dfs, subclasses = triple) 
+    gt <- matrix(0, nrow = length(v$truth), ncol = 3)
+    N <- length(v$truth)
+    truth <- sapply(1:N, function(i) which.max(triple == v$truth[i]))
+    gt <- sapply(1:N, function(i) {
+        omit1(v$r[,,i], truth[i])
+    }) |> t()
+    # print(dim(gt))
+    brier <- matrix(nrow = N, ncol = length(ls(e)))
+    acc <- matrix(nrow = N, ncol = length(ls(e)))
+    colnames(brier) <- ls(e)
+    colnames(acc) <- ls(e)
+    for (i in 1:N) {
+        gti <- which.max(gt[i,])
+        for (m in ls(e)) {
+            fn <- e[[m]]
+            p <- fn(v$r[,,i])
+            brier[i, m] = sum( (p - gt[i,])^2)
+            acc[i, m] = which.max(p) == gti
+        }
+    }
+    list(truth = truth, brier = brier, acc = acc)
+}
+
+hinton_multi <- function(dfs) {
+    v <- lda_binary(dfs)
+    K <- length(v$subclasses)
+    gt <- matrix(0, nrow = length(v$truth), ncol = K)
+    N <- length(v$truth)
+    truth <- sapply(1:N, function(i) which.max(v$subclasses == v$truth[i]))
+
+    gt <- sapply(1:N, function(i) {
+        # pred <- vector("numeric", K)
+        pred <- v$r[,truth[i],i]
+        pred <- pred - max(pred)
+        p1 <- exp(pred) 
+        p1 / sum(p1)
+    }) |> t()
+    brier <- matrix(nrow = N, ncol = length(ls(e)))
+    acc <- matrix(nrow = N, ncol = length(ls(e)))
+    colnames(brier) <- ls(e)
+    colnames(acc) <- ls(e)
+    for (i in 1:N) {
+        gti <- which.max(gt[i,])
+        for (m in ls(e)) {
+            fn <- e[[m]]
+            p <- fn(v$r[,,i])
+            brier[i, m] = sum( (p - gt[i,])^2)
+            acc[i, m] = which.max(p) == gti
+        }
+    }
+    list(truth = truth, brier = brier, acc = acc)
+}
+
+hinton <- function(dfs) {
+    com <- combn(max(dfs$train$class_id), 3)
+    triple <- map(1:ncol(com), function(m) {
+        i = com[1,m]
+        j = com[2,m]
+        k = com[3,m]
+        h <- hinton_triple(dfs, i,j,k)
+        l1 <- as.list(apply(h$brier, 2, mean))
+         #print(l1)
+        data.frame(i = i, j = j, k = k,  l1) # l1$normal, l1$radial, l1$wlw2)
+    }) |> list_rbind() 
+    triple1 <- triple |> dplyr::select(-(1:3)) |> apply(2, mean) 
+    multi  <- hinton_multi(dfs)$brier |> apply(2, mean) |> as.list() |> data.frame()
+    list(triple = triple1, multi = multi)
+}
