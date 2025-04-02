@@ -32,6 +32,7 @@
 
 \newtheorem{prop}{Proposition}
 \newtheorem{thm}{Theorem}
+\newtheorem{assumption}{Assumption}
 
 % Definitions of handy macros can go here
 
@@ -44,7 +45,7 @@
 % Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
 
 \usepackage{lastpage}
-\jmlrheading{23}{2022}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Author One and Author Two}
+\jmlrheading{23}{2025}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Author One and Author Two}
 
 % Short headings should be running head and authors last names
 
@@ -60,10 +61,16 @@
        Ďumbierska 1\\
        Banská Bystrica, 974 01, Slovakia
        \AND
-       \name Peter Novotný \email two@cs.berkeley.edu \\
-       \addr Division of Computer Science\\
-       University of California\\
-       Berkeley, CA 94720-1776, USA}
+       \name Peter Novotný \email peter.novotny@uniza.sk \\
+       \addr Fakulta informatiky a riadenia\\
+       Žilinská Univerzita v Žiline\\
+       Žilina, 010 26, Slovakia
+       \AND
+       \name Ali Haidar \email haidar@savbb.sk \\
+       \addr Matematický ústav SAV\\
+       Ďumbierska 1\\
+       Banská Bystrica, 974 01, Slovakia
+       }
 
 \editor{My editor}
 
@@ -95,9 +102,15 @@ Suppose we have $K$ classes of objects, each distributed according to a probabil
 
 \subsection{Bayes classifier}
 
-An exact solution to this problem is provided by the Bayes classifier. To simplify the discussion we will assume that $p_i(x) > 0$ for all $x$ and $P_i > 0$ for all $i$. Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines.
+An exact solution to this problem is provided by the Bayes classifier. To simplify the discussion we will make the following assumption.
 
- The Bayes classifier predicts that the probability of $x$ belonging to the $i$-th class is
+
+\begin{assumption} \label{ass:1}
+ For all $x$ in the feature space we have $p_i(x) > 0$.
+\end{assumption}
+Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines all satisfy this assumption.
+
+The Bayes classifier predicts that the probability of $x$ belonging to the $i$-th class is
 \begin{align}
  p^\Pi_i(x) = \frac{p_i(x) P_i}{\sum_{k=1}^K p_k(x)P_k}.
 \end{align}
@@ -105,10 +118,10 @@ An exact solution to this problem is provided by the Bayes classifier. To simpli
 Besides the multi-class classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of classes. Assuming prior on the two classes is proportional to $(P_i, P_j)$, the binary Bayes classifier predicts the probability of $i$-th class as 
 
 \begin{align}
-	p_{ij}^\Pi(x) = \frac{p_i(x) P_1}{p_i(x)P_1 + p_j(x)P_2}.
+	p_{ij}^\Pi(x) = \frac{p_i(x) P_i}{p_i(x)P_i + p_j(x)P_j}.
 \end{align}
 
-Knowledge of vector $\boldsymbol{p}^\Pi$ is  equivalent to knowing the functions $p^\Pi_{ij}(x)$. Indeed, if $p_{i}> 0$ for all $x$, then we have
+Knowledge of vector $\boldsymbol{p}^\Pi(x)$ is  equivalent to knowing the functions $p^\Pi_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
 \begin{align}
 p_{ij}^\Pi(x) = \frac{p_i^\Pi(x)}{p_i^\Pi(x) + p_j^\Pi(x)}. \label{eq:bt1}
 \end{align}
@@ -129,7 +142,7 @@ The system of  equations \eqref{eq:bt1} in unknowns $p_i^\Pi(x)$ has a unique so
 \subsection{One-vs-one classification }
 
 
-In practice one does not have know true probability distributions and hence cannot construct Bayes classifier. However, given a sample from the distribution, we can train binary classifiers to provide approximations $r_{ij}(x)$ to pairwise Bayes classifiers $p_{ij}(x)$. The goal of probabilistic one-vs-one classification is to deduce for any $x$ in the feature space $X$ an estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\Pi(x)$. One does it by finding approximate solution of the system of equations
+In practice one does not have know true probability distributions and hence cannot construct Bayes classifier. However, given a sample from the distribution, we can train binary classifiers to provide approximations $r_{ij}(x)$ to pairwise Bayes classifiers $p_{ij}^\Pi(x)$. The goal of probabilistic one-vs-one classification is to deduce for any $x$ in the feature space $X$ an estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\Pi(x)$. One does it by finding an approximate solution of the system of equations
 %\begin{align}
 %
 %\end{align}
@@ -157,12 +170,27 @@ In practice one does not have know true probability distributions and hence cann
 %\end{itemize}
 
 Equations forming system \eqref{eq:bt2} are called Bradley-Terry equations.
-The system is usually inconsistent and additional assumptions are needed. A method to solve Bradley-Terry equations is called a coupling method. Its input can be represented by a matrix with off-diagonal entries being $r_{ij}(x)$.
+The system is usually inconsistent and additional assumptions are needed. A method to solve Bradley-Terry equations is called a coupling method. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{C}$ proceeds as indicated in Figure \ref{fig:coupling}.
 
-Let us outline what kind of conditions may be desirable in a coupling method. In Section \ref{sec:des:exact} we will describe exact mathematical criteria, while in \ref{sec:des:inexact} we shall describe more flexible properties.
+\begin{figure}[!h]
+	\centering
+	\begin{tikzcd}[column sep=3cm]
+		\textrm{sample $x$}\arrow[r, "binary~classifiers"] \arrow{dr}[swap]{multi-class~ prediction} & \boldsymbol{R}(x) \arrow{d}{coupling}[swap]{V} \\
+		 & V(\boldsymbol{R}(x)) 
+	\end{tikzcd}
+	\caption{Multi-class classification using a coupling method ${V}$}
+	\label{fig:coupling}
+\end{figure}
+
+
+
 
 
 \subsection{Exact desiderata on coupling method} \label{sec:des:exact}
+
+Let us outline what kind of conditions may be desirable in a coupling method. In %Section \ref{sec:des:exact} 
+this section
+ we will describe exact mathematical criteria, while in section \ref{sec:des:inexact} we shall describe more flexible properties.
 
 %\begin{itemize}
 %\item a coupling method should should always provide a unique solution, at least when all $r_{ij}>0$,
@@ -185,24 +213,28 @@ Let us outline what kind of conditions may be desirable in a coupling method. In
 
 \emph{Canonicity} refers to requirement that the method should be in a natural way unique. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. 
 
-\emph{Symmetry} refers to the action of the permutation group which acts both on the classes as well as on predictions. The action of a permutation $\sigma$ extends to the action on pairwise matrix by 
+\emph{Symmetry} refers to the action of the permutation group which acts both on the classes as well as on multi-class predictions. The action of a permutation $\sigma$ extends to the action on the pairwise matrix $\boldsymbol{R} = (r_{ij})$ by 
 \begin{equation}
-	\hat r^\sigma_{i,j} = \hat r_{\sigma(i), \sigma(j)}
+	 r^\sigma_{i,j} \stackrel{def}{=}  r_{\sigma(i), \sigma(j)}.
 \end{equation}
+We say that a coupling method $V$ is \emph{symmetric} if 
+\begin{align}
+		V(\boldsymbol{R})^\sigma = V(\boldsymbol{R}^\sigma)\quad\textrm{for any permutation $\sigma$}.
+\end{align}
 
 \emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
 \begin{align}
 \boldsymbol{p}^{\Pi'} \propto (p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}). \label{eq:changePrior}
 \end{align}
 
-When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical, for all initial pairwise data $R$, then we say that the coupling method is Bayes covariant. Symbolically, let us denote by  $\pi$ the change of priors. Let $R^\pi$ be pairwise datum when we apply \eqref{eq:changePrior} to each binary classifier.
+When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical, for all initial pairwise data $\boldsymbol{R}$, then we say that the coupling method is Bayes covariant. Symbolically, let us denote by  $\pi$ the change of priors. Let $\boldsymbol{R}^\pi$ be pairwise datum when we apply \eqref{eq:changePrior} to each binary classifier.
 For Bayes covariant method $V$ the following diagram commutes.
 
 \begin{figure}[!h]
 \centering
 \begin{tikzcd}
-	R \arrow[r, "\pi"] \arrow[d, "V"] & R^\pi \arrow[d, "V"] \\
-	V(R) \arrow[r, "\pi"] & V(R^\pi) = V(R)^\pi
+	\boldsymbol{R} \arrow[r, "\pi"] \arrow[d, "V"] & \boldsymbol{R}^\pi \arrow[d, "V"] \\
+	V(\boldsymbol{R}) \arrow[r, "\pi"] & V(\boldsymbol{R}^\pi) = V(\boldsymbol{R})^\pi
 \end{tikzcd}
 \caption{Diagrammatical description of Bayes covariance for a coupling method $V$}
 \label{fig:bc}
@@ -213,26 +245,25 @@ For Bayes covariant method $V$ the following diagram commutes.
 
 \label{sec:des:inexact}
 
+In this section we describe several concepts that lack strict mathematical delineation, but may still be important to consider.
+
 \emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
 
 \emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
-Let us finally describe \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction \cite[p.~467]{hastie1998classification}. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
+Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction \cite[p.~467]{hastie1998classification}. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
 
 
-The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
+%The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
 
 
 \section{Examples of coupling methods} \label{sec:coupling}
 
-There is a plethora of methods available for coupling. Let us describe four major categories.
+There is a plethora of methods available for coupling. Let us describe four major classes.
 
-
-
-
-\subsection{Optimizing binary divergence}
+\subsection{Methods aiming to minimize binary divergence}
 
 A multi-class estimate $\hat{\boldsymbol{p}}$ obtained by a coupling method implies via \eqref{eq:bt1} probability distributions on each pair of classes:
 \begin{align*}
@@ -261,9 +292,9 @@ $$
 $$
 Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method [\cite{wu2004probability}]. 
 
-Their method use an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
+Their method uses an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
 \begin{align*}
-\hat{\boldsymbol{p}} = \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
+\hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
 \end{align*}
 
 We note that the method is symmetric. The choice of quadratic scoring rule can also be viewed as canonical in view of axiomatic characterization given in  [\cite{selten1998axiomatic}].  However the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we do not view Wu-Lin-Weng's method as canonical.
@@ -301,16 +332,25 @@ For any sample, its result is identical to the arboreal method where the underly
 
 In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\hat{\boldsymbol{T}}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the simplex $\sum_i \hat p_i = 1$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\hat{\boldsymbol{T}}_i$. Let us now define \emph{radial} coupling method. The  method requires that for  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
 \begin{equation}
-	\hat {\boldsymbol{p}} = \sum_{i=1}^K p_i \hat{\boldsymbol{T}}_i. \label{eq:radial}
+	\hat {\boldsymbol{p}} = \bigoplus_{i=1}^K p_i \hat{\boldsymbol{T}}_i. \label{eq:radial}
 \end{equation}
 %
 The intuition behind \eqref{eq:radial} is that if some component of $\hat{\boldsymbol{p}}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by $\hat{\boldsymbol{T}}_i$.
 
 \subsection{Bayes covariant methods}
 
-There are many Bayes covariant methods. For instance any arboreal method is Bayes covariant. Given two Bayes covariant methods one can interpolate between them using their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make it explicit.
+There are many Bayes covariant methods. For instance any arboreal method is Bayes covariant. 
 
- Suppose real numbers $\alpha, \beta$ are given such $\alpha + \beta = 1$. If the prediction of the two Bayes covariant methods $\boldsymbol{B}$ and $\boldsymbol{\tilde B}$ are
+
+
+Given several Bayes covariant methods one can form  their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make it explicit.
+
+ Suppose real numbers $\alpha_1, \alpha_L$ are real numbers and $\boldsymbol{C}_1, \ldots, \boldsymbol{C}_L$ are coupling methods. We define their linear combination by requiring that 
+ \begin{align*}
+ 	\bigl(\alpha_1 \boldsymbol{C}_1 \oplus \ldots \oplus \alpha_L \boldsymbol{C}_L\bigr)(x) \propto 
+ \end{align*}
+ 
+ given such $\alpha + \beta = 1$. If the prediction of the two Bayes covariant methods $\boldsymbol{B}$ and $\boldsymbol{\tilde B}$ are
 \begin{align*}
 	\boldsymbol{B}(x) = (p_1, \ldots, p_K)\quad\textrm{and}\quad \boldsymbol{\tilde B}(x) = (\tilde p_1, \ldots, \tilde p_K)
 \end{align*}
@@ -366,8 +406,20 @@ The following table indicates which properties are enjoyed by each coupling meth
 
 \section{Experimental results.}
 
+We considered the following questions 
+
+- are there Bayes covariant methods that match the performance of Wu-Lin-Weng's method ?
+- when priors change, is it better to apply Bayes update before or after coupling?
+- which coupling methods are best with respect to Hinton's minimality?
+
+\subsection{Datasets}
 
 
+\begin{figure}[!ht]
+	\includegraphics[width = 0.5\linewidth]{graph/dna-lda.pdf}
+	\includegraphics[width = 0.5\linewidth]{graph/waveform-lda.pdf}
+	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
+\end{figure}
 
 
 %\subsection{Wu-Lin-Weng's method}
