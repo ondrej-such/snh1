@@ -801,7 +801,7 @@ bc_triple <- function(dfs, i, j, k, add = 2) {
                 correct2 <- weight * (pred == q)
                 acc2 <- sum(correct2) / sum(weight[idx])
                 # acc2 <- mean(pred == q)
-                data.frame(changed = n, factor = (1 + acc) , binary = acc2, multi = acc, method = m)
+                data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m)
                 # data.frame(p[idx,], 
                         # id = 1:sum(idx), orig_id = (1:N)[idx], 
                         # truth = q, pred = pred, method = m, 
@@ -916,4 +916,62 @@ hinton <- function(dfs) {
     triple1 <- triple |> dplyr::select(-(1:3)) |> apply(2, mean) 
     multi  <- hinton_multi(dfs)$brier |> apply(2, mean) |> as.list() |> data.frame()
     list(triple = triple1, multi = multi)
+}
+
+bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
+    stopifnot(all(as.logical(sapply(ns, function(n) n %in% tuple))))
+    df1 <- dfs$train
+    df2 <- dfs$test
+    K <- max(dfs$train$class_id)
+
+    v <- lda_binary(dfs, subclasses = tuple)
+
+    truth <- dfs$test$class_id
+    r <- v$r
+    idx <- truth %in% tuple
+    dft <- dfs$test
+    N <- nrow(dft)
+    t2 <- truth[idx]
+    q <- sapply(1:length(t2), function(k) {
+            which(t2[k] == tuple) 
+        })
+
+    map(ns, function(n) {
+        print(n)
+        it <- which(n == tuple)     
+        
+        map (ls(e), function(m) {
+            fn <- e[[m]]
+            p <- sapply(1:N, function(k) {
+                fn(r[,,k])
+            }) |> t()
+
+            #w <- rep(1,3)
+            #w[which(n == triple)] = (1 + add)
+            # p <- w * p
+            wp <- p
+            wp[, it] = (1 + add) * wp[,it]
+            # also could use t(w * t(p))
+            predictions <- apply(wp, 1, which.max)
+            weight <- if_else (t2 == n, 1 + add, 1)
+            correct <- weight * (predictions[idx] == q)
+            acc <- sum(correct) / sum(weight[idx])
+
+            p2 <- sapply(1:N, function(k) {
+                r2 <- r[,,k]
+                for (s in 1:3) {
+                    if (s == it) 
+                        next
+                    r2[it, s] = r2[it,s] + log((1 + add))
+                    r2[s, it] = -r2[it,s]
+                }
+                fn(r2)
+            }) |> t()
+
+            pred <- apply(p2[idx,],1, which.max)
+            correct2 <- weight * (pred == q)
+            acc2 <- sum(correct2) / sum(weight[idx])
+            data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m)
+        }) |>  list_rbind()
+    }) |>  list_rbind()
 }
