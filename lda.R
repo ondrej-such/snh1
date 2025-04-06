@@ -534,6 +534,7 @@ gen_W3 <- function(n = 1000, lbd = 0, ubd = 1) {
 
 }
 
+
 # use triangular grid (same as gen_W2)
 # probably should remove in order not to confuse 
 #
@@ -950,12 +951,14 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
             #w[which(n == triple)] = (1 + add)
             # p <- w * p
             wp <- p
+            old_predictions <- apply(p, 1, which.max)
             wp[, it] = (1 + add) * wp[,it]
             # also could use t(w * t(p))
             predictions <- apply(wp, 1, which.max)
             weight <- if_else (t2 == n, 1 + add, 1)
             correct <- weight * (predictions[idx] == q)
             acc <- sum(correct) / sum(weight[idx])
+            flipped = mean(predictions[idx] != old_predictions[idx])
 
             p2 <- sapply(1:N, function(k) {
                 r2 <- r[,,k]
@@ -971,7 +974,7 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
             pred <- apply(p2[idx,],1, which.max)
             correct2 <- weight * (pred == q)
             acc2 <- sum(correct2) / sum(weight[idx])
-            data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m)
+            data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m, flipped = flipped)
         }) |>  list_rbind()
     }) |>  list_rbind()
 }
