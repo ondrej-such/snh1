@@ -261,7 +261,7 @@ Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported t
 
 \section{Examples of coupling methods} \label{sec:coupling}
 
-There is a plethora of methods available for coupling. Let us describe four major classes.
+There is a plethora of methods available for coupling. In this section we describe four major classes.
 
 \subsection{Methods aiming to minimize binary divergence}
 
@@ -301,41 +301,45 @@ We note that the method is symmetric. The choice of quadratic scoring rule can a
 
 \subsection{Arboreal methods}
 
-
-Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
+System of equations \eqref{eq:bt2} is overdetermined because there are $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one.  Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
 
 An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes 1 and 3. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
 \begin{equation}
 	\begin{split}
-		\frac{\hat p_1}{\hat p_2} &= \vec{r}_{12}\\
-		\frac{\hat p_2}{\hat p_3} &= \vec{r}_{23}\\
-		\hat p_1 + \hat p_2 + \hat p_3 &= 0
+		\frac{\hat p_1}{\hat p_1 + \hat p_2} &= {r}_{12}\\
+		\frac{\hat p_2}{\hat p_2 + \hat p_3} &= {r}_{23}\\
+		\hat p_1 + \hat p_2 + \hat p_3 &= 1
 	\end{split}
+	\label{eq:arb1}
 \end{equation}
 
-For $K=3$, there are three different arboreal coupling methods, which we shall call $omit12$, $omit13$, $omit23$. 
+For $K=3$, there are three different arboreal coupling methods, which we shall call $T_1$, $T_2$, $T_3$, where the system \eqref{eq:arb1} represents coupling method $T_2$.
 
 In order to obtain a regular system of equations for  larger values of $K$ , the resulting classifiers must represent a connected tree within the complete graph on all classes. Any arboreal method is non-canonical, because there is no natural way to choose a tree in a complete graph.
 
 \subsection{Methods emphasizing Hinton's minimality}
 
-A variant on arboreal methods is the following oracle method which we shall call Hinton's oracle. It  assumes it has the access to the ground truth $y = C_i$. It outputs probabilities by solving only the equations
+A variant on arboreal methods is the following oracle method which we shall call Hinton's oracle. It  assumes it has the access to the ground truth $y = C_t$. It outputs probabilities by solving only the equations
 $$
-\frac{p_i}{p_j} = \vec{r}_{ij},\quad \textrm{for }i\not = j,
+\frac{\hat p_t}{\hat p_t + \hat p_j} = {r}_{tj},\quad \textrm{for }j\not = t,
 $$
-together  with total sum equation
+together the  with total sum equation
 $$
 \sum_{i=1}^K  \hat p_i = 1.
 $$
 
 For any sample, its result is identical to the arboreal method where the underlying tree forms a star. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\hat{\boldsymbol{T}}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the simplex $\sum_i \hat p_i = 1$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\hat{\boldsymbol{T}}_i$. Let us now define \emph{radial} coupling method. The  method requires that for  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by ${T}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $T_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
 \begin{equation}
-	\hat {\boldsymbol{p}} = \bigoplus_{i=1}^K p_i \hat{\boldsymbol{T}}_i. \label{eq:radial}
+	\begin{split}
+	\hat {\boldsymbol{p}} &= \hat p_1 T_1(x) + \ldots + \hat p_K T_K(x)\\
+	1 &= \hat p_1 + \ldots + \hat p_K
+	\end{split}
+	 \label{eq:radial}
 \end{equation}
 %
-The intuition behind \eqref{eq:radial} is that if some component of $\hat{\boldsymbol{p}}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by $\hat{\boldsymbol{T}}_i$.
+The intuition behind \eqref{eq:radial} is that if some component of $\hat{\boldsymbol{p}}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by ${{T}}_i$.
 
 \subsection{Bayes covariant methods}
 
@@ -406,20 +410,60 @@ The following table indicates which properties are enjoyed by each coupling meth
 
 \section{Experimental results.}
 
-We considered the following questions 
+It is natural to consider the following interrelated questions 
 
-- are there Bayes covariant methods that match the performance of Wu-Lin-Weng's method ?
-- when priors change, is it better to apply Bayes update before or after coupling?
-- which coupling methods are best with respect to Hinton's minimality?
+\begin{itemize}
+\item[a)] Which non-parametric coupling methods shows good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng?
+\item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric method Bayes covariant method which  matches its performance?
+\item[c)] If the answer to b) is negative, how serious is the impact of the lack of Bayes covariance in practice?
+\end{itemize}
+
+The following sections attempt to gather answers to these questions. 
 
 \subsection{Datasets}
 
+It is natural to consider the benchmark datasets used in previous evaluation of coupling methods \cite{wu2004probability}. The authors considered altogether seven datasets with number of classes ranging from 3 to 26. For each dataset they extracted 40 pairs of training and testing datasets. Half of these were smaller (300 training samples and 500 testing samples) and the other half was larger (800 training samples and 1000 testing samples). In our experiments we use only the larger pairs. 
 
-\begin{figure}[!ht]
-	\includegraphics[width = 0.5\linewidth]{graph/dna-lda.pdf}
-	\includegraphics[width = 0.5\linewidth]{graph/waveform-lda.pdf}
-	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
-\end{figure}
+As a preliminary step we conducted analysis of linear separability of the datasets. We used ECOS solver in CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
+
+\input{tab-sep.tex}
+
+We can infer that except for 'waveform' dataset, majority of binary problems are linearly separable.
+
+\subsection{Binary classifiers}
+
+We have opted to use LDA as a binary classification tool. Its appeal is that it is applicable even for linearly separable datasets, thus obviating additional crossvalidation step incurred by methods that use regularization (e.g. penalized logistic regression or SVM). It usually provides results close to logistic regression \cite{james2013introduction}.
+
+For preprocessing we first removed features that were constant across classes. Then we projected the data using PCA to the subspace for which corresponding singular values were at least $1/1000$. We used PCA without scaling or centering since the datasets' features were already normalized to interval $[-1,1]$. 
+
+For training LDA we used MASS library in R.
+
+%\begin{figure}[!ht]
+%	\includegraphics[width = 0.5\linewidth]{graph/dna-lda.pdf}
+%	\includegraphics[width = 0.5\linewidth]{graph/waveform-lda.pdf}
+%	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
+%\end{figure}
+
+\subsection{Experiment 1: Accuracy on benchmark datasets}
+
+The first experiment compares the performanc of three parameterless coupling methods
+\begin{itemize}
+\item method of Wu-Lin-Weng, which is widely used in software libraries, and thus can be viewed as an orthodox choice,
+\item normal coupling, which is a Bayes covariant method,
+\item radial coupling, which is not Bayes covariant.
+\end{itemize}
+
+Although previous evaluations of the latter two methods were done in \cite{vsuch2016bayes}, they used phonetic data for which ground truth may be imprecise. 
+
+\input{tab-multi.tex}
+
+From Table \ref{tab:multi} we can clearly see that Wu-Lin-Weng's method has the best performance. On some datasets it trounces normal coupling method by a wide margin. The edge over radial method is smaller, with the exception of usps dataset where its accuracy is higher by remarkable 30\%. 
+
+
+
+\subsection{Experiment 2: Accuracy of Bayes covariant methods with parameters}
+
+
 
 
 %\subsection{Wu-Lin-Weng's method}
