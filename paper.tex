@@ -370,7 +370,7 @@ As an example, consider the classification problem with three classes. We have t
 \end{align}
 is Bayes covariant \emph{and} symmetric. A key result proved in \cite{vsuch2016bayes} is that it is a unique such classifier for $K=3$.
 
-\begin{thm}
+\begin{thm} \label{thm:K3}
 	There exists a unique symmetric Bayes covariant coupling methods for $K=3$.
 \end{thm}
 
@@ -444,7 +444,7 @@ For training LDA we used MASS library in R.
 %	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
 %\end{figure}
 
-\subsection{Experiment 1: Accuracy on benchmark datasets}
+\subsection{Experiment 1: Accuracy of parameter-less coupling methods on benchmark datasets}
 
 The first experiment compares the performanc of three parameterless coupling methods
 \begin{itemize}
@@ -463,8 +463,41 @@ From Table \ref{tab:multi} we can clearly see that Wu-Lin-Weng's method has the 
 
 \subsection{Experiment 2: Accuracy of Bayes covariant methods with parameters}
 
+In the previous experiment we established that the method of Wu-Lin-Weng provides leading performance. However in view of Theorem \ref{thm:K3} the method is not Bayes covariant. 
+
+In this experiment we investigated whether we can (always) find  a Bayes covariant coupling method that could match the performance of Wu-Lin-Weng's method, if we allow it to have (a few) trainable parameters.  Our experiment proceeds in five steps. 
+
+First, we restrict our investigation to the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask. 
+
+As a second step, we consider whether the three arboreal methods $ \boldsymbol{S}_1,~ \boldsymbol{S}_2,~ \boldsymbol{S}_3$ (which do not have any parameters) could bridge the gap. The statistics are shown in Table \ref{tab:step2}. 
+
+\input{tab-step2.tex}
 
 
+We can see that approximately half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. Therefore we should extend search to Bayes covariant methods with trainable parameters.
+
+
+In the third step we define two parameter family of Bayes covariant coupling methods
+\begin{align}
+a_1 \boldsymbol{S}_1 + a_2 \boldsymbol{S}_2 + a_3 \boldsymbol{S}_3,\quad\textrm{where } a_1 + a_2 +a_3 = 1
+\end{align}
+Note that the parameter space of this family is not compact. In order to facilitate computations we opted to conduct a grid search on points in the simplex where the coefficients $a_i$ are nonnegative $a_i \geq 0$. 
+
+In order to reduce computational burden we selected 1000 three-class subproblems. The results are shown in Figure \ref{fig:par-bc}.
+
+\begin{figure}[!ht]
+\includegraphics{graph/exp2-summary.pdf}
+\caption{Results of grid search for parametric Bayes covariant methods matching performance of Wu-Lin-Weng's method}
+\label{fig:par-bc}
+\end{figure}
+
+
+
+
+\begin{figure}[!ht]
+	\includegraphics{graph/exp2-detail.pdf}
+	\caption{Color map indicates the value of Brier score computed for an ensemble of coupling methods on the testing dataset. The vertices triangle indicate the arboreal coupling methods, and the black circle the location of the optimum.}
+\end{figure}
 
 %\subsection{Wu-Lin-Weng's method}
 
