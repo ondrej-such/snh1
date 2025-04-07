@@ -170,15 +170,16 @@ In practice one does not have know true probability distributions and hence cann
 %\end{itemize}
 
 Equations forming system \eqref{eq:bt2} are called Bradley-Terry equations.
-The system is usually inconsistent and additional assumptions are needed. A method to solve Bradley-Terry equations is called a coupling method. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{C}$ proceeds as indicated in Figure \ref{fig:coupling}.
+The system is usually inconsistent and additional assumptions are needed. A method to solve Bradley-Terry equations is called a coupling method. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
 
 \begin{figure}[!h]
 	\centering
 	\begin{tikzcd}[column sep=3cm]
-		\textrm{sample $x$}\arrow[r, "binary~classifiers"] \arrow{dr}[swap]{multi-class~ prediction} & \boldsymbol{R}(x) \arrow{d}{coupling}[swap]{V} \\
-		 & V(\boldsymbol{R}(x)) 
+		\textrm{sample $x$}\arrow[r, "binary~classifiers"] \arrow{dr}[swap]{multi-class~ prediction} & \boldsymbol{R}(x) %\arrow{d}{coupling}[swap]{\boldsymbol{v}} \\
+		\arrow{d}{coupling} \\
+		 & \boldsymbol{v}(\boldsymbol{R}(x)) 
 	\end{tikzcd}
-	\caption{Multi-class classification using a coupling method ${V}$}
+	\caption{Multi-class classification using a coupling method $\boldsymbol{v}$}
 	\label{fig:coupling}
 \end{figure}
 
@@ -219,7 +220,7 @@ this section
 \end{equation}
 We say that a coupling method $V$ is \emph{symmetric} if 
 \begin{align}
-		V(\boldsymbol{R})^\sigma = V(\boldsymbol{R}^\sigma)\quad\textrm{for any permutation $\sigma$}.
+		\boldsymbol{v}(\boldsymbol{R})^\sigma = \boldsymbol{v}(\boldsymbol{R}^\sigma)\quad\textrm{for any permutation $\sigma$}.
 \end{align}
 
 \emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
@@ -228,15 +229,15 @@ We say that a coupling method $V$ is \emph{symmetric} if
 \end{align}
 
 When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical, for all initial pairwise data $\boldsymbol{R}$, then we say that the coupling method is Bayes covariant. Symbolically, let us denote by  $\pi$ the change of priors. Let $\boldsymbol{R}^\pi$ be pairwise datum when we apply \eqref{eq:changePrior} to each binary classifier.
-For Bayes covariant method $V$ the following diagram commutes.
+For Bayes covariant method $\boldsymbol{v}$ the following diagram commutes.
 
 \begin{figure}[!h]
 \centering
 \begin{tikzcd}
-	\boldsymbol{R} \arrow[r, "\pi"] \arrow[d, "V"] & \boldsymbol{R}^\pi \arrow[d, "V"] \\
-	V(\boldsymbol{R}) \arrow[r, "\pi"] & V(\boldsymbol{R}^\pi) = V(\boldsymbol{R})^\pi
+	\boldsymbol{R} \arrow[r, "\pi"] \arrow[d, "coupling"] & \boldsymbol{R}^\pi \arrow[d, "coupling"] \\
+	\boldsymbol{v}(\boldsymbol{R}) \arrow[r, "\pi"] & \boldsymbol{v}(\boldsymbol{R}^\pi) =\boldsymbol{v}(\boldsymbol{R})^\pi
 \end{tikzcd}
-\caption{Diagrammatical description of Bayes covariance for a coupling method $V$}
+\caption{Diagrammatical description of Bayes covariance for a coupling method $\boldsymbol{v}$}
 \label{fig:bc}
 \end{figure}
 
@@ -276,7 +277,7 @@ On the other hand, binary classifiers provide another distribution for each pair
 
 A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional incorporating divergence measures between these distributions
 \begin{align*}
-\hat{\boldsymbol{p}} = \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\hat D_{ij}^\textrm{multi}, \hat D_{ij}^\textrm{binary})
+\hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\hat D_{ij}^\textrm{multi}, \hat D_{ij}^\textrm{binary})
 \end{align*}
 
 A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback-Leibler divergence $\divm_\textrm{KL}$
@@ -313,7 +314,7 @@ An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A
 	\label{eq:arb1}
 \end{equation}
 
-For $K=3$, there are three different arboreal coupling methods, which we shall call $T_1$, $T_2$, $T_3$, where the system \eqref{eq:arb1} represents coupling method $T_2$.
+For $K=3$, there are three different arboreal coupling methods, which we shall call $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the system \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
 
 In order to obtain a regular system of equations for  larger values of $K$ , the resulting classifiers must represent a connected tree within the complete graph on all classes. Any arboreal method is non-canonical, because there is no natural way to choose a tree in a complete graph.
 
@@ -330,10 +331,10 @@ $$
 
 For any sample, its result is identical to the arboreal method where the underlying tree forms a star. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by ${T}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $T_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
 \begin{equation}
 	\begin{split}
-	\hat {\boldsymbol{p}} &= \hat p_1 T_1(x) + \ldots + \hat p_K T_K(x)\\
+	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1(x) + \ldots + \hat p_K \boldsymbol{s}_K(x)\\
 	1 &= \hat p_1 + \ldots + \hat p_K
 	\end{split}
 	 \label{eq:radial}
@@ -343,30 +344,38 @@ The intuition behind \eqref{eq:radial} is that if some component of $\hat{\bolds
 
 \subsection{Bayes covariant methods}
 
-There are many Bayes covariant methods. For instance any arboreal method is Bayes covariant. 
+There are many Bayes covariant methods. First examples are provided by arboreal coupling methods. 
 
-
+\begin{prop}
+Any arboreal method is Bayes covariant.
+\end{prop}
 
 Given several Bayes covariant methods one can form  their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make it explicit.
 
- Suppose real numbers $\alpha_1, \alpha_L$ are real numbers and $\boldsymbol{C}_1, \ldots, \boldsymbol{C}_L$ are coupling methods. We define their linear combination by requiring that 
- \begin{align*}
- 	\bigl(\alpha_1 \boldsymbol{C}_1 \oplus \ldots \oplus \alpha_L \boldsymbol{C}_L\bigr)(x) \propto 
- \end{align*}
- 
- given such $\alpha + \beta = 1$. If the prediction of the two Bayes covariant methods $\boldsymbol{B}$ and $\boldsymbol{\tilde B}$ are
+Suppose real numbers $\alpha_1, \alpha_L$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_L$ are coupling methods. We define their linear combination $\bigoplus_i a_i \boldsymbol{v}_i$ as the coupling method that for any $x$ yields the probability distribution on $L$ classes that satisfies
 \begin{align*}
-	\boldsymbol{B}(x) = (p_1, \ldots, p_K)\quad\textrm{and}\quad \boldsymbol{\tilde B}(x) = (\tilde p_1, \ldots, \tilde p_K)
+ 	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_L \boldsymbol{v}_L\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_L^{a_L}(x),
 \end{align*}
-then the prediction of the ensemble $\alpha 	\boldsymbol{B} \oplus \beta \boldsymbol{\tilde B}$ is given by
-\begin{align*}
-	\bigl(\alpha 	\boldsymbol{B} \oplus \beta \boldsymbol{\tilde B}\bigr)(x)\propto (\,p_1^\alpha \tilde p_1^\beta, \ldots, p_K^\alpha \tilde p_K^\beta).
-\end{align*}
+where the symbol $\odot$ denotes componentwise multiplication. With this definition we have the following result.
 
-As an example, consider the classification problem with three classes. We have three arboreal classifiers $\boldsymbol{T}_1, \boldsymbol{T}_2, \boldsymbol{T}_3$ which correspond to star graphs centered respectively at classes $C_1, C_2, C_3$. The classifier 
+\begin{prop}
+Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_L$ are Bayes covariant. If $\sum a_i = 1$, then $\bigoplus_i a_i \boldsymbol{v}_i$ is also a Bayes covariant coupling method.
+\end{prop}
+
+
+% 
+% given such $\alpha + \beta = 1$. If the prediction of the two Bayes covariant methods $\boldsymbol{B}$ and $\boldsymbol{\tilde B}$ are
+%\begin{align*}
+%	\boldsymbol{B}(x) = (p_1, \ldots, p_K)\quad\textrm{and}\quad \boldsymbol{\tilde B}(x) = (\tilde p_1, \ldots, \tilde p_K)
+%\end{align*}
+%then the prediction of the ensemble $\alpha 	\boldsymbol{B} \oplus \beta \boldsymbol{\tilde B}$ is given by
+%\begin{align*}
+%	\bigl(\alpha 	\boldsymbol{B} \oplus \beta \boldsymbol{\tilde B}\bigr)(x)\propto (\,p_1^\alpha \tilde p_1^\beta, \ldots, p_K^\alpha \tilde p_K^\beta).
+%\end{align*}
+
+As an example, consider the classification problem with three classes. We have three arboreal classifiers $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ which correspond to star graphs centered respectively at classes $C_1, C_2, C_3$. The classifier 
 \begin{align}
-\frac13 \boldsymbol{T}_1 \oplus \frac13 \boldsymbol{T}_2 \oplus \frac 13 \boldsymbol{T}_3 = \frac13 \boldsymbol{T}_1 \oplus \frac23 \biggl(\frac12 \boldsymbol{T}_2 \oplus \frac 12 \boldsymbol{T}_3
-\biggr), \label{eq:bc1}
+\frac13 \boldsymbol{s}_1 \oplus \frac13 \boldsymbol{s}_2 \oplus \frac 13 \boldsymbol{s}_3  \label{eq:bc1}
 \end{align}
 is Bayes covariant \emph{and} symmetric. A key result proved in \cite{vsuch2016bayes} is that it is a unique such classifier for $K=3$.
 
@@ -374,9 +383,9 @@ is Bayes covariant \emph{and} symmetric. A key result proved in \cite{vsuch2016b
 	There exists a unique symmetric Bayes covariant coupling methods for $K=3$.
 \end{thm}
 
-Let us point out one consequence of the theorem. We could define another ensemble $\boldsymbol{E}$ by averaging the predictions of $\boldsymbol{T}_1, \boldsymbol{T}_2, \boldsymbol{T}_3$:
+Let us point out one consequence of the theorem. We could define another ensemble $\boldsymbol{E}$ by averaging the predictions of $\boldsymbol{s}_1, \boldsymbol{T}_2, \boldsymbol{T}_3$:
 \[
-\boldsymbol{E} = \frac13 \boldsymbol{T}_1(x) + \frac13 \boldsymbol{T}_2(x) + \frac 13 \boldsymbol{T}_3(x).
+\boldsymbol{E} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
 \]
 Note that here we use the plus symbol to denote the vector addition of vectors representing $K$-class probability distributions. This is a different classifier from the one given by  \eqref{eq:bc1} (see Appendix \ref{app:explicit}), and since it is symmetric, it cannot be Bayes covariant.
 
@@ -410,15 +419,15 @@ The following table indicates which properties are enjoyed by each coupling meth
 
 \section{Experimental results.}
 
-It is natural to consider the following interrelated questions 
+The choice of a coupling method is an important task for practitioners. We aim to help by posing the following interrelated questions 
 
 \begin{itemize}
 \item[a)] Which non-parametric coupling methods shows good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng?
 \item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric method Bayes covariant method which  matches its performance?
-\item[c)] If the answer to b) is negative, how serious is the impact of the lack of Bayes covariance in practice?
+\item[c)] If the answer to b) is negative, is it better to apply change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice?
 \end{itemize}
 
-The following sections attempt to gather answers to these questions. 
+These questions will be put to test in Sections \ref{sec:exp1}, \ref{sec:exp2}, and \ref{sec:exp3}.
 
 \subsection{Datasets}
 
@@ -430,13 +439,21 @@ As a preliminary step we conducted analysis of linear separability of the datase
 
 We can infer that except for 'waveform' dataset, majority of binary problems are linearly separable.
 
-\subsection{Binary classifiers}
+\subsection{Classification methodology}
 
 We have opted to use LDA as a binary classification tool. Its appeal is that it is applicable even for linearly separable datasets, thus obviating additional crossvalidation step incurred by methods that use regularization (e.g. penalized logistic regression or SVM). It usually provides results close to logistic regression \cite{james2013introduction}.
 
 For preprocessing we first removed features that were constant across classes. Then we projected the data using PCA to the subspace for which corresponding singular values were at least $1/1000$. We used PCA without scaling or centering since the datasets' features were already normalized to interval $[-1,1]$. 
 
-For training LDA we used MASS library in R.
+For training LDA we used MASS library in R. We implemented coupling methods in C++ using Eigen library. As arguments to the coupling methods we use log-odds, i.e. instead of $r_{ij}$ they expect
+$$
+\tilde r_{ij} = \log \biggl(\frac{1}{r_{ji}} - 1\biggr).
+$$
+The resulting matrix $\tilde{\boldsymbol{R}}$ is skew symmetric (with the convention of having zeroes on the diagonal).
+
+This parametrization allows for precise representation of extremely small probabilities which are sometimes produced by LDA. These small probabilities might be expected given that a large fraction of binary problems is linearly separable. 
+
+Small probabilities generally have very little effect on the implementation of Bayes covariant methods which generally operate using log-odds. However small probabilities do affect both the method of Wu-Lin-Weng as well sa radial method, because then Assumption \ref{ass:1} fails to hold. 
 
 %\begin{figure}[!ht]
 %	\includegraphics[width = 0.5\linewidth]{graph/dna-lda.pdf}
@@ -444,7 +461,7 @@ For training LDA we used MASS library in R.
 %	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
 %\end{figure}
 
-\subsection{Experiment 1: Accuracy of parameter-less coupling methods on benchmark datasets}
+\subsection{Experiment 1: Accuracy of parameter-less coupling methods on benchmark datasets} \label{sec:exp1}
 
 The first experiment compares the performanc of three parameterless coupling methods
 \begin{itemize}
@@ -462,6 +479,7 @@ From Table \ref{tab:multi} we can clearly see that Wu-Lin-Weng's method has the 
 
 
 \subsection{Experiment 2: Accuracy of Bayes covariant methods with parameters}
+ \label{sec:exp2}
 
 In the previous experiment we established that the method of Wu-Lin-Weng provides leading performance. However in view of Theorem \ref{thm:K3} the method is not Bayes covariant. 
 
@@ -469,7 +487,7 @@ In this experiment we investigated whether we can (always) find  a Bayes covaria
 
 First, we restrict our investigation to the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask. 
 
-As a second step, we consider whether the three arboreal methods $ \boldsymbol{S}_1,~ \boldsymbol{S}_2,~ \boldsymbol{S}_3$ (which do not have any parameters) could bridge the gap. The statistics are shown in Table \ref{tab:step2}. 
+As a second step, we consider whether the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ (which do not have any parameters) could bridge the gap. The statistics are shown in Table \ref{tab:step2}. 
 
 \input{tab-step2.tex}
 
@@ -479,7 +497,7 @@ We can see that approximately half of the cases none of the four parameterless B
 
 In the third step we define two parameter family of Bayes covariant coupling methods
 \begin{align}
-a_1 \boldsymbol{S}_1 + a_2 \boldsymbol{S}_2 + a_3 \boldsymbol{S}_3,\quad\textrm{where } a_1 + a_2 +a_3 = 1
+a_1 \boldsymbol{s}_1 + a_2 \boldsymbol{s}_2 + a_3 \boldsymbol{s}_3,\quad\textrm{where } a_1 + a_2 +a_3 = 1
 \end{align}
 Note that the parameter space of this family is not compact. In order to facilitate computations we opted to conduct a grid search on points in the simplex where the coefficients $a_i$ are nonnegative $a_i \geq 0$. 
 
@@ -499,6 +517,7 @@ In order to reduce computational burden we selected 1000 three-class subproblems
 	\caption{Color map indicates the value of Brier score computed for an ensemble of coupling methods on the testing dataset. The vertices triangle indicate the arboreal coupling methods, and the black circle the location of the optimum.}
 \end{figure}
 
+\subsection{Experiment 3: Effect of change of priors}  \label{sec:exp3}
 %\subsection{Wu-Lin-Weng's method}
 
 
