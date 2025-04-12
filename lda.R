@@ -210,7 +210,7 @@ remove_constant_within_groups <- function(data, group_col, tol = 0) {
 }
 
 
-lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
+lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id), tol = 0.05) {
     df <- dfs$train
     stopifnot(min(df$class_id) == 1)
     pairs <- expand.grid(i = subclasses, j = subclasses) |> 
@@ -228,15 +228,15 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
 
         # Identify non-constant columns
         group_col <- "class_id"
-        tol <- 0
+        tol2 <- 0
         model <- NULL
 
         while (is.null(model)) {
-            non_constant_cols <- remove_constant_within_groups(df_ij, group_col, tol)
+            non_constant_cols <- remove_constant_within_groups(df_ij, group_col, tol2)
             # Subset the data to keep only non-constant columns + group column
             cleaned_data <- df_ij[, non_constant_cols]
             pca <- prcomp(cleaned_data,          # we do PCA to try to remove collinearity
-                                        tol = 0.001, 
+                                        tol = tol, 
                                         scale. = F,
                                         center = F)
             newd <- as.data.frame(predict(pca, cleaned_data)) # project data to lower dim space
@@ -251,10 +251,10 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
             m1 <- tryCatch(lda(class_id == i ~ ., 
                                 data = newd), 
             error = function(e) {
-                tol <<- if (tol == 0) 1e-8 else 2 * tol
+                tol2 <<- if (tol2 == 0) 1e-8 else 2 * tol2
                 return(NULL)
             }, 
-            finally = if (tol > 0) print(sprintf("Tol increased to %g for %d %d", tol, i,j)))
+            finally = if (tol2 > 0) print(sprintf("Tol2 increased to %e for %d %d", tol2, i,j)))
             # print(is.null(m1))
             model <- m1
         }
@@ -289,6 +289,8 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
         list(i = i, 
              j = j, 
              r = r1,
+             tol = tol,
+             tol2 = tol2, 
              # r = r,
              col_nonconstant = length(non_constant_cols),
              col_used = ncol(dft) - 1,
@@ -309,7 +311,7 @@ lda_binary <- function(dfs, subclasses = 1:max(dfs$train$class_id)) {
         R[row, col,] <<- logis_r
         R[col, row, ] <<- -logis_r
         data.frame(n = n, dataset = dataset, run = run, 
-                i = li$i, j = li$j, bacc = li$bacc, ece = li$ece, col_used = li$col_used)
+                i = li$i, j = li$j, bacc = li$bacc, ece = li$ece, col_used = li$col_used, tol = li$tol, tol2 = li$tol2)
     }) |> list_rbind()
 
 
@@ -439,47 +441,104 @@ mix_triple <- function(wlws, i, j, k, alpha = 0) {
     triple <- c(i,j,k)
     truth <- dfs$test$class_id
 }
- 
-lda_multi <- function(dfs) {
+
+multi_pred <- function(dfs, method, tol) {
     dft <- dfs$test
-    v <- lda_binary(dfs)
+    v <- lda_binary(dfs, tol = tol)
     r <- v$r
     N <- nrow(dft)
     K <- max(dft$class_id)
     run = dfs$run
     n = dfs$n
+    fn <- e[[method]]
 
-    # print("binary done")
-    multi = map (ls(e), function(m) {
-        # print(m)
-        p <- sapply(1:N, function(k) {
-                fn <- e[[m]]
-                vecp <- fn(r[,,k])
-                which.max(vecp)
-                })
-        data.frame(n = n, K = K, method = m, correct = sum(p == dft$class_id))
-    } )|> list_rbind()
-    # Now, let's do Hinton's oracle
-    mr <- sapply(1:N, function(i) 
-        sum(r[dft$class_id[i],,i] > 0))
-    # print(mr)
-    multi <- rbind(multi,
-        data.frame(n = n, K = K, method = "oracle", correct = sum(mr == K-1)))
-
-    multi$dataset = dfs$dataset
-    multi$run = run
-    list(multi = multi, binary = v$summary)
+    probs <- sapply(1:N, function(k) {
+            fn(r[,,k])
+            }) |> t()
+    p <- apply(probs, 1, which.max)
+    print(sprintf("Accuracy %f", mean(p == dft$class_id)))
+    #data.frame(n = n, K = K, method = m, correct = sum(p == dft$class_id))
+    probs
 }
 
-write_multi <- function(runs = 20, workers = 11) {
+score_matrix <- function(p, truth, score) {
+    if (nrow(p) != length(truth)) {
+        print(dim(p))
+        print(length(truth))
+        stopifnot(F)
+
+    }
+
+    if (score == "brier") {
+        data.factor <- as.factor(truth)
+        onehot <- model.matrix(~ data.factor - 1)
+        apply(p - onehot, 1, function(x) -sum(x * x))
+    } else if (score == "log") {
+        idx = cbind(1:length(truth), truth)
+        log(p[idx]) # TODO: replac with logsumexp
+    } else if (score == "acc") {
+        maxes <- apply(p, 1, max)
+        mv <- p[cbind(1:nrow(p), truth)]
+        cts <- apply(p == maxes,1, sum)
+        ifelse(mv == maxes, 1 / cts, 0)
+        # as.numeric(apply(p, 1, which.max) == truth)
+    } else {
+        stopifnot(F)
+    }
+}
+ 
+lda_multi <- function(dfs, tols, score = "acc") {
+
+   map(tols, function(tol) {
+        dft <- dfs$test
+        v <- lda_binary(dfs, tol = tol)
+        r <- v$r
+        N <- nrow(dft)
+        K <- max(dft$class_id)
+        run = dfs$run
+        n = dfs$n
+
+        multi = map (ls(e), function(m) {
+            p <- sapply(1:N, function(k) {
+                    fn <- e[[m]]
+                    fn(r[,,k])
+                    }) |> t()
+            scores <- score_matrix(p, dft$class_id, score)
+            data.frame(n = n, K = K, method = m, correct = mean(scores))
+        } )|> list_rbind()
+        # Now, let's do Hinton's oracle
+        mr <- sapply(1:N, function(i) {
+            true_cl <- dft$class_id[i]
+            v <- r[true_cl,,i]
+            maxv <- max(v)
+            v1 <- exp(v - maxv)
+            v1 / sum(v1)
+        }) |> t()
+        scores <- score_matrix(mr, dft$class_id, score)
+        multi <- rbind(multi,
+            data.frame(n = n, K = K, method = "Hinton's oracle", correct =
+                mean(scores)))
+                
+#        multi <- rbind(multi,
+            #data.frame(n = n, K = K, method = "oracle", correct = sum(mr == K-1)))
+
+        multi$dataset = dfs$dataset
+        multi$run = run
+        multi$tol = tol
+        list(multi = multi, binary = v$summary)
+   }) |> my_pmap()
+}
+
+write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc") {
     plan(multicore, workers = workers)
     df <- map(files, function(f) {
         future_map(0:(runs - 1), function (r) {
             dfs <- read_wlws(800, f, r)
-            lda_multi(dfs)$multi
+            lda_multi(dfs, tols = tol, score = score)$multi
         }) |> list_rbind()
     }) |> list_rbind() |> 
-        pivot_wider(names_from = "method", values_from = "correct")
+        group_by(dataset, tol, method) |> summarize(acc = mean(correct))
+        #pivot_wider(names_from = "method", values_from = "correct")
     write.csv(df, file = "data/multi.csv", row.names = F, quote = F)
 }
 
@@ -695,8 +754,8 @@ eval_scores <- function(bcp, W = gen_W(qL = length(bcp$pl)), score = "brier") {
 
 par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
     df <- read.csv("data/triples.csv")
-    df1 <- df |> mutate(m = pmax(normal, omit12, omit13, omit23)) |> 
-            filter(wlw2 > m)
+    # df1 <- df |> mutate(m = pmax(normal, omit12, omit13, omit23)) |> 
+    df1 <- df |>  filter(wlw2 > normal)
     print(sprintf("Remains %d out of %d", nrow(df1), nrow(df)))
     # print(head(df1))
     
@@ -727,6 +786,8 @@ par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
         df4$max_bc = max(apply(acc, 2, mean))
         df4
     }) |> list_rbind()
+    list(total = nrow(df), remained = nrow(df1) , 
+        df = df2) 
 }
 
 bc_all <- function(dfs, add = 2) {
