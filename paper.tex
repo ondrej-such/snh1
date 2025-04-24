@@ -437,36 +437,36 @@ An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on t
 
 Given several Bayes covariant methods one can form  their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make it explicit.
 
-Suppose real numbers $\alpha_1, \ldots,\alpha_L$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_L$ are probabibilistic multi-class classification methods satisfying Assumption \ref{ass:1}. We define their linear combination $\bigoplus_i a_i \boldsymbol{v}_i$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
+Suppose real numbers $\alpha_1, \ldots,\alpha_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabibilistic multi-class classification methods satisfying Assumption \ref{ass:1}. We define their linear combination $\bigoplus_i a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
 \begin{align*}
- 	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_L \boldsymbol{v}_L\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_L^{a_L}(x),
+ 	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_M \boldsymbol{v}_M\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(x),
 \end{align*}
 where the symbol $\odot$ denotes componentwise multiplication, and exponentials are computed component-wise. With this definition we can state the following result.
 
 \begin{prop}
-Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_L$ are Bayes covariant. If $\sum a_i = 1$, then $\bigoplus_i a_i \boldsymbol{v}_i$ is also a Bayes covariant coupling method.
+Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are Bayes covariant. If $\sum a_m = 1$, then $\bigoplus_m a_m \boldsymbol{v}_m$ is also a Bayes covariant coupling method.
 \end{prop}
 
 \begin{proof}
 We will be using property $BC_{ij}$ from the proof of the previous proposition. It is sufficient to show that $BC_{ij}$ holds for any $i\not= j$. 
 
-Let $\pi$ be a change of priors from $(P_1, \ldots, P_K)$  to $(P'_1, \ldots, P'_K)$. Let $o_l$ denotes the odds of classes $C_i$ and $C_j$ predicted by coupling method $\boldsymbol{v}_l$. Then the odds of $C_i$ and $C_j$ predicted by $(\bigoplus_i a_i \boldsymbol{v}_i)^\pi$ are 
+Let $\pi$ be a change of priors from $(P_1, \ldots, P_K)$  to $(P'_1, \ldots, P'_K)$. Let $o_m$ denotes the odds of classes $C_i$ and $C_j$ predicted by coupling method $\boldsymbol{v}_m$. Then the odds of $C_i$ and $C_j$ predicted by $(\bigoplus_i a_i \boldsymbol{v}_i)^\pi$ are 
 \begin{align}
-	\biggl(\bigoplus_i a_i \boldsymbol{v}_i\biggr)^\pi(\boldsymbol{R}) & = \frac{P'_i}{P_i} \frac{P_j}{P'_j} \biggl(\bigoplus_i a_i \boldsymbol{v}_i\biggr)(\boldsymbol{R}) \\
-	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_l o_l^{a_l}
+	\biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)^\pi(\boldsymbol{R}) & = \frac{P'_i}{P_i} \frac{P_j}{P'_j} \biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)(\boldsymbol{R}) \\
+	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}
 \end{align}
 
-Let us now use Bayes covariant of $\boldsymbol{v}_i$. We have
+Let us now use Bayes covariance of $\boldsymbol{v}_i$. We have
 \begin{align}
-	\biggl(\bigoplus_i a_i \boldsymbol{v}_i\biggr)(\boldsymbol{R^\pi}) & =  \biggl(\bigoplus_i a_i \boldsymbol{v}_i^\pi\biggr)(\boldsymbol{R}) \\
-	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_l o_l^{a_l}
+	\biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)(\boldsymbol{R^\pi}) & =  \biggl(\bigoplus_m a_m \boldsymbol{v}_m^\pi\biggr)(\boldsymbol{R}) \\
+	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}
 \end{align}
 
-It follows that the odds of $C_i$ to $C_j$ for $\bigoplus_i a_i \boldsymbol{v}_i$ are 
+It follows that the odds of $C_i$ to $C_j$ for $\bigoplus_m a_m \boldsymbol{v}_m$ are 
 \begin{align}
-\biggl(\frac{P'_i}{P_i} \frac{P_j}{P'_j} \biggr)^{\sum a_i} \prod_l o_l^{a_l}.
+\biggl(\frac{P'_i}{P_i} \frac{P_j}{P'_j} \biggr)^{\sum a_m} \prod_m o_m^{a_m}.
 \end{align}
-Clearly, under the assumption $\sum_i a_i = 1$, the classifier $\bigoplus_i a_i \boldsymbol{v}_i$ satisfies $BC_{ij}$ and it follows that it is Bayes covariant.
+Clearly, under the assumption $\sum_m a_m = 1$, the classifier $\bigoplus_m a_m \boldsymbol{v}_m$ satisfies $BC_{ij}$ and it follows that it is Bayes covariant.
 \end{proof}
 
 
