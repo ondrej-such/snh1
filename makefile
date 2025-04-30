@@ -21,8 +21,6 @@ $(info EXP3 Is [${EXP3}])
 
 .PHONY: 
 
-
-
 .ONESHELL:
 unzips: ${ZIP_FILES}
 	mkdir unzips
@@ -35,24 +33,23 @@ unzips: ${ZIP_FILES}
 		unzip -j $${F}  -d unzips/n800 
 	done
 
-
-exp1: 
-		mkdir exp1
-
-exp2: 
-		mkdir exp2
-
-exp%:
-		mkdir $@
-
 data:
 		mkdir data
 
 data/separation.csv: data separation.R
 		Rscript -e "source('separation.R'); df <- map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
 
-data/multi.csv: data lda.R
-		Rscript -e "source('lda.R'); write_multi(1)"
+data/multi-acc.csv: data lda.R
+		Rscript -e "source('lda.R'); write_multi(1, tol = 1/2^(4:12))"
+
+data/triples.csv: data lda.R
+		Rscript -e "source('lda.R'); write_triples(1)"
+
+tab-sep.tex: data/separation.csv
+		Rscript -e "source('tab-sep.R')"
+
+tab-multi.tex: data/multi-acc.csv
+		Rscript -e "source('tab-multi.R')"
 
 data/ex2-%-300.csv: unzips data
 
@@ -63,52 +60,16 @@ else
 				echo "Missing rule"
 endif
 
-
-exp1/%-800.csv: exp1
-ifneq (,$(wildcard $@))
-		Rscript -e "source('msvm.R');df<-sah1(800,'$*');write.csv(df, '$@', quote=F, row.names=F)"
-endif
-
-exp2/%-300.csv: exp2
-ifneq (,$(wildcard $@))
-		Rscript -e "source('msvm.R');df<-sah1(300,'$*',lapl=-2:4);write.csv(df, '$@', quote=F, row.names=F)"
-endif
-
-exp3/%-300.csv: exp3
-		Rscript -e "source('msvm.R');df<-sah1(300,'$*',lapl=-3:6);write.csv(df, '$@', quote=F, row.names=F)"
-
-
-exp2/%-800.csv: exp2
-ifneq (,$(wildcard $@))
-		Rscript -e "source('msvm.R');df<-sah1(800,'$*', lapl=-2:4);write.csv(df, '$@', quote=F, row.names=F)"
-endif
-
-exp3/%-800.csv: exp3
-		Rscript -e "source('msvm.R');df<-sah1(800,'$*', lapl=-3:6);write.csv(df, '$@', quote=F, row.names=F)"
-
-exp4/%-800.csv: exp4
-		Rscript -e "source('msvm.R');df<-sah1(800,'$*', cent = c(T,F));write.csv(df, '$@', quote=F, row.names=F)"
-
-exp4/%-300.csv: exp4
-		Rscript -e "source('msvm.R');df<-sah1(300,'$*', cent = c(T,F));write.csv(df, '$@', quote=F, row.names=F)"
-
-
-paper1.pdf: paper1.tex exp1anova.tex graph1.pdf graph2.pdf
+paper1.pdf: paper1.tex tab-sep.tex tab-multi.tex
 		pdflatex paper1.tex
 
 graph1.pdf graph2.pdf: graph12.R
 		Rscript -e "source('graph12.R')"
 
-exp1anova.tex: exp1.R
-		Rscript -e "source('exp1.R')"
-
-exp2anova.tex: exp1.R
-		Rscript -e "source('exp2.R')"
-
-
 all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
 clean:
 		rmdir -rf unzips
+		rm tab*.tex
 		rmdir -rf exp1
 		rmdir -rf exp2
