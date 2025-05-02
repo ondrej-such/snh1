@@ -33,20 +33,33 @@ unzips: ${ZIP_FILES}
 		unzip -j $${F}  -d unzips/n800 
 	done
 
-data:
-		mkdir data
+data: unzips
+		mkdir -p data
+
+graphs: 
+		mkdir -p graphs
+
 
 data/separation.csv: data separation.R
-		Rscript -e "source('separation.R'); df <- map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
+		Rscript -e "source('separation.R'); df <- future_map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
 
 data/multi-acc.csv: data lda.R
 		Rscript -e "source('lda.R'); write_multi(1, tol = 1/2^(4:12))"
 
 data/triples.csv: data lda.R
 		Rscript -e "source('lda.R'); write_triples(1)"
+ 
+graphs/exp2-detail.pdf: exp2-detail.R graphs
+		Rscript -e "source('exp2-detail.R')"
+
+graphs/exp2-summary.pdf: exp2-summary.R graphs
+		Rscript -e "source('exp2-summary.R')"
 
 tab-sep.tex: data/separation.csv
 		Rscript -e "source('tab-sep.R')"
+
+tab-step2.tex: data/triples.csv
+		Rscript -e "source('tab-step2.R')"
 
 tab-multi.tex: data/multi-acc.csv
 		Rscript -e "source('tab-multi.R')"
@@ -60,8 +73,8 @@ else
 				echo "Missing rule"
 endif
 
-paper1.pdf: paper1.tex tab-sep.tex tab-multi.tex
-		pdflatex paper1.tex
+paper.pdf: paper.tex tab-sep.tex tab-multi.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf
+		pdflatex paper.tex
 
 graph1.pdf graph2.pdf: graph12.R
 		Rscript -e "source('graph12.R')"
@@ -69,7 +82,5 @@ graph1.pdf graph2.pdf: graph12.R
 all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
 clean:
-		rmdir -rf unzips
+		rm -rf unzips
 		rm tab*.tex
-		rmdir -rf exp1
-		rmdir -rf exp2
