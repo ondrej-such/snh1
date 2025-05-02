@@ -537,9 +537,11 @@ write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc"
             lda_multi(dfs, tols = tol, score = score)$multi
         }) |> list_rbind()
     }) |> list_rbind() |> 
-        group_by(dataset, tol, method) |> summarize(acc = mean(correct))
-        #pivot_wider(names_from = "method", values_from = "correct")
-    write.csv(df, file = "data/multi.csv", row.names = F, quote = F)
+        group_by(dataset, tol, method) |> summarize(acc = mean(correct), correct = sum(correct)) |>
+        pivot_wider(names_from = "method", values_from = "correct")
+    df$score = score
+    write.csv(df, file = sprintf("data/multi-%s.csv", score), row.names = F, quote = F)
+    df
 }
 
 write_triples <- function(runs = 20, workers = 11) {
