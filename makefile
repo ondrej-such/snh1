@@ -41,7 +41,7 @@ graphs:
 
 
 data/separation.csv: data separation.R
-		Rscript -e "source('separation.R'); df <- future_map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
+		Rscript -e "source('separation.R'); plan(multicore, workers = 4); df <- future_map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
 
 data/multi-acc.csv: data lda.R
 		Rscript -e "source('lda.R'); write_multi(1, tol = 1/2^(4:12))"
