@@ -453,13 +453,18 @@ We will be using property $BC_{ij}$ from the proof of the previous proposition. 
 Let $\pi$ be a change of priors from $(P_1, \ldots, P_K)$  to $(P'_1, \ldots, P'_K)$. Let $o_m$ denotes the odds of classes $C_i$ and $C_j$ predicted by coupling method $\boldsymbol{v}_m$. Then the odds of $C_i$ and $C_j$ predicted by $(\bigoplus_i a_i \boldsymbol{v}_i)^\pi$ are 
 \begin{align}
 	\biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)^\pi(\boldsymbol{R}) & = \frac{P'_i}{P_i} \frac{P_j}{P'_j} \biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)(\boldsymbol{R}) \\
+\end{align}
+so the odds are 
+
+\begin{align}
 	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}
 \end{align}
 
-Let us now use Bayes covariance of $\boldsymbol{v}_i$. We have
+Let us now use Bayes covariance of $\boldsymbol{v}_i$. 
+We have
 \begin{align}
 	\biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)(\boldsymbol{R^\pi}) & =  \biggl(\bigoplus_m a_m \boldsymbol{v}_m^\pi\biggr)(\boldsymbol{R}) \\
-	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}
+%	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}
 \end{align}
 
 It follows that the odds of $C_i$ to $C_j$ for $\bigoplus_m a_m \boldsymbol{v}_m$ are 
