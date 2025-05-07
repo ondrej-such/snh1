@@ -57,7 +57,7 @@
 
 \begin{document}
 
-\title{On probabilistic one-vs-one classification}
+\title{On change of priors in one-vs-one classification methods}
 
 \author{\name Ondrej Šuch \email ondrejs@savbb.sk \\
        \addr Matematický ústav SAV\\
@@ -103,13 +103,12 @@ A key step in probabilistic one-vs-one modelling is the aggregation of results o
 Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature space $X$. In a multi-class classification problem we are provided with the prior probabilities $\Pi = (P_1, \ldots, P_k)$ of each class. Given $x$ in $X$ we aim to find the probability that $x$ belongs to $i$-th class. 
 
 
-\subsection{Bayes classifier}
+\subsection{One-vs-on classification}
 
-An exact solution to this problem is provided by the Bayes classifier. To simplify the discussion we will make the following assumption.
-
+An exact solution to a classification problem is provided by the Bayes classifier. To simplify the discussion we will make the following assumption.
 
 \begin{assumption} \label{ass:1}
- For all $x$ in the feature space we have $d_i(x) > 0$.
+For all $x$ in the feature space we have $d_i(x) > 0$.
 \end{assumption}
 Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines all satisfy this assumption.
 
@@ -124,16 +123,24 @@ Besides the multi-class classifier we may also consider the binary Bayes classif
 	p_{ij}^\Pi(x) = \frac{d_i(x) P_i}{d_i(x)P_i + d_j(x)P_j}.
 \end{align}
 
-Knowledge of vector $\boldsymbol{p}^\Pi(x)$ is  equivalent to knowing the functions $p^\Pi_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
+Knowledge of vector $\boldsymbol{p}^\Pi(x)$ is equivalent to knowing the functions $p^\Pi_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
 \begin{align}
 p_{ij}^\Pi(x) = \frac{p_i^\Pi(x)}{p_i^\Pi(x) + p_j^\Pi(x)}. \label{eq:bt1}
 \end{align}
 
 Conversely, it is easy to show that  the system of equations \eqref{eq:bt1} has a unique solution.
 
-\begin{prop} \label{prop:binary2multi}
-The system of  equations \eqref{eq:bt1} in unknowns $p_i^\Pi(x)$ has a unique solution which is the multi-class Bayes classifier.
+\begin{prop}[Fundamental theorem of one-vs-one classification]
+	 \label{prop:binary2multi}
+	 Knowledge of binary Bayes classifiers $p_{ij}^\Pi$ determines the multiclass Bayes classifier $\boldsymbol{p}^\Pi$.
 \end{prop}
+\begin{proof}
+	Indeed, from \eqref{eq:bt1} we deduce the odds of classes $C_j$ to $C_i$
+	\begin{align}
+	\frac{p_j^\Pi(x)}{p_j^\Pi(x)} = \frac{1}{p^\Pi_{ij}(x)}- 1.
+	\end{align}
+	Knowing the odds of $C_2$ to $C_1$, $C_3$ to $C_2$ up to $C_{K}$ to $C_{K-1}$ together with the requirement that probabilities sum to one uniquely determines the whole vector $\boldsymbol{p}^\Pi(x)$.
+\end{proof}
 %\begin{proof}
 %Indeed, we have 
 %\begin{align*}
@@ -142,10 +149,9 @@ The system of  equations \eqref{eq:bt1} in unknowns $p_i^\Pi(x)$ has a unique so
 %\end{proof}
 
 
-\subsection{One-vs-one classification }
+\subsection{Coupling methods}
 
-
-In practice one does not have know true probability distributions and hence cannot construct Bayes classifier. However, given a sample from the distribution, we can train binary classifiers to provide approximations $r_{ij}(x)$ to pairwise Bayes classifiers $p_{ij}^\Pi(x)$. The goal of probabilistic one-vs-one classification is to deduce for any $x$ in the feature space $X$ an estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\Pi(x)$. One does it by finding an approximate solution of the system of equations
+In practice one does not have know true probability distributions and hence cannot construct Bayes classifies. However, given a sample from the distribution, we can train binary classifiers to provide approximations $r_{ij}(x)$ to pairwise Bayes classifiers $p_{ij}^\Pi(x)$. The goal of probabilistic one-vs-one classification is to deduce for any $x$ in the feature space $X$ an estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\Pi(x)$. One does it by finding an approximate solution of the system of equations
 %\begin{align}
 %
 %\end{align}
@@ -173,7 +179,7 @@ In practice one does not have know true probability distributions and hence cann
 %\end{itemize}
 
 Equations forming system \eqref{eq:bt2} are called Bradley-Terry equations.
-The system is usually inconsistent and additional assumptions are needed. A method to solve Bradley-Terry equations is called a coupling method. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
+The system is usually inconsistent and additional assumptions are needed to construct an estimator. A method to solve Bradley-Terry equations is called a \emph{coupling method}. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
 
 \begin{figure}[!h]
 	\centering
@@ -346,7 +352,12 @@ An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A
 
 For $K=3$, there are three different arboreal coupling methods, which we shall call $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the system \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
 
-In order to obtain a regular system of equations for  larger values of $K$ , the resulting classifiers must represent a connected tree within the complete graph on all classes. Any arboreal method is non-canonical, because there is no natural way to choose a tree in a complete graph.
+For $K>3$ the three methods can be generalized to corresponds to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$.
+
+More generally, to obtain a regular system of equations for  any of $K$ , it is necessary that the tree corresponding to an arboreal method forms a spanning tree. Note that any arboreal method is non-canonical, because there is no natural way to choose a tree in a complete graph. In fact, a stronger statement is true -- no arboreal method is symmetric.
+%However, we will see in Section \ref{sec:bc2} that by ``averaging'' several stars we can obtain a canonical 
+
+
 
 \subsection{Methods emphasizing Hinton's minimality}
 
@@ -361,7 +372,7 @@ $$
 
 For any sample, its result is identical to the arboreal method where the underlying tree forms a star. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centred at the class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
 \begin{equation}
 	\begin{split}
 	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1(x) + \ldots + \hat p_K \boldsymbol{s}_K(x)\\
@@ -370,27 +381,34 @@ In order to convert Hinton's oracle into a true classification method we can use
 	 \label{eq:radial}
 \end{equation}
 %
-The intuition behind \eqref{eq:radial} is that if some component of $\hat{\boldsymbol{p}}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by ${{T}}_i$.
+The intuition behind \eqref{eq:radial} is that if some component of $\hat{\boldsymbol{p}}$ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by ${\boldsymbol{s}}_i$.
 
-\subsection{Bayes covariant methods}
+\subsection{Bayes covariant methods} \label{sec:bc2}
 
-There are many Bayes covariant methods. First examples are provided by arboreal coupling methods. 
+There are many Bayes covariant methods. In this section we will show that 
+\begin{itemize} 
+	\item arboreal coupling methods are Bayes covariant,
+	\item Bayes covariant methods can be ensembled,
+	\item describe all Bayes covariant methods for $K=3$.
+\end{itemize}
 
-
-\begin{prop}
-Any arboreal method $\boldsymbol{t}$ is Bayes covariant.
-\end{prop}
-\begin{proof}
-We start by defining property $BC_{ij}$ (short for Bayes covariant when restricted to classes $i$ and $j$) of a coupling method. A coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ if for any change of priors $\pi$ and any  pairwise data $\boldsymbol{R}$ the odds of classes $C_i$ to $C_j$ predicted by $\boldsymbol{v}(\boldsymbol{R}^\pi)$ and $\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi$ are equal. 
+We start by defining the property $BC_{ij}$ (the notation stands for \emph{Bayes covariant when restricted to classes} $i$ and $j$) of a coupling method. A coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ if for any change of priors $\pi$ and any  pairwise data $\boldsymbol{R}$ the odds of classes $C_i$ to $C_j$ predicted by $\boldsymbol{v}(\boldsymbol{R}^\pi)$ and $\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi$ are equal. 
 
 Let us list some easy to verify properties of this concept:
 
 \begin{itemize}
-\item[a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$,
-\item[b)] if a coupling method satisfies $BC_{12}, BC_{23}, \ldots, BC_{(K-1),K}$ then it is Bayes covariant,
-\item[c)] if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant,
-\item[d)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$.
+	\item[a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$,
+	\item[b)] if a coupling method satisfies $BC_{12}, BC_{23}, \ldots, BC_{(K-1),K}$ then it is Bayes covariant,
+	\item[c)] if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant,
+	\item[d)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$.
 \end{itemize}
+
+Now we are ready to prove the our first result.
+
+\begin{prop}
+Any arboreal method is Bayes covariant.
+\end{prop}
+\begin{proof}
 
 An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on the classes satisfies $BC_{ij}$ whenever the edge $C_iC_j$ belongs to $T$. It follows using from b) and d) that the method is Bayes covariant.
 	
@@ -495,7 +513,7 @@ is Bayes covariant \emph{and} symmetric. A key result proved in [\cite{vsuch2016
 	There exists a unique symmetric Bayes covariant coupling methods for $K=3$.
 \end{thm}
 
-Let us point out one consequence of the theorem. We could define another ensemble $\boldsymbol{E}$ by averaging the predictions of $\boldsymbol{s}_1, \boldsymbol{T}_2, \boldsymbol{T}_3$:
+Let us point out one consequence of the theorem. We could define another ensemble $\boldsymbol{E}$ by averaging the predictions of $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$:
 \[
 \boldsymbol{E} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
 \]
