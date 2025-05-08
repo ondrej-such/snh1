@@ -37,7 +37,7 @@ Conversely, it is easy to show that  the system of equations \eqref{eq:bt1} has 
 \begin{proof}
 	Given a multiclass distribution $\boldsymbol{p} = (p_1, \ldots,p_K)$ on $K$ classes, let $\alpha_{ij}(\boldsymbol{p})$ denote the odds of $C_i$ to $C_j$:
 	\begin{align}
-		\alpha_{ij}(\boldsymbol{p}) = \frac{p_i}{p_j}
+		\alpha_{ij}(\boldsymbol{p}) = \frac{p_i}{p_j} \label{eq:alpha}
 	\end{align}
 	
 	From \eqref{eq:bt1} we can deduce the odds of classes $C_j$ to $C_i$ for the Bayes classifier since
@@ -131,13 +131,18 @@ this section
 
 Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical [\cite{shannon1948mathematical,selten1998axiomatic}].
 
-\emph{Symmetry} refers to the action of the permutation group which acts both on the classes as well as on multi-class predictions. The action of a permutation $\sigma$ extends to the action on the pairwise matrix $\boldsymbol{R} = (r_{ij})$ by 
-\begin{equation}
-	 r^\sigma_{i,j} \stackrel{def}{=}  r_{\sigma(i), \sigma(j)}.
-\end{equation}
+\emph{Symmetry} We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
+
+\begin{itemize}
+	\item Given  distributions on the classes $\boldsymbol{p}= (p_1, \ldots, p_K)$, we can define
+	\begin{align}
+		\sigma(\boldsymbol{p})= (p_{\sigma(1)},p_{\sigma(2)}, \ldots, p_{\sigma(K)}).
+	\end{align}
+	 \item $\sigma$ also acts on the matrix of binary predictions. Namely, the entry of $\sigma(\boldsymbol{R})$ in $i$-th row and $j$-th column is defined to be $r_{\sigma(i), \sigma(j)}$.
+	 \end{itemize}
 We say that a coupling method $V$ is \emph{symmetric} if 
 \begin{align}
-		\boldsymbol{v}(\boldsymbol{R})^\sigma = \boldsymbol{v}(\boldsymbol{R}^\sigma)\quad\textrm{for any permutation $\sigma$}.
+		\sigma(\boldsymbol{v}(\boldsymbol{R})) = \boldsymbol{v}(\sigma(\boldsymbol{R}))\quad\textrm{for any permutation $\sigma$}.
 \end{align}
 
 \emph{Bayes covariance} is a notion introduced in  [\cite{vsuch2016bayes}]. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
