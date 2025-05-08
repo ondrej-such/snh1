@@ -125,6 +125,7 @@ Suppose first that real numbers $a_1, \ldots,a_M$ are real numbers and $\boldsym
 where the symbol $\odot$ denotes componentwise multiplication, and exponentials are computed component-wise. With this definition we can state the following result.
 
 \begin{prop}
+	\label{prop:ensemble}
 Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are Bayes covariant. If $\sum a_m = 1$, then $\boldsymbol{e} = \bigoplus_m a_m \boldsymbol{v}_m$ is also a Bayes covariant coupling method.
 \end{prop}
 
@@ -191,7 +192,7 @@ for a symmetric coupling method we have
 \begin{align}
 	\boldsymbol{v} (\boldsymbol{R}_s) = \biggl(\frac 13, \frac 13, \frac 13 \biggr).
 \end{align}
-Now applying  Proposition \ref{prop:bc3} from Appendix \ref{app:bc1} yields uniqueness. The existence of the method was already shown above.
+Now applying  Proposition \ref{prop:bc3} from Appendix \ref{app:bc1} yields uniqueness. The existence of the method was already shown above using Proposition \ref{prop:ensemble}.
 \end{proof}
 
 
@@ -199,7 +200,7 @@ Let us point out one consequence of the theorem. We could define another ensembl
 \[
 \tilde{\boldsymbol{e}} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
 \]
-Note that here we use the plus symbol to denote the vector addition of vectors representing $K$-class probability distributions. This is a different classifier from the one given by  \eqref{eq:bc1} (see Appendix \ref{app:explicit}), and since it is symmetric, it cannot be Bayes covariant.
+Note that here we use the plus symbol to denote the vector addition of vectors representing  probability distributions over $K$ classes. This is a different classifier from the one given by  \eqref{eq:bc1} (see Appendix \ref{app:explicit}), and since it is symmetric, it cannot be Bayes covariant.
 
 The classifier $\boldsymbol{e}_3$ has a canonical generalization for any $K>3$, namely the classifier
 \begin{align}
@@ -209,8 +210,17 @@ We call this coupling method the \emph{normal} coupling method.
 
 \subsection{Properties of coupling methods}
 
+In this section  we summarize properties of coupling methods described earlier in this section.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
+\begin{itemize}
+	\item whether a coupling method amounts to a linear system of equations,
+	\item if the coupling method amounts to a linear system of equations, whether the equations are of a special form (e.g. a Markov matrix) that facilitates their solution,
+	\item whether the authors who published the method provide an iterative method that implements the estimate. Iterative methods are often  faster than Gaussian elimination, and less prone to numerical issues.
+\end{itemize}
 
-The following table indicates which properties are enjoyed by each coupling method we described in this section.
+ %interpretation of exact desiderate is unambiguous. 
+
+
+%The following table indicates which properties are enjoyed by each coupling method we described in this section.
 
 \begin{table}[!ht]
 \begin{tabular}{cm{2.5cm}m{1.5cm}m{1.5cm}ccm{1.5cm}m{1.5cm}}
@@ -224,10 +234,11 @@ The following table indicates which properties are enjoyed by each coupling meth
 & Bayes covariant & no & no & no & yes & yes & yes \\
 \hline
 \multirow{5}{*}{\begin{turn}{90}\makecell{non-exact}\end{turn}}
-&Hinton's minimality & ? & ?  & ++ & ?  & ? & +++ \\
+&Hinton's minimality & N/A & \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
+&robustness & N/A & \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
 &lack of parameters & yes & yes & yes & yes & yes & yes \\
 & amounts to a linear system & no & yes & yes & yes & yes & yes\\
-& linear system of special form & no & no & yes & yes & yes & yes \\
+& linear system of special form & N/A & no & yes & yes & yes & yes \\
 & iterative method & yes & yes & yes & no & not needed & not needed\\
 \hline
 \end{tabular}
