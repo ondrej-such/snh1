@@ -5,20 +5,20 @@
 
 In this appendix we provide proofs of statements used in Section \label{sec:bc2}.
 
-\begin{prop}
-	Let $\boldsymbol{v}$ be a coupling method. The following statements are equivalent:
+\begin{prop} \label{prop:bcprop}
+	Let $\boldsymbol{v}$ be a coupling method. If Assumption \ref{ass:1} holds, the following statements are equivalent:
 	\begin{itemize}
 		\item[a)] The coupling method $\boldsymbol{v}$ is Bayes covariant.
-		\item[b)] The coupling method $\boldsymbol{v}$ satisfies $BC_{12}, BC_{23}, \ldots, BC_{K-1,K}$.
-		\item[c)] The coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ for any pair of integers between 1 and $K$ with $i\not= j$.
+		\item[b)] The coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ for any pair of integers  $i\not= j$ with $1\leq i,j \leq K$.
+		\item[c)] The coupling method $\boldsymbol{v}$ satisfies $BC_{12}, BC_{23}, \ldots, BC_{K-1,K}$.
 	\end{itemize}
 \end{prop}
 \begin{proof}
-	
+It follows directly from the definition of $BC_{ij}$ that a) implies b). Also, clearly b) implies c). If the assumptions of c) hold, then the vectors $\boldsymbol{v}(\boldsymbol{R})^\pi$ and $ \boldsymbol{v}(\boldsymbol{R}^\pi)$ are proportional, but since both have components adding up to one, it follows they are equal and thus a) holds.
 \end{proof}
 
 \begin{lem} \label{lem:transitivity}
-	If a coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$.
+	Suppose Assumption \ref{ass:1} holds. If a coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$.
 \end{lem}
 \begin{proof}
 	Let $\pi$ be a change of priors. From the assumptions we have 
@@ -33,45 +33,82 @@ In this appendix we provide proofs of statements used in Section \label{sec:bc2}
 	which means that the coupling method satisfies $BC_{ik}$.
 \end{proof}
 
+The following proposition restricts the set of Bayes covariant coupling methods for $K=3$.
 
-\section{}
-\label{app:explicit}
+\begin{prop} \label{prop:bc3}
+	For $K=3$ any Bayes covariant coupling method is uniquely determined by its prediction for  matrices of the form
+	$$
+	\boldsymbol{R_s} = \begin{pmatrix} \cdot & s & 1 -s \\  1-s & \cdot & s \\ s & 1-s & \cdot \end{pmatrix}.
+	$$
+\end{prop}
+\begin{proof}
+	Suppose $\boldsymbol{v}$ is a coupling method,  the priors are $\Pi = (P_1, P_2,P_3)$, and the binary classifiers yield prediction matrix 
+	\begin{align}
+		\boldsymbol{R} = \begin{pmatrix} \cdot & r_{12} & 1 - r_{31} \\ 1-r_{12} & \cdot & r_{23} \\
+			r_{31} & 1- r_{23} & \cdot \end{pmatrix}.
+	\end{align}
+	
+	Suppose there was a change of priors $\pi$ such that $\boldsymbol{R}^\pi$ would be belong to the one-parameter family $\boldsymbol{r}_s$ with $s$ in $(0,1)$. Then we have
+	$$
+	\boldsymbol{v}(\boldsymbol{R})^\pi = \boldsymbol{v}(\boldsymbol{R}^\pi) = \boldsymbol{v}(\boldsymbol{R}_s).
+	$$
+	Inverting action of $\pi$ would then determine $\boldsymbol{v}(\boldsymbol{R})$.
+	
+	In order to construct such $\pi$ let us introduce a new parametrization of the matrix of binary  predictions
+	\begin{align}
+		\begin{split}
+			q_{12} &= \frac{1}{r_{12}} -1 \\
+			q_{23} &= \frac{1}{r_{23}} -1 \\
+			q_{31} &= \frac{1}{r_{31}} -1 
+		\end{split}
+	\end{align}
+	Under the change of priors $\pi:\Pi \rightarrow \Pi' = (P'_1, P'_2, P'_3)$ we have
+	\begin{align}
+		q'_{ij}	= q_{ij} \cdot \frac{P_i'}{P_i} \frac{P_j}{P'_j}.
+	\end{align}
+	One checks easily that $\Pi' \propto (1, \frac{q_{12}}{q_{23}}, \frac{q_{12}}{q_{23}})$ yields the desired change of priors.
+	
+\end{proof}
 
-% Note: in this sample, the section number is hard-coded in. Following
-% proper LaTeX conventions, it should properly be coded as a reference:
 
+%\section{}
+%\label{app:explicit}
+%
+%% Note: in this sample, the section number is hard-coded in. Following
+%% proper LaTeX conventions, it should properly be coded as a reference:
+%
+%%In this appendix we prove the following theorem from
+%%Section~\ref{sec:textree-generalization}:
+%
+%In this appendix we provide explicit predictions of coupling methods used in the paper.
+%
+%
+%
 %In this appendix we prove the following theorem from
-%Section~\ref{sec:textree-generalization}:
-
-In this appendix we provide explicit predictions of coupling methods used in the paper.
-
-
-
-In this appendix we prove the following theorem from
-Section~6.2:
-
-\noindent
-{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
-	not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
-	dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
-	which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
-	respective empirical mutual information values based on the sample
-	$\dataset$. Then
-	\[
-	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
-	\]
-	with equality only if $u$ is identically 0.} \hfill\BlackBox
-
-\section{}
-
-\noindent
-{\bf Proof}. We use the notation:
-\[
-P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
-P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
-\]
-These values represent the (empirical) probabilities of $v$
-taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
-by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
-
-{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
+%Section~6.2:
+%
+%\noindent
+%{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
+%	not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
+%	dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
+%	which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
+%	respective empirical mutual information values based on the sample
+%	$\dataset$. Then
+%	\[
+%	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
+%	\]
+%	with equality only if $u$ is identically 0.} \hfill\BlackBox
+%
+%\section{}
+%
+%\noindent
+%{\bf Proof}. We use the notation:
+%\[
+%P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
+%P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
+%\]
+%These values represent the (empirical) probabilities of $v$
+%taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
+%by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
+%
+%{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}

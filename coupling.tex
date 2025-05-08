@@ -102,7 +102,7 @@ Let us list some easy to verify properties of this concept:
 	\item[a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$ (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
 	%\item[b)] if a coupling method satisfies $BC_{12}, BC_{23}, \ldots, BC_{(K-1),K}$ then it is Bayes covariant (see Proposition \ref{prop:bcprop}),
 	\item[b)] if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
-	\item[c)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$ (see Lemma \ref{lem:transitivity}).
+	\item[c)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$ (see Lemma \ref{lem:transitivity} in Appendix \ref{app:bc1}).
 \end{itemize}
 
 Now we are ready to prove the our first result.
@@ -112,7 +112,7 @@ Any arboreal method is Bayes covariant.
 \end{prop}
 \begin{proof}
 
-An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on the classes satisfies $BC_{ij}$ whenever the edge $C_iC_j$ belongs to $T$. Since any pair of vertices is connected by a path, it follows from transitivity of $BC_{ij}$ (property c) that the assumption of b) holds and thus the coupling method is Bayes covariant.
+An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on the classes satisfies $BC_{ij}$ whenever the edge $C_iC_j$ belongs to $T$. Since any pair of vertices is connected by a path, it follows from transitivity of $BC_{ij}$ (property c)\,) that the assumption of b) holds and thus the coupling method is Bayes covariant.
 	
 \end{proof}
 
@@ -173,19 +173,39 @@ Clearly, under the assumption $\sum_m a_m = 1$, the classifier $\bigoplus_m a_m 
 
 As an example, consider the classification problem with three classes. We have three arboreal classifiers $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ which correspond to star graphs centered respectively at classes $C_1, C_2, C_3$. The classifier 
 \begin{align}
-\frac13 \boldsymbol{s}_1 \oplus \frac13 \boldsymbol{s}_2 \oplus \frac 13 \boldsymbol{s}_3  \label{eq:bc1}
+\boldsymbol{e}_3 \stackrel{def}{=} \frac13 \boldsymbol{s}_1 \oplus \frac13 \boldsymbol{s}_2 \oplus \frac 13 \boldsymbol{s}_3  \label{eq:bc1}
 \end{align}
-is Bayes covariant \emph{and} symmetric. A key result proved in [\cite{vsuch2016bayes}] is that it is a unique such classifier for $K=3$.
+is Bayes covariant \emph{and} symmetric. A key result proved in [\cite{vsuch2016bayes}] is that it is a unique  classifier having these two properties.
 
 \begin{thm} \label{thm:K3}
 	There exists a unique symmetric Bayes covariant coupling methods for $K=3$.
 \end{thm}
 
-Let us point out one consequence of the theorem. We could define another ensemble $\boldsymbol{E}$ by averaging the predictions of $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$:
+\begin{proof}
+Let 
+\begin{align}
+	\boldsymbol{R}_s \stackrel{def}{=} \begin{pmatrix} \cdot & s & 1 -s \\  1-s & \cdot & s \\ s & 1-s & \cdot \end{pmatrix}
+\end{align}
+Since $R_s$ is invariant under the action of any permutation of 3 elements, 
+for a symmetric coupling method we have 
+\begin{align}
+	\boldsymbol{v} (\boldsymbol{R}_s) = \biggl(\frac 13, \frac 13, \frac 13 \biggr).
+\end{align}
+Now applying  Proposition \ref{prop:bc3} from Appendix \ref{app:bc1} yields uniqueness. The existence of the method was already shown above.
+\end{proof}
+
+
+Let us point out one consequence of the theorem. We could define another ensemble $\tilde{\boldsymbol{e}}$ by averaging the predictions of $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$:
 \[
-\boldsymbol{E} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
+\tilde{\boldsymbol{e}} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
 \]
 Note that here we use the plus symbol to denote the vector addition of vectors representing $K$-class probability distributions. This is a different classifier from the one given by  \eqref{eq:bc1} (see Appendix \ref{app:explicit}), and since it is symmetric, it cannot be Bayes covariant.
+
+The classifier $\boldsymbol{e}_3$ has a canonical generalization for any $K>3$, namely the classifier
+\begin{align}
+\boldsymbol{e}_K \stackrel{def}{=} \frac1K \boldsymbol{s}_1 \oplus \frac1K \boldsymbol{s}_2 \oplus \ldots \oplus \frac 1K \boldsymbol{s}_K  \label{eq:bc1}
+\end{align}
+We call this coupling method the \emph{normal} coupling method.
 
 \subsection{Properties of coupling methods}
 
