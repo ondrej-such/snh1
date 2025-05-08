@@ -1,0 +1,202 @@
+\section{Theoretical basis of coupling methods}
+
+Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature space $X$. In a multi-class classification problem we are provided with the prior probabilities $\Pi = (P_1, \ldots, P_k)$ of each class. Given $x$ in $X$ we aim to find the probability that $x$ belongs to $i$-th class. 
+
+
+\subsection{One-vs-on classification}
+
+An exact solution to a classification problem is provided by the Bayes classifier. To simplify the discussion we will make the following assumption.
+
+\begin{assumption} \label{ass:1}
+For all $x$ in the feature space we have $d_i(x) > 0$.
+\end{assumption}
+Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines all satisfy this assumption.
+
+The Bayes classifier predicts that the probability of $x$ belonging to the $i$-th class is
+\begin{align}
+ p^\Pi_i(x) = \frac{d_i(x) P_i}{\sum_{k=1}^K d_k(x)P_k}.
+\end{align}
+
+Besides the multi-class classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of classes. Assuming prior on the two classes is proportional to $(P_i, P_j)$, the binary Bayes classifier predicts the probability of $i$-th class as 
+
+\begin{align}
+	p_{ij}^\Pi(x) = \frac{d_i(x) P_i}{d_i(x)P_i + d_j(x)P_j}.
+\end{align}
+
+Knowledge of vector $\boldsymbol{p}^\Pi(x)$ is equivalent to knowing the functions $p^\Pi_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
+\begin{align}
+p_{ij}^\Pi(x) = \frac{p_i^\Pi(x)}{p_i^\Pi(x) + p_j^\Pi(x)}. \label{eq:bt1}
+\end{align}
+
+Conversely, it is easy to show that  the system of equations \eqref{eq:bt1} has a unique solution.
+
+\begin{prop}[Fundamental theorem of one-vs-one classification]
+	 \label{prop:binary2multi}
+	 Knowledge of binary Bayes classifiers $p_{ij}^\Pi$ determines the multiclass Bayes classifier $\boldsymbol{p}^\Pi$.
+\end{prop}
+\begin{proof}
+	Given a multiclass distribution $\boldsymbol{p} = (p_1, \ldots,p_K)$ on $K$ classes, let $\alpha_{ij}(\boldsymbol{p})$ denote the odds of $C_i$ to $C_j$:
+	\begin{align}
+		\alpha_{ij}(\boldsymbol{p}) = \frac{p_i}{p_j}
+	\end{align}
+	
+	From \eqref{eq:bt1} we can deduce the odds of classes $C_j$ to $C_i$ for the Bayes classifier since
+	\begin{align}
+	\alpha_{ij}(\boldsymbol{p}^\Pi) = \frac{p_j^\Pi(x)}{p_j^\Pi(x)} = \frac{1}{p^\Pi_{ij}(x)}- 1.
+	\end{align}
+	Knowing the odds of $C_2$ to $C_1$, $C_3$ to $C_2$ up to $C_{K}$ to $C_{K-1}$ together with the requirement that probabilities sum to one uniquely determines the whole vector $\boldsymbol{p}^\Pi(x)$.
+\end{proof}
+%\begin{proof}
+%Indeed, we have 
+%\begin{align*}
+%\frac{1}{r_{ij}(x)} - 1 = \frac{p_j^\Pi}{p_i^\Pi}
+%\end{align*}
+%\end{proof}
+
+
+\subsection{Coupling methods}
+
+In practice one does not have know true probability distributions and hence cannot construct Bayes classifies. However, given a sample from the distribution, we can train binary classifiers to provide approximations $r_{ij}(x)$ to pairwise Bayes classifiers $p_{ij}^\Pi(x)$. The goal of probabilistic one-vs-one classification is to deduce for any $x$ in the feature space $X$ an estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\Pi(x)$. One does it by finding an approximate solution of the system of equations
+%\begin{align}
+%
+%\end{align}
+%
+%
+%Suppose that $K$ classes $C_1, \ldots, C_K$ are distributed according to probability distributions $p_i$ on a  space $X$. Let us denote the $r_{ij}(x)$ the output of Bayes (binary) classifier for $x$ in $X$ yielding the probability $p(x \in C_i \mid x\in C_i \cup C_j )$. Then we have
+%\begin{equation}
+%r_{ij}(x)= \frac {p_i(x)}{p_i(x) + p_j(x)}.
+%\end{equation}
+%
+%
+%The system of equations is called Bradley--Terry equations.  The equations in \eqref{eq:bt1}  can be transformed to a system of linear equations. The theoretical basis for one-vs-one classification framework is provided by the following result.
+%
+%
+%
+%Suppose we have estimators $\hat r_{ij}$ for Bayes predictions $r_{ij}$ for all pairs $i\not= j$. A \emph{coupling method} obtains a multi-class probabilistic estimate $\boldsymbol{\hat p}= (\hat p_1, \ldots, \hat p_K)$ that satisfy
+\begin{equation}
+	{r}_{ij}(x) \approx \frac {\hat p_i(x)}{\hat p_i(x) + \hat p_j(x)}. \label{eq:bt2}
+\end{equation}
+
+% One should note that 
+%\begin{itemize}
+%\item the resulting system of equations will usually not be consistent, because $\hat{r}_{ij}$ are only estimates of true values $r_{ij}$,
+%\item when probabilities are parametrized in other ways (e.g. other common parametrizations are as odds, or log-odds), the system of equations \eqref{eq:bt} is non-linear.
+%\end{itemize}
+
+Equations forming system \eqref{eq:bt2} are called Bradley-Terry equations.
+The system is usually inconsistent and additional assumptions are needed to construct an estimator. A method to solve Bradley-Terry equations is called a \emph{coupling method}. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
+
+\begin{figure}[!h]
+	\centering
+	\begin{tikzcd}[column sep=3cm]
+		\textrm{sample $x$}\arrow[r, "binary~classifiers"] \arrow[dr,dotted,swap, "multi-class~ prediction"] & \boldsymbol{R}(x) %\arrow{d}{coupling}[swap]{\boldsymbol{v}} \\
+		\arrow{d}{coupling} \\
+		 & \boldsymbol{v}(\boldsymbol{R}(x)) 
+	\end{tikzcd}
+	\caption{Multi-class classification using a coupling method $\boldsymbol{v}$}
+	\label{fig:coupling}
+\end{figure}
+
+
+
+
+
+\subsection{Exact desiderata on coupling method} \label{sec:des:exact}
+
+Let us outline what kind of conditions may be desirable in a coupling method. In %Section \ref{sec:des:exact} 
+this section
+ we will describe exact mathematical criteria, while in section \ref{sec:des:inexact} we shall describe more flexible properties.
+
+%\begin{itemize}
+%\item a coupling method should should always provide a unique solution, at least when all $r_{ij}>0$,
+%\item Bradley-Terry consistency,
+%\item canonicity,
+%\item symmetry,
+%\item Bayes covariance,
+%
+%\item good accuracy on benchmark tasks,
+%\item lack of parameters, or at least having a small number of parameters,
+%\item Hinton's minimality,
+%\item simplicity of computation.
+%\end{itemize}
+
+
+
+\emph{Unique solution} refers to the fact that the procedure to compute a multi-class probabilistic prediction always converges to a unique solution. One way to satisfy this condition would be that it amounts to a linear system of equations in $K$ variables, and the matrix of the system would be invertible. Another example would be when the procedure amounts to finding the minimum of a strongly convex function. 
+
+\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multi-class Bayes classifier i.e. satisfies \eqref{eq:bt1}.
+
+\emph{Canonicity} refers to requirement that the method should be natural. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. 
+
+Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical [\cite{shannon1948mathematical,selten1998axiomatic}].
+
+\emph{Symmetry} refers to the action of the permutation group which acts both on the classes as well as on multi-class predictions. The action of a permutation $\sigma$ extends to the action on the pairwise matrix $\boldsymbol{R} = (r_{ij})$ by 
+\begin{equation}
+	 r^\sigma_{i,j} \stackrel{def}{=}  r_{\sigma(i), \sigma(j)}.
+\end{equation}
+We say that a coupling method $V$ is \emph{symmetric} if 
+\begin{align}
+		\boldsymbol{v}(\boldsymbol{R})^\sigma = \boldsymbol{v}(\boldsymbol{R}^\sigma)\quad\textrm{for any permutation $\sigma$}.
+\end{align}
+
+\emph{Bayes covariance} is a notion introduced in  [\cite{vsuch2016bayes}]. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
+\begin{align}
+\boldsymbol{p}^{\Pi'} \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{eq:changePrior}
+\end{align}
+
+When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical, for all initial pairwise data $\boldsymbol{R}$, then we say that the coupling method is \emph{Bayes covariant}. 
+
+Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_2^{ij}(D)$ by requiring
+$$
+\pi_2^{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
+$$
+We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $\pi_2^{ij}(r_{ij})$. The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
+
+On the other hand we can apply \eqref{eq:changePrior} after coupling. Say we have a distribution on $K$ classes
+\begin{align}
+D \propto (p_1, \ldots, p_K)
+\end{align}
+then we define $D^\pi$ by requiring 
+\begin{align}
+D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr).
+\end{align}
+We now say that a method if Bayes covariant if
+\begin{align}
+\boldsymbol{v}(\boldsymbol{R}^\pi)=	\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi,
+\end{align}
+for any matrix $\boldsymbol{R}$ with $r_{ij}> 0$.
+
+
+
+
+%Let $\boldsymbol{R}^\pi$ be the matrix of pairwise predictions when we apply \eqref{eq:changePrior} to each binary classifier.
+%For Bayes covariant method $\boldsymbol{v}$ the following diagram commutes.
+%
+%\begin{figure}[!h]
+%\centering
+%\begin{tikzcd}
+%	\boldsymbol{R} \arrow[r, "\pi"] \arrow[d, "coupling"] & \boldsymbol{R}^\pi \arrow[d, "coupling"] \\
+%	\boldsymbol{v}(\boldsymbol{R}) \arrow[r, "\pi"] & \boldsymbol{v}(\boldsymbol{R}^\pi) =\boldsymbol{v}(\boldsymbol{R})^\pi
+%\end{tikzcd}
+%\caption{Diagrammatical description of Bayes covariance for a coupling method $\boldsymbol{v}$}
+%\label{fig:bc}
+%\end{figure}
+
+
+\subsection{Inexact desiderata for coupling methods}
+
+\label{sec:des:inexact}
+
+In this section we describe several concepts that lack strict mathematical delineation, but may still be important to consider.
+
+\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
+
+\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
+
+\emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
+
+Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction [\cite[p.~467]{hastie1998classification}]. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
+
+
+%The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
+

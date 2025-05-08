@@ -1,0 +1,77 @@
+\appendix
+
+\section{}
+\label{app:bc1}
+
+In this appendix we provide proofs of statements used in Section \label{sec:bc2}.
+
+\begin{prop}
+	Let $\boldsymbol{v}$ be a coupling method. The following statements are equivalent:
+	\begin{itemize}
+		\item[a)] The coupling method $\boldsymbol{v}$ is Bayes covariant.
+		\item[b)] The coupling method $\boldsymbol{v}$ satisfies $BC_{12}, BC_{23}, \ldots, BC_{K-1,K}$.
+		\item[c)] The coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ for any pair of integers between 1 and $K$ with $i\not= j$.
+	\end{itemize}
+\end{prop}
+\begin{proof}
+	
+\end{proof}
+
+\begin{lem} \label{lem:transitivity}
+	If a coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$.
+\end{lem}
+\begin{proof}
+	Let $\pi$ be a change of priors. From the assumptions we have 
+	\begin{align}
+		\alpha_{ij}(\boldsymbol{v}(\boldsymbol{R})^\pi ) &= \alpha_{ij}(\boldsymbol{v}(\boldsymbol{R}^\pi) ) \\
+		\alpha_{jk}(\boldsymbol{v}(\boldsymbol{R})^\pi ) &= \alpha_{jk}(\boldsymbol{v}(\boldsymbol{R}^\pi) )
+	\end{align}
+	Since $\alpha_{ik}(\boldsymbol{p}) = \alpha_{ij}(\boldsymbol{p})  \alpha_{jk}(\boldsymbol{p})$ it follows that for any $\boldsymbol{R}$
+	\begin{align}
+		\alpha_{ik}(\boldsymbol{v}(\boldsymbol{R})^\pi ) &= \alpha_{ik}(\boldsymbol{v}(\boldsymbol{R}^\pi) )
+	\end{align}
+	which means that the coupling method satisfies $BC_{ik}$.
+\end{proof}
+
+
+\section{}
+\label{app:explicit}
+
+% Note: in this sample, the section number is hard-coded in. Following
+% proper LaTeX conventions, it should properly be coded as a reference:
+
+%In this appendix we prove the following theorem from
+%Section~\ref{sec:textree-generalization}:
+
+In this appendix we provide explicit predictions of coupling methods used in the paper.
+
+
+
+In this appendix we prove the following theorem from
+Section~6.2:
+
+\noindent
+{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
+	not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
+	dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
+	which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
+	respective empirical mutual information values based on the sample
+	$\dataset$. Then
+	\[
+	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
+	\]
+	with equality only if $u$ is identically 0.} \hfill\BlackBox
+
+\section{}
+
+\noindent
+{\bf Proof}. We use the notation:
+\[
+P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
+P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
+\]
+These values represent the (empirical) probabilities of $v$
+taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
+by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
+
+{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}

@@ -1,0 +1,118 @@
+
+
+\section{Experimental results.}
+
+The choice of a coupling method is an important task for practitioners. We aim to help by posing the following interrelated questions 
+
+\begin{itemize}
+\item[a)] Which non-parametric coupling methods shows good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng?
+\item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric method Bayes covariant method which  matches its performance?
+\item[c)] If the answer to b) is negative, is it better to apply change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice?
+\end{itemize}
+
+These questions will be put to test in Sections \ref{sec:exp1}, \ref{sec:exp2}, and \ref{sec:exp3}.
+
+\subsection{Datasets}
+
+It is natural to consider the benchmark datasets used in previous evaluation of coupling methods [\cite{wu2004probability}]. The authors considered altogether seven datasets with number of classes ranging from 3 to 26. For each dataset they extracted 40 pairs of training and testing datasets. Half of these were smaller (300 training samples and 500 testing samples) and the other half was larger (800 training samples and 1000 testing samples). In our experiments we use only the larger pairs. 
+
+As a preliminary step we conducted analysis of linear separability of the datasets. We used ECOS solver in CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
+
+\input{tab-sep.tex}
+
+We can infer that except for 'waveform' dataset, majority of binary problems are linearly separable.
+
+\subsection{Classification methodology}
+
+We have opted to use LDA as a binary classification tool. Its appeal is that it is applicable even for linearly separable datasets, thus obviating additional crossvalidation step incurred by methods that use regularization (e.g. penalized logistic regression or SVM). It usually provides results close to logistic regression [\cite{james2013introduction}].
+
+For preprocessing we first removed features that were constant across classes. Then we projected the data using PCA to the subspace for which corresponding singular values were at least $1/1000$. We used PCA without scaling or centering since the datasets' features were already normalized to interval $[-1,1]$. 
+
+For training LDA we used MASS library in R. We implemented coupling methods in C++ using Eigen library. As arguments to the coupling methods we use log-odds, i.e. instead of $r_{ij}$ they expect
+$$
+\tilde r_{ij} = \log \biggl(\frac{1}{r_{ji}} - 1\biggr).
+$$
+The resulting matrix $\tilde{\boldsymbol{R}}$ is skew symmetric (with the convention of having zeroes on the diagonal).
+
+This parametrization allows for precise representation of extremely small probabilities which are sometimes produced by LDA. These small probabilities might be expected given that a large fraction of binary problems is linearly separable. 
+
+Small probabilities generally have very little effect on the implementation of Bayes covariant methods which generally operate using log-odds. However small probabilities do affect both the method of Wu-Lin-Weng as well sa radial method, because then Assumption \ref{ass:1} fails to hold. 
+
+%\begin{figure}[!ht]
+%	\includegraphics[width = 0.5\linewidth]{graph/dna-lda.pdf}
+%	\includegraphics[width = 0.5\linewidth]{graph/waveform-lda.pdf}
+%	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
+%\end{figure}
+
+\subsection{Experiment 1: Accuracy of parameter-less coupling methods on benchmark datasets} \label{sec:exp1}
+
+The first experiment compares the performance of three parameterless coupling methods
+\begin{itemize}
+\item method of Wu-Lin-Weng, which is widely used in software libraries, and thus can be viewed as an orthodox choice,
+\item normal coupling, which is a Bayes covariant method,
+\item radial coupling, which is not Bayes covariant.
+\end{itemize}
+
+Although previous evaluations of the latter two methods were done in [\cite{vsuch2016bayes}], they used phonetic data for which ground truth may be imprecise. 
+
+\input{tab-multi.tex}
+
+From Table \ref{tab:multi} we can clearly see that Wu-Lin-Weng's method has the best performance. On some datasets it trounces normal coupling method by a wide margin. The edge over radial method is smaller, with the exception of usps dataset where its accuracy is higher by remarkable 30\%. 
+
+
+
+\subsection{Experiment 2: Accuracy of Bayes covariant methods with parameters}
+ \label{sec:exp2}
+
+In the previous experiment we established that the method of Wu-Lin-Weng provides leading performance. However in view of Theorem \ref{thm:K3} the method is not Bayes covariant. 
+
+In this experiment we investigated whether we can (always) find  a Bayes covariant coupling method that could match the performance of Wu-Lin-Weng's method, if we allow it to have (a few) trainable parameters.  Our experiment proceeds in five steps. 
+
+First, we restrict our investigation to the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask. 
+
+As a second step, we consider whether the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ (which do not have any parameters) could bridge the gap. The statistics are shown in Table \ref{tab:step2}. 
+
+\input{tab-step2.tex}
+
+
+We can see that approximately half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. Therefore we should extend search to Bayes covariant methods with trainable parameters.
+
+
+In the third step we define two parameter family of Bayes covariant coupling methods
+\begin{align}
+a_1 \boldsymbol{s}_1 \oplus a_2 \boldsymbol{s}_2 \oplus a_3 \boldsymbol{s}_3,\quad\textrm{where } a_1 + a_2 +a_3 = 1 \label{eq:family}
+\end{align}
+Note that the parameter space of this family is not compact. In order to facilitate computations we opted to conduct a grid search on points in the simplex where the coefficients $a_i$ are nonnegative $a_i \geq 0$.  To further reduce computational burden we selected 1000 three-class subproblems from those where Wu-Lin-Weng's method outperformed normal coupling. The results are shown in Figure \ref{fig:par-bc}.
+
+\begin{figure}[!ht]
+\includegraphics{graphs/exp2-summary.pdf}
+\caption{Results of grid search for parametric Bayes covariant methods matching performance of Wu-Lin-Weng's method}
+\label{fig:par-bc}
+\end{figure}
+
+We can see that only in minority of cases we found a parametric method matching the performance of Wu-Lin-Weng's. This finding comes with caveat that we searched only in the simplex $a_i \geq 0$. 
+
+Therefore as the final step in our investigation we looked whether a parametric Bayes covariant method in family \eqref{eq:family} for parameters \emph{outside} of this simplex could perform better. We conducted another search but this time
+\begin{itemize}
+	\item We searched within a much larger rectangle $D$ containing the simplex $a_i\geq 0$, which in this case is a triangle $T$.
+	\item We used Brier score as a smooth proxy for measuring the quality of multi-class classifier. This score is much smoother than 0-1 score which measures accuracy.
+\end{itemize}
+
+The results are shown in Figure \ref{fig:score}
+
+
+\begin{figure}[!ht]
+	\includegraphics{graphs/exp2-detail.pdf}
+	\caption{Color map indicates the value of Brier score computed for an ensemble of coupling methods on the testing dataset. The vertices triangle indicate the arboreal coupling methods, and the black circle the location of the optimum.}
+	\label{fig:score}
+\end{figure}
+
+We can see that indeed the optimum over the rectangle lies outside of the simplex. Let us compare the resulting accuracy of the optima in $\Delta$ and $D$. The results are shown in Table \ref{tab:step5}.
+
+\input tab-step5.tex
+
+\subsection{Experiment 3: Effect of change of priors}  \label{sec:exp3}
+%\subsection{Wu-Lin-Weng's method}
+
+
+
