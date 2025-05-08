@@ -89,22 +89,20 @@ The intuition behind \eqref{eq:radial} is that if some component of $\hat{\bolds
 
 \subsection{Bayes covariant methods} \label{sec:bc2}
 
-There are many Bayes covariant methods. In this section we will show that 
-\begin{itemize} 
-	\item arboreal coupling methods are Bayes covariant,
-	\item Bayes covariant methods can be ensembled,
-	\item describe all Bayes covariant methods for $K=3$.
-\end{itemize}
+There are many Bayes covariant methods. The simplest example are arboreal coupling methods. They are not canonical, but with the help of ensembling, one can construct also canonical coupling methods. 
 
-We start by defining the property $BC_{ij}$ (the notation stands for \emph{Bayes covariant when restricted to classes} $i$ and $j$) of a coupling method. A coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ if for any change of priors $\pi$ and any  pairwise data $\boldsymbol{R}$ the odds of classes $C_i$ to $C_j$ predicted by $\boldsymbol{v}(\boldsymbol{R}^\pi)$ and $\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi$ are equal. 
+A very helpful aid to study Bayes covariant methods is property $BC_{ij}$ (the notation stands for \emph{Bayes covariant when restricted to classes} $i$ and $j$). A coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ if for any change of priors $\pi$ and any  pairwise data $\boldsymbol{R}$ the odds of classes $C_i$ to $C_j$ predicted by $\boldsymbol{v}(\boldsymbol{R}^\pi)$ and $\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi$ are equal. Using  notation for odds from Section \ref{sec:one-vs-one}, one has
+\begin{align}
+	\alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R}^\pi) \bigr) = \alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R})^\pi \bigr)
+\end{align}
 
 Let us list some easy to verify properties of this concept:
 
 \begin{itemize}
-	\item[a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$,
-	\item[b)] if a coupling method satisfies $BC_{12}, BC_{23}, \ldots, BC_{(K-1),K}$ then it is Bayes covariant,
-	\item[c)] if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant,
-	\item[d)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$ (see Proposition \ref{lem:transitivity}).
+	\item[a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$ (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
+	%\item[b)] if a coupling method satisfies $BC_{12}, BC_{23}, \ldots, BC_{(K-1),K}$ then it is Bayes covariant (see Proposition \ref{prop:bcprop}),
+	\item[b)] if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
+	\item[c)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$ (see Lemma \ref{lem:transitivity}).
 \end{itemize}
 
 Now we are ready to prove the our first result.
@@ -114,7 +112,7 @@ Any arboreal method is Bayes covariant.
 \end{prop}
 \begin{proof}
 
-An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on the classes satisfies $BC_{ij}$ whenever the edge $C_iC_j$ belongs to $T$. It follows using from b) and d) that the method is Bayes covariant.
+An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on the classes satisfies $BC_{ij}$ whenever the edge $C_iC_j$ belongs to $T$. Since any pair of vertices is connected by a path, it follows from transitivity of $BC_{ij}$ (property c) that the assumption of b) holds and thus the coupling method is Bayes covariant.
 	
 	
 %	

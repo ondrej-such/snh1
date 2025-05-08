@@ -3,7 +3,7 @@
 Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature space $X$. In a multi-class classification problem we are provided with the prior probabilities $\Pi = (P_1, \ldots, P_k)$ of each class. Given $x$ in $X$ we aim to find the probability that $x$ belongs to $i$-th class. 
 
 
-\subsection{One-vs-on classification}
+\subsection{One-vs-one classification} \label{sec:one-vs-one}
 
 An exact solution to a classification problem is provided by the Bayes classifier. To simplify the discussion we will make the following assumption.
 
@@ -103,9 +103,10 @@ The system is usually inconsistent and additional assumptions are needed to cons
 
 \subsection{Exact desiderata on coupling method} \label{sec:des:exact}
 
-Let us outline what kind of conditions may be desirable in a coupling method. In %Section \ref{sec:des:exact} 
+%Let us outline what kind of exact conditions may be desirable in a coupling method. 
+In %Section \ref{sec:des:exact} 
 this section
- we will describe exact mathematical criteria, while in section \ref{sec:des:inexact} we shall describe more flexible properties.
+ we will describe exact mathematical criteria that one may impose on a coupling method, while in section \ref{sec:des:inexact} we shall describe more flexible properties.
 
 %\begin{itemize}
 %\item a coupling method should should always provide a unique solution, at least when all $r_{ij}>0$,
