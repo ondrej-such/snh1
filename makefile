@@ -55,6 +55,9 @@ graphs/exp2-detail.pdf: exp2-detail.R graphs
 graphs/exp2-summary.pdf: exp2-summary.R graphs
 		Rscript -e "source('exp2-summary.R')"
 
+graphs/exp1-plot1.pdf: exp1-plot1.R
+		Rscript -e "source('exp1-plot1.R')"
+
 tab-sep.tex: data/separation.csv
 		Rscript -e "source('tab-sep.R')"
 
@@ -73,7 +76,7 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-multi.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf
+paper.pdf: paper.tex tab-sep.tex tab-multi.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
 		pdflatex paper.tex
 
 graph1.pdf graph2.pdf: graph12.R
