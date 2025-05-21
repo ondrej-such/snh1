@@ -55,7 +55,7 @@ graphs/exp2-detail.pdf: exp2-detail.R graphs
 graphs/exp2-summary.pdf: exp2-summary.R graphs
 		Rscript -e "source('exp2-summary.R')"
 
-graphs/exp1-plot1.pdf: exp1-plot1.R
+graphs/exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv
 		Rscript -e "source('exp1-plot1.R')"
 
 tab-sep.tex: data/separation.csv
