@@ -26,7 +26,7 @@ We can infer that except for 'waveform' dataset, majority of binary problems are
 
 We have opted to use LDA as a binary classification tool. Its appeal is that it is applicable even for linearly separable datasets, thus obviating additional crossvalidation step incurred by methods that use regularization (e.g. penalized logistic regression or SVM). It usually provides results close to logistic regression [\cite{james2013introduction}].
 
-For preprocessing we first removed features that were constant across classes. Then we projected the data using PCA to the subspace for which corresponding singular values were at least $1/1000$. We used PCA without scaling or centering since the datasets' features were already normalized to interval $[-1,1]$. 
+For preprocessing we first removed features that were constant across classes. Then we projected the data using PCA to the subspace for which corresponding singular values were $> tol$, where $tol$ is a hyper-parameter of an experiment. We used PCA without scaling or centering since the datasets' features were already normalized to interval $[-1,1]$. 
 
 For training LDA we used MASS library in R. We implemented coupling methods in C++ using Eigen library. As arguments to the coupling methods we use log-odds, i.e. instead of $r_{ij}$ they expect
 $$
@@ -61,7 +61,7 @@ From Table \ref{tab:multi} we can clearly see that Wu-Lin-Weng's method has the 
 
 \begin{figure}
 	\includegraphics{graphs/exp1-plot1.pdf}
-	\caption{0-1 score evaluated for different datasets}
+	\caption{0-1 score plotted against the logarithm of $tol$ hyper-parameter, evaluated for different datasets.}
 	\label{fig:exp1-plot1}
 \end{figure}
 
