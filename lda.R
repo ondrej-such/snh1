@@ -509,11 +509,12 @@ lda_multi <- function(dfs, tols, score = "acc") {
         # Now, let's do Hinton's oracle
         mr <- sapply(1:N, function(i) {
             true_cl <- dft$class_id[i]
-            v <- r[true_cl,,i]
+            v <- r[,true_cl,i]
             maxv <- max(v)
             v1 <- exp(v - maxv)
             v1 / sum(v1)
         }) |> t()
+        print(dim(mr))
         scores <- score_matrix(mr, dft$class_id, score)
         multi <- rbind(multi,
             data.frame(n = n, K = K, method = "Hinton's oracle", correct =
@@ -537,8 +538,8 @@ write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc"
             lda_multi(dfs, tols = tol, score = score)$multi
         }) |> list_rbind()
     }) |> list_rbind() |> 
-        group_by(dataset, tol, method) |> summarize(acc = mean(correct), correct = sum(correct)) |>
-        pivot_wider(names_from = "method", values_from = "correct")
+        group_by(dataset, tol, method) |> summarize(acc = mean(correct)) |>
+        pivot_wider(names_from = "method", values_from = "acc")
     df$score = score
     write.csv(df, file = sprintf("data/multi-%s.csv", score), row.names = F, quote = F)
     df
