@@ -27,10 +27,10 @@ unzips: ${ZIP_FILES}
 	mkdir unzips/n300
 	mkdir unzips/n800
 	for F in ${ZIP300}; do 
-		unzip -j $${F}  -d unzips/n300 
+		unzip -n -j $${F}  -d unzips/n300 
 	done
 	for F in ${ZIP800}; do 
-		unzip -j $${F}  -d unzips/n800 
+		unzip -n -j $${F}  -d unzips/n800 
 	done
 
 data: unzips

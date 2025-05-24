@@ -4,6 +4,7 @@ library(CalibratR)
 suppressPackageStartupMessages(library(MASS))
 library(dplyr)
 suppressPackageStartupMessages(library(tidyr))
+library(stringr)
 
 files <- c( "dna", 
             "letter", 
@@ -12,6 +13,12 @@ files <- c( "dna",
             "segment", 
             "usps", 
             "waveform")
+
+dataset_names <- function() {
+    fs <- dir("unzips/n800", pattern = "*.t-\\d*")
+    m1 <- str_match(fs, "(.*).scale.t-(\\d+)")
+    unique(m1[,2])
+}
 
 make_folds <- function(grp, f = 5) {
     gs <- unique(grp)
@@ -532,7 +539,7 @@ lda_multi <- function(dfs, tols, score = "acc") {
 
 write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc") {
     plan(multicore, workers = workers)
-    df <- map(files, function(f) {
+    df <- map(dataset_names(), function(f) {
         future_map(0:(runs - 1), function (r) {
             dfs <- read_wlws(800, f, r)
             lda_multi(dfs, tols = tol, score = score)$multi
@@ -548,7 +555,7 @@ write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc"
 
 write_triples <- function(runs = 20, workers = 11) {
     plan(multicore, workers = workers)
-    df <- map(files, function(f) {
+    df <- map(dataset_names(), files, function(f) {
         future_map(0:(runs - 1), function (r) {
             dfs <- read_wlws(800, f, r)
             df1 <- lda_triples(dfs) |> 
