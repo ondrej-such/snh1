@@ -78,6 +78,8 @@ endif
 
 paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
 		pdflatex paper.tex
+		bibtex paper
+		pdflatex paper.tex
 
 graph1.pdf graph2.pdf: graph12.R
 		Rscript -e "source('graph12.R')"
