@@ -75,12 +75,26 @@ read_wlws <- function(nsamp, dataset, i) {
         r1 <- read_wlw(name1)
         name2 <- sub("-", ".t-", name1)
         r2 <- read_wlw(name2)
+        normalized <- F
 
         if ((r1$min_col != r2$min_col) | (r1$max_col != r2$max_col)) {
             mc = min(r1$min_col, r2$min_col)
             xc = max(1 + r1$ncol - r1$min_col, 1 + r2$ncol - r2$min_col)
             r1 <- read_wlw(name1, min_col = mc, max_col = xc)
             r2 <- read_wlw(name2, min_col = mc, max_col = xc)
+        }
+        
+        for (i in 2:ncol(r1$df)) {
+            r <- range(r1$df[,i])
+            dr <- r[2] - r[1]
+            if (max(abs(r)) > 1 & dr > 0) {
+                r1$df[,i] <- (r1$df[,i] - r[1]) / dr
+                r2$df[,i] <- (r2$df[,i] - r[1]) / dr
+                normalized <- T
+            }
+        }
+        if (normalized) {
+            print("Some features were normalized to interval [0,1]")
         }
         list(train = r1$df, test = r2$df, n = nsamp, dataset = dataset, run = i)
 }
