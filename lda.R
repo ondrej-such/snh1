@@ -538,8 +538,9 @@ write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc"
             lda_multi(dfs, tols = tol, score = score)$multi
         }) |> list_rbind()
     }) |> list_rbind() |> 
-        group_by(dataset, tol, method) |> summarize(acc = mean(correct)) |>
-        pivot_wider(names_from = "method", values_from = "acc")
+        group_by(dataset, tol, method) |> summarize(acc = mean(correct)) 
+# |>
+ #       pivot_wider(names_from = "method", values_from = "acc")
     df$score = score
     write.csv(df, file = sprintf("data/multi-%s.csv", score), row.names = F, quote = F)
     df

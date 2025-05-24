@@ -76,7 +76,7 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-multi.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
 		pdflatex paper.tex
 
 graph1.pdf graph2.pdf: graph12.R
