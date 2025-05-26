@@ -118,7 +118,7 @@ An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on t
 
 Given several Bayes covariant methods one can form  their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make the construction explicit.
 
-Suppose first that real numbers $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabibilistic multi-class classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_i a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
+Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multi-class classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_i a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
 \begin{align*}
  	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_M \boldsymbol{v}_M\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(x),
 \end{align*}
@@ -137,11 +137,12 @@ $$
 o_m = \alpha_{ij}(\boldsymbol{v}_m(\boldsymbol{R})).
 $$
 
-It follows from the definition of linear combination of coupling methods that the odds of $C_i$ to $C_j$ for $\boldsymbol{e}$ are
+From the definition of linear combination of coupling methods that the odds of $C_i$ to $C_j$ for $\boldsymbol{e}$ are
 \begin{align}
 \prod_m o_m^{a_m}.
 \end{align}
-It follows that the odds of $\boldsymbol{e}^\pi$ are 
+
+It follows from \eqref{def:prior:effect} that the odds of $\boldsymbol{e}^\pi$ are 
 \begin{align}
 \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}.
 \end{align}
@@ -150,14 +151,14 @@ Let us now use Bayes covariance of $\boldsymbol{v}_i$.
 We have
 \begin{align}
 	\biggl(\bigoplus_m a_m \boldsymbol{v}_m\biggr)(\boldsymbol{R^\pi}) & \propto 
-	\boldsymbol{v}_1^{a_1}(\boldsymbol{R}^\pi) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(\boldsymbol{R}^\pi) =  \bigodot_m  (\boldsymbol{v}_m^\pi(\boldsymbol{R}))^{a_m} \\
+	\boldsymbol{v}_1^{a_1}(\boldsymbol{R}^\pi) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(\boldsymbol{R}^\pi) =  \bigodot_m  (\boldsymbol{v}_m^\pi(\boldsymbol{R}))^{a_m}. \\
 %	&= \frac{P'_i}{P_i} \frac{P_j}{P'_j} \prod_m o_m^{a_m}
 \end{align}
-
-It follows that the odds of $C_i$ to $C_j$ for $\bigoplus_m a_m \boldsymbol{v}_m$ are 
+Therefore the odds of $C_i$ to $C_j$ for $\bigoplus_m a_m \boldsymbol{v}_m$ are 
 \begin{align}
 \biggl(\frac{P'_i}{P_i} \frac{P_j}{P'_j} \biggr)^{\sum a_m} \prod_m o_m^{a_m}.
 \end{align}
+
 Clearly, under the assumption $\sum_m a_m = 1$, the classifier $\bigoplus_m a_m \boldsymbol{v}_m$ satisfies $BC_{ij}$. Since this holds for any $i\not=j$,  it follows that $\boldsymbol{e}$ is Bayes covariant.
 \end{proof}
 

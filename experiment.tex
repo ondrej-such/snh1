@@ -1,16 +1,4 @@
-
-
-\section{Experimental results.}
-
-The choice of a coupling method is an important task for practitioners. We aim to help by posing the following interrelated questions 
-
-\begin{itemize}
-\item[a)] Which non-parametric coupling methods shows good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng?
-\item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric method Bayes covariant method which  matches its performance?
-\item[c)] If the answer to b) is negative, is it better to apply change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice?
-\end{itemize}
-
-These questions will be put to test in Sections \ref{sec:exp1}, \ref{sec:exp2}, and \ref{sec:exp3}.
+\section{Methodology.}
 
 \subsection{Datasets}
 
@@ -44,6 +32,20 @@ Small probabilities generally have very little effect on the implementation of B
 %	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
 %\end{figure}
 
+\section{Experimental results.}
+
+The choice of a coupling method is an important task for practitioners. We aim to help by posing the following interrelated questions 
+
+\begin{itemize}
+\item[a)] Which non-parametric coupling methods shows good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng?
+\item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric method Bayes covariant method which  matches its performance?
+\item[c)] If the answer to b) is negative, is it better to apply change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice?
+\end{itemize}
+
+These questions will be put to test in Sections \ref{sec:exp1}, \ref{sec:exp2}, and \ref{sec:exp3}.
+
+
+
 \subsection{Experiment 1: Accuracy of parameter-less coupling methods on benchmark datasets} \label{sec:exp1}
 
 The first experiment compares the performance of three parameterless coupling methods
@@ -60,7 +62,7 @@ Although previous evaluations of the latter two methods were done in [\cite{vsuc
 From Figure \ref{fig:exp1-plot1} we can clearly see that Wu-Lin-Weng's method has the best performance. On some datasets it trounces normal coupling method by a wide margin. The edge over radial method is smaller, with the exception of usps dataset where its accuracy is higher by remarkable 30\%. 
 
 \begin{figure}
-	\includegraphics{graphs/exp1-plot1.pdf}
+	\includegraphics{graphs/exp1-plot2.pdf}
 	\caption{0-1 score plotted against the logarithm of $tol$ hyper-parameter, evaluated for different datasets.}
 	\label{fig:exp1-plot1}
 \end{figure}
@@ -70,23 +72,24 @@ From Figure \ref{fig:exp1-plot1} we can clearly see that Wu-Lin-Weng's method ha
 
 In the previous experiment we established that the method of Wu-Lin-Weng provides leading performance. However in view of Theorem \ref{thm:K3} the method is not Bayes covariant. 
 
-In this experiment we investigated whether we can (always) find  a Bayes covariant coupling method that could match the performance of Wu-Lin-Weng's method, if we allow it to have (a few) trainable parameters.  Our experiment proceeds in five steps. 
+In this experiment we investigated whether we can (always) find  a Bayes covariant coupling method that could match the performance of Wu-Lin-Weng's method. We investigate  the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask if we allow it to have (a few) trainable parameters.  Our experiment has three parts. 
 
-First, we restrict our investigation to the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask. 
 
-As a second step, we consider whether the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ (which do not have any parameters) could bridge the gap. The statistics are shown in Table \ref{tab:step2}. 
+In the first part, we consider whether four parameterless Bayes covariant method could match the performance of Wu-Lin-Weng method. In our comparison we include the normal method, as well as the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$. The statistics are shown in Table \ref{tab:step2}. 
 
 \input{tab-step2.tex}
 
 
-We can see that approximately half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. Therefore we should extend search to Bayes covariant methods with trainable parameters.
+We can see that in slightly less than half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. Therefore next we will extend search to Bayes covariant methods with trainable parameters.
 
 
-In the third step we define two parameter family of Bayes covariant coupling methods
+Let us define two parameter family of Bayes covariant coupling methods
 \begin{align}
 a_1 \boldsymbol{s}_1 \oplus a_2 \boldsymbol{s}_2 \oplus a_3 \boldsymbol{s}_3,\quad\textrm{where } a_1 + a_2 +a_3 = 1 \label{eq:family}
 \end{align}
-Note that the parameter space of this family is not compact. In order to facilitate computations we opted to conduct a grid search on points in the simplex where the coefficients $a_i$ are nonnegative $a_i \geq 0$.  To further reduce computational burden we selected 1000 three-class subproblems from those where Wu-Lin-Weng's method outperformed normal coupling. The results are shown in Figure \ref{fig:par-bc}.
+Note that the parameter space of this family is not compact. 
+
+In the second part of our experiment we  conduct a grid search on points in the simplex where the coefficients $a_i$ are nonnegative $a_i \geq 0$.  To further reduce computational burden we selected 1000 three-class subproblems from those where Wu-Lin-Weng's method outperformed normal coupling. The summary statistics are shown in Figure \ref{fig:par-bc}.
 
 \begin{figure}[!ht]
 \includegraphics{graphs/exp2-summary.pdf}

@@ -1,0 +1,13 @@
+\section{Discussion}
+
+Let us discuss our findings with the focus on applications.
+
+One-vs-one classification framework is commonly used by machine learning practitioners, for instance whenever one uses radial basis function SVM implemented in  standard libraries. Since those method rely on coupling method of Wu-Lin-Weng, one is faced with the decision how to handle differing predictions when priors change.
+
+Of course, one option is to use other classification models. For instance, random forests provide a flexible alternative. Nevertheless, RBF SVM are still one of the best choices for classification tasks with non-linear boundaries. 
+
+We have shown in Experiment 1, that substituting parameterless Bayes covariant method for Wu-Lin-Weng coupling methods incurs penalty in accuracy metric. 
+
+In our Experiment 2 we showed that the penalty can be often, but not always, eliminated when one opts for one of the parametric Bayes covariant methods.
+
+Finally, in Experiment 3 we showed that the impact of the 

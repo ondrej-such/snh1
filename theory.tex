@@ -8,7 +8,7 @@ Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=
 An exact solution to a classification problem is provided by the Bayes classifier. To simplify the discussion we will make the following assumption.
 
 \begin{assumption} \label{ass:1}
-For all $x$ in the feature space we have $d_i(x) > 0$.
+For all $x$ in the feature space we have $d_i(x) P_i > 0$.
 \end{assumption}
 
 
@@ -171,7 +171,7 @@ D \propto (p_1, \ldots, p_K)
 \end{align}
 then we define $D^\pi$ by requiring 
 \begin{align}
-D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr).
+D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{def:prior:effect}
 \end{align}
 We now say that a method if Bayes covariant if
 \begin{align}

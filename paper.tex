@@ -58,7 +58,7 @@
 
 \begin{document}
 
-\title{On change of priors in one-vs-one classification methods}
+\title{On selection of a coupling method to cope with change of priors in one-vs-one classification }
 
 \author{\name Ondrej Šuch \email ondrejs@savbb.sk \\
        \addr Matematický ústav SAV\\
@@ -71,9 +71,17 @@
        Žilina, 010 26, Slovakia
        \AND
        \name Ali Haidar \email haidar@savbb.sk \\
+       \begin{minipage}[t]{0.45\textwidth}
        \addr Matematický ústav SAV\\
        Ďumbierska 1\\
        Banská Bystrica, 974 01, Slovakia
+       \end{minipage}\hfill
+       \begin{minipage}[t]{0.45\textwidth}
+       \addr Fakulta matematiky, fyziky a informatiky\\
+       Univerzity Komenského \\
+       Mlynská dolina F1 \\
+       Bratislava, 842 48, Slovakia
+       \end{minipage}
        }
 
 \editor{My editor}
@@ -92,15 +100,13 @@
 
 %\blindmathpaper
 
-Distribution shift is an important problem facing machine-learning practitioners. The shift is almost inevitable since most real-worlds environments evolve over time. One particular way a distribution shift may manifest in classification problems  is when the class priors change. To make a concrete example, imagine a driver assistance system recognizing traffic signs. The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city. This of course affects classification, and a good classification system will be able to improve its performance when supplied with a new set of more accurate class priors. 
+Distribution shift is an important problem facing machine-learning practitioners  [\cite{zhang2023dive, sugiyama2007covariate}].  One particular way a distribution shift may manifest in classification problems  is when the class priors change between the training set used to train a model, and the data distribution in deployment - the so called label shift [\cite{vsipka2022hitchhiker,lipton2018detecting}]. To make a concrete example, consider a driver assistance system recognizing traffic signs. Suppose a speed limit sign was maliciously altered to indicate 80mph limit instead of 30mph. To avoid being fooled by the alteration, the system could utilize priors. The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city. It is very unlikely to encounter 80mph limit in a city setting. By taking into account the city priors, a driver assistance is likely to make the proper classification. In general a good classification system will be able to improve its performance when supplied with a new set of class priors that correspond to the true distribution of classes. 
 
-Change of priors can be effectively dealt with in probabilistic classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} what should happen  to the prediction of the  Bayes classifier.  In practice we assume that a trained classifier closely approximates the Bayes classifier. Therefore we can make adjustment to our prediction by applying the same transformation of posterior as would happen with the Bayes classifier. 
+Change of priors can be effectively dealt with in probabilistic classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} what should happen  to the prediction of the  Bayes classifier when priors change.  In practice we assume that a trained classifier closely approximates the Bayes classifier. Therefore we can make adjustment to our prediction by applying the same transformation of posterior as would happen with the Bayes classifier. 
 
-There is a subtle issue with this approach  when handling probabilistic classifiers arising in one-vs-one classification framework.   One-vs-one classification is a natural framework to approach  multi-class classification by reducing it to a series of binary classification problems. One then deduces the multi-class decision by aggregating decisions for the binary problems. Since the procedure is two-step, there is possibility to apply adjustment of priors either during the first step, or the second step, and it is not clear what should be the preferred course of action.
+There is a subtle issue with this approach  when handling probabilistic classifiers arising in one-vs-one classification framework.   One-vs-one classification is a two-step framework to approach  multi-class classification. In the first step it reduces the multiclass problem to a series of binary classification problems. In the second step it deduces the multi-class decision by aggregating decisions for the binary problems. Since the procedure is two-step, there is a possibility to apply adjustment of priors either to the probabilistic distributions obtained after the first step, or after the second step. It is not clear what should be the preferred course of action and this problem motivates our paper.
 
-One-vs-one classification is commonly by machine learning practitioners when they opt to use support vector classifiers or support vector machines. Why is that users opt one-vs-one classification when there are multi-class extensions of SVM such as the proposed by Crammer-Singer?  One possible reason is that there is no \emph{canonical} extension. A second reason is that the multi-class optimization problems have to deal with multiple 
-
-A key step in probabilistic one-vs-one modelling is the aggregation of results of individual binary classifiers - so-called \emph{coupling method}. The most commonly used coupling method is that proposed by Wu-Lin-Weng. As noted in [\cite{dohau}], the method is one of several non-canonical decisions used in multi-class SVM modelling. The goal of this paper is to compare its behavior with canonical methods. 
+The focus of efforts is in presenting and evaluating the methods to aggregate binary predictions. We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. Section is 3 is devoted to presenting different classes that one 
 
 
 \input theory.tex
@@ -108,6 +114,8 @@ A key step in probabilistic one-vs-one modelling is the aggregation of results o
 \input coupling.tex
 
 \input experiment.tex
+
+\input discussion.tex
 
 % Acknowledgements and Disclosure of Funding should go at the end, before appendices and references
 
