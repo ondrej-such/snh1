@@ -65,7 +65,7 @@
        Ďumbierska 1\\
        Banská Bystrica, 974 01, Slovakia
        \AND
-       \name Peter Novotný \email peter.novotny@uniza.sk \\
+       \name Peter Novotný \email peter.novotny@fri.uniza.sk \\
        \addr Fakulta informatiky a riadenia\\
        Žilinská Univerzita v Žiline\\
        Žilina, 010 26, Slovakia
@@ -106,7 +106,10 @@ Change of priors can be effectively dealt with in probabilistic classifiers. The
 
 There is a subtle issue with this approach  when handling probabilistic classifiers arising in one-vs-one classification framework.   One-vs-one classification is a two-step framework to approach  multi-class classification. In the first step it reduces the multiclass problem to a series of binary classification problems. In the second step it deduces the multi-class decision by aggregating decisions for the binary problems. Since the procedure is two-step, there is a possibility to apply adjustment of priors either to the probabilistic distributions obtained after the first step, or after the second step. It is not clear what should be the preferred course of action and this problem motivates our paper.
 
-The focus of efforts is in presenting and evaluating the methods to aggregate binary predictions. We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. Section is 3 is devoted to presenting different classes that one 
+
+Our approach to the problem is to evaluate practical performance of different methods to aggregate binary predictions. Such methods -- called coupling methods -- first appeared in work of \cite{refregier1991probabilistic}. Many authors followed with alternative proposals [\cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned, wu2004probability, vsuch2015new, vsuch2016bayes}].
+
+We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. We pay special focus to methods that commute with change of priors -- Bayes covariant methods, since such methods provide an unexpected, and elegant solution to our problem. We introduce new coupling methods by forming weighted ensembles, which we prove are also Bayes covariant when a normalizing condition on weights hold (Proposition \ref{prop:ensemble}).  In Section 4 we summarize our methodology. The results of our experiments are described in Section 5. In Section 6 we summarize our findings and provide practical guidance to solving the problem.
 
 
 \input theory.tex
