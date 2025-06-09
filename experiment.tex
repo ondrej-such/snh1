@@ -62,7 +62,7 @@ Although previous evaluations of the latter two methods were done in [\cite{vsuc
 From Figure \ref{fig:exp1-plot1} we can clearly see that Wu-Lin-Weng's method has the best performance. On some datasets it trounces normal coupling method by a wide margin. The edge over radial method is smaller, with the exception of usps dataset where its accuracy is higher by remarkable 30\%. 
 
 \begin{figure}
-	\includegraphics{graphs/exp1-plot2.pdf}
+	\includegraphics{graphs/exp1-plot1.pdf}
 	\caption{0-1 score plotted against the logarithm of $tol$ hyper-parameter, evaluated for different datasets.}
 	\label{fig:exp1-plot1}
 \end{figure}
@@ -70,26 +70,22 @@ From Figure \ref{fig:exp1-plot1} we can clearly see that Wu-Lin-Weng's method ha
 \subsection{Experiment 2: Accuracy of Bayes covariant methods with parameters}
  \label{sec:exp2}
 
-In the previous experiment we established that the method of Wu-Lin-Weng provides leading performance. However in view of Theorem \ref{thm:K3} the method is not Bayes covariant. 
+The method of Wu-Lin-Weng provides leading performance among the \emph{non-parametric} methods examined in the previous experiment. However in view of Theorem \ref{thm:K3} the Wu-Lin-Weng's method is not Bayes covariant. 
 
-In this experiment we investigated whether we can (always) find  a Bayes covariant coupling method that could match the performance of Wu-Lin-Weng's method. We investigate  the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask if we allow it to have (a few) trainable parameters.  Our experiment has three parts. 
+In this experiment we investigated whether we can (always) find  a (possibly \emph{parametric}) Bayes covariant coupling method that could match the performance of Wu-Lin-Weng's method. We investigate  the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to asks.  Our experiment has three parts. 
 
 
-In the first part, we consider whether four parameterless Bayes covariant method could match the performance of Wu-Lin-Weng method. In our comparison we include the normal method, as well as the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$. The statistics are shown in Table \ref{tab:step2}. 
+In the first part, we consider whether four parameterless Bayes covariant method could match the performance of Wu-Lin-Weng method. In our comparison we include the normal method, as well as the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$. We consider all possible triples of classes in all datasets. The resulting statistics are shown in Table \ref{tab:step2}. 
 
 \input{tab-step2.tex}
 
-
-We can see that in slightly less than half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. Therefore next we will extend search to Bayes covariant methods with trainable parameters.
-
-
-Let us define two parameter family of Bayes covariant coupling methods
+We can see that in slightly less than half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. Therefore we will extend search to Bayes covariant methods with trainable parameters. Let us define two parameter family of Bayes covariant coupling methods
 \begin{align}
 a_1 \boldsymbol{s}_1 \oplus a_2 \boldsymbol{s}_2 \oplus a_3 \boldsymbol{s}_3,\quad\textrm{where } a_1 + a_2 +a_3 = 1 \label{eq:family}
 \end{align}
-Note that the parameter space of this family is not compact. 
+We note that the parameter space of this family (the hyperplane $a_1 + a_2 + a_3 =1$) is not compact. 
 
-In the second part of our experiment we  conduct a grid search on points in the simplex where the coefficients $a_i$ are nonnegative $a_i \geq 0$.  To further reduce computational burden we selected 1000 three-class subproblems from those where Wu-Lin-Weng's method outperformed normal coupling. The summary statistics are shown in Figure \ref{fig:par-bc}.
+In the second part of our experiment we  conduct a grid search for methods matching performance of Wu-Lin-Weng method. We examine methods for which the coefficients $a_i$ are nonnegative $a_i \geq 0$.  To reduce computational burden we selected 1000 random chosen three-class subproblems from those where Wu-Lin-Weng's method outperformed normal coupling. The summary statistics are shown in Figure \ref{fig:par-bc}.
 
 \begin{figure}[!ht]
 \includegraphics{graphs/exp2-summary.pdf}
@@ -99,7 +95,7 @@ In the second part of our experiment we  conduct a grid search on points in the 
 
 We can see that only in minority of cases we found a parametric method matching the performance of Wu-Lin-Weng's. This finding comes with caveat that we searched only in the simplex $a_i \geq 0$. 
 
-Therefore as the final step in our investigation we looked whether a parametric Bayes covariant method in family \eqref{eq:family} for parameters \emph{outside} of this simplex could perform better. We conducted another search but this time
+Therefore in the third part of our experiment  we looked whether a parametric Bayes covariant method in family \eqref{eq:family} for parameters \emph{outside} of this simplex could perform better. We conducted another search but this time
 \begin{itemize}
 	\item We searched within a much larger rectangle $D$ containing the simplex $a_i\geq 0$, which in this case is a triangle $T$.
 	\item We used Brier score as a smooth proxy for measuring the quality of multi-class classifier. This score is much smoother than 0-1 score which measures accuracy.
