@@ -763,7 +763,7 @@ eval_scores <- function(bcp, W = gen_W(qL = length(bcp$pl)), score = "brier") {
     list(scores = scores, W = W, score = score)
 }
 
-par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
+par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100, seed = 123) {
     df <- read.csv("data/triples.csv")
     # df1 <- df |> mutate(m = pmax(normal, omit12, omit13, omit23)) |> 
     df1 <- df |>  filter(wlw2 > normal)
@@ -773,6 +773,7 @@ par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100) {
     W <- gen_W2(div)
 
     #df2 <- map(1:nrow(df1), function(i) {
+    set.seed(seed)
     plan(multicore, workers = workers)
     rows <- if (nrow(df1) > limit) {
         sample(1:nrow(df1), limit)
