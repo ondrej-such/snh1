@@ -572,15 +572,15 @@ write_triples <- function(runs = 20, workers = 11) {
 #
 gen_W <- function(n = 200, div = 100, qL = 4) {
   sapply( 1:n,  function(i) { 
-    s <- sample(0:div , qL - 1, replace = T) |> 
-            sort()
-    if (qL == 2)
-        c(s[1], div - s[1]) / div
-    else 
-        c(s[1], 
-        sapply(1:(qL - 2), function(i) (s[i + 1] - s[i])),
-        (div - s[qL - 1])) / div
-    })  |> t()
+  s <- sample(0:div , qL - 1, replace = T) |> 
+       sort()
+  if (qL == 2)
+      c(s[1], div - s[1]) / div
+  else 
+      c(s[1], 
+      sapply(1:(qL - 2), function(i) (s[i + 1] - s[i])),
+      (div - s[qL - 1])) / div
+  })  |> t()
 }
 
 
@@ -774,11 +774,16 @@ par_triples <- function(div = 10, score = "acc", workers = 12, limit = 100, seed
 
     #df2 <- map(1:nrow(df1), function(i) {
     set.seed(seed)
-    plan(multicore, workers = workers)
     rows <- if (nrow(df1) > limit) {
         sample(1:nrow(df1), limit)
     } else 1:nrow(df1)
-    df2 <- future_map(rows, function(i) {
+    cv_triples(df1[rows,], W = W, score = score, workers = workers, seed = seed)
+}
+
+cv_triples <- function(df1, W, score = "acc", workers = 12, seed = 123) {
+    plan(multicore, workers = workers)
+    df2 <- future_map(1:nrow(df1), function(i) {
+        set.seed(seed + i)
         dfs <- read_wlws(800, df1$dataset[i], df1$run[i]) 
         bcp <- get_bcp(dfs, df1$i[i], df1$j[i], df1$k[i])
         acc <- eval_scores(bcp, W = W, score = "acc")$scores
