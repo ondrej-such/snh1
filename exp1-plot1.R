@@ -10,6 +10,7 @@ df$method = if_else(df$method == "wlw2", "Wu-Lin-Weng", df$method)
 plt1 <- ggplot(df, aes(x = log2(tol), 
                        y = acc, 
                        group = method, 
+                       linetype = method,
                        color = method )) + 
   geom_line() + facet_wrap(~dataset) + 
   scale_x_continuous(breaks = c(-12, -8, -4)) +
