@@ -48,14 +48,18 @@ data/multi-acc.csv: data lda.R
 
 data/triples.csv: data lda.R
 		Rscript -e "source('lda.R'); write_triples(1)"
+
+data/bc3_%.csv: data lda.R
+		Rscript -e "source('lda.R');pt<-par_triples(limit = 1000, score =
+		'$*');print(class(pt));print(class(pt\$$df));write.csv(pt\$$df, '$@', quote=F, row.names=F)"
  
-graphs/exp2-detail.pdf: exp2-detail.R graphs
+graphs/exp2-detail.pdf: exp2-detail.R graphs theme.R
 		Rscript -e "source('exp2-detail.R')"
 
-graphs/exp2-summary.pdf: exp2-summary.R graphs
+graphs/exp2-summary.pdf: exp2-summary.R graphs theme.R
 		Rscript -e "source('exp2-summary.R')"
 
-graphs/exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv
+graphs/exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
 		Rscript -e "source('exp1-plot1.R')"
 
 tab-sep.tex: data/separation.csv
@@ -76,7 +80,7 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
