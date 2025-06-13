@@ -1011,7 +1011,7 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
     dft <- dfs$test
     N <- nrow(dft)
     t2 <- truth[idx]
-    q <- sapply(1:length(t2), function(k) {
+    tuple_truth <- sapply(1:length(t2), function(k) {
             which(t2[k] == tuple) 
         })
 
@@ -1029,18 +1029,23 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
             #w[which(n == triple)] = (1 + add)
             # p <- w * p
             wp <- p
-            old_predictions <- apply(p, 1, which.max)
-            wp[, it] = (1 + add) * wp[,it]
+            old_predictions <- apply(p[idx,], 1, which.max)
+            wp[idx, it] = (1 + add) * wp[idx, it]
             # also could use t(w * t(p))
-            predictions <- apply(wp, 1, which.max)
+            predictions <- apply(wp[idx,], 1, which.max)
             weight <- if_else (t2 == n, 1 + add, 1)
-            correct <- weight * (predictions[idx] == q)
-            acc <- sum(correct) / sum(weight[idx])
-            flipped = mean(predictions[idx] != old_predictions[idx])
+            correct <- weight * (predictions == tuple_truth)
+            # print(correct)
+            stopifnot(!is.na(correct))
+            acc <- sum(correct) / sum(weight)
+            print(sum(weight))
+            print(sum(correct))
+            stopifnot(!is.na(acc))
+            flipped = mean(predictions != old_predictions)
 
             p2 <- sapply(1:N, function(k) {
                 r2 <- r[,,k]
-                for (s in 1:3) {
+                for (s in 1:length(tuple)) {
                     if (s == it) 
                         next
                     r2[it, s] = r2[it,s] + log((1 + add))
@@ -1050,8 +1055,8 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
             }) |> t()
 
             pred <- apply(p2[idx,],1, which.max)
-            correct2 <- weight * (pred == q)
-            acc2 <- sum(correct2) / sum(weight[idx])
+            correct2 <- weight * (pred == tuple_truth)
+            acc2 <- sum(correct2) / sum(weight)
             data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m, flipped = flipped)
         }) |>  list_rbind()
     }) |>  list_rbind()
