@@ -997,6 +997,16 @@ hinton <- function(dfs) {
     list(triple = triple1, multi = multi)
 }
 
+bc_dataset <- function(dataset, workers = 12, add = 9) {
+    plan(multicore, workers = workers)
+    df <- future_map(0:19 , function(run) {
+        dfs <- read_wlws(800, dataset, run)
+        df1 <- bc_tuple(dfs, 1:max(dfs$train$class_id), add = add)
+        df1 |> mutate(run = run)
+    }) |> list_rbind() |> 
+        mutate(dataset = dataset)
+}
+
 bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
     stopifnot(all(as.logical(sapply(ns, function(n) n %in% tuple))))
     df1 <- dfs$train
@@ -1041,7 +1051,7 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
             print(sum(weight))
             print(sum(correct))
             stopifnot(!is.na(acc))
-            flipped = mean(predictions != old_predictions)
+            c2c0 = mean(predictions != old_predictions)
 
             p2 <- sapply(1:N, function(k) {
                 r2 <- r[,,k]
@@ -1055,9 +1065,11 @@ bc_tuple <- function(dfs, tuple, ns = tuple, add = 2) {
             }) |> t()
 
             pred <- apply(p2[idx,],1, which.max)
+            c1c0 = mean(pred != old_predictions)
+            c2c1 = mean(predictions != pred)
             correct2 <- weight * (pred == tuple_truth)
             acc2 <- sum(correct2) / sum(weight)
-            data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m, flipped = flipped)
+            data.frame(changed = n, factor = (1 + add) , binary = acc2, multi = acc, method = m, c2c0 = c2c0, c1c0 = c1c0, c2c1 = c2c1)
         }) |>  list_rbind()
     }) |>  list_rbind()
 }
