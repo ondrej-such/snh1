@@ -559,7 +559,7 @@ write_triples <- function(runs = 20, workers = 11) {
     n1 <- dataset_names()
     df <- map(dataset_names(), function(f) {
         print(f)
-        map(0:(runs - 1), function (r) {
+        future_map(0:(runs - 1), function (r) {
             dfs <- read_wlws(800, f, r)
             df1 <- lda_triples(dfs) |> 
                 pivot_wider(names_from = "method", values_from = "acc")
