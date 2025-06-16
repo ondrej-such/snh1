@@ -83,7 +83,8 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
+paper.bib tab-exp4.R
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
