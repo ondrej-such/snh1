@@ -90,6 +90,7 @@ paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/ex
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
+		pdflatex paper.tex
 
 graph1.pdf graph2.pdf: graph12.R
 		Rscript -e "source('graph12.R')"
