@@ -45,6 +45,9 @@ data/separation.csv: data separation.R
 
 data/multi-acc.csv: data lda.R
 		Rscript -e "source('lda.R'); write_multi(1, tol = 1/2^(4:12))"
+		
+data/exp4.csv: data lda.R  exp4.R
+		Rscript -e "source('exp4.R')"
 
 data/triples.csv: data lda.R
 		Rscript -e "source('lda.R'); write_triples(1)"
@@ -80,7 +83,8 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
+paper.bib tab-exp4.R
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
