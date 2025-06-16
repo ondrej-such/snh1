@@ -17,6 +17,7 @@ files <- c( "dna",
 dataset_names <- function() {
     fs <- dir("unzips/n800", pattern = "*.t-\\d*")
     m1 <- str_match(fs, "(.*).scale.t-(\\d+)")
+    # print(unique(m1[,2]))
     unique(m1[,2])
 }
 
@@ -555,8 +556,10 @@ write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc"
 
 write_triples <- function(runs = 20, workers = 11) {
     plan(multicore, workers = workers)
-    df <- map(dataset_names(), files, function(f) {
-        future_map(0:(runs - 1), function (r) {
+    n1 <- dataset_names()
+    df <- map(dataset_names(), function(f) {
+        print(f)
+        map(0:(runs - 1), function (r) {
             dfs <- read_wlws(800, f, r)
             df1 <- lda_triples(dfs) |> 
                 pivot_wider(names_from = "method", values_from = "acc")
