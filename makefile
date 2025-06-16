@@ -74,6 +74,9 @@ tab-step2.tex: data/triples.csv
 tab-multi.tex: data/multi-acc.csv
 		Rscript -e "source('tab-multi.R')"
 
+tab-exp4.tex: data/exp4.csv
+		Rscript -e "source('tab-exp4.R')"
+
 data/ex2-%-300.csv: unzips data
 
 exp1/%-300.csv: exp1
