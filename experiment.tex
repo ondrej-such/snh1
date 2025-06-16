@@ -42,11 +42,11 @@ The choice of a coupling method is an important task for practitioners. We aim t
 \item[c)] If the answer to b) is negative, is it better to apply the change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice?
 \end{itemize}
 
-These questions will be put to test in Sections \ref{sec:exp1}, \ref{sec:exp2}, and \ref{sec:exp3}.
+These questions will be put to test in Sections \ref{sec:exp1} --\ref{sec:exp4}.
 
 
 
-\subsection{Experiment: Accuracy of canonical coupling methods on benchmark datasets} \label{sec:exp1}
+\subsection{Experiment: Accuracy of canonical coupling methods} \label{sec:exp1}
 
 The first experiment compares the performance the following canonical coupling methods
 \begin{itemize}
@@ -76,6 +76,7 @@ In this experiment we compare  Bayes covariant coupling methods \emph{without} p
 We can see that in slightly less than half of the cases none of the four parameterless Bayes covariant methods was able to match the performance of Wu-Lin-Weng's method. This leads us to extend evaluation to Bayes covariant methods with parameters. 
 
 \subsection{Experiment: A parametric family of Bayes covariant methods}
+\label{sec:exp3}
 
 Let us define two parameter family of Bayes covariant coupling methods
 \begin{align}
@@ -124,8 +125,16 @@ We can see that only in minority of cases we found a parametric Bayes covariant 
 %
 %\input tab-step5.tex
 
-\subsection{Experiment: Effect of change of priors}  \label{sec:exp3}
+\subsection{Experiment: Effect of change of priors}  \label{sec:exp4}
 %\subsection{Wu-Lin-Weng's method}
 
+We have shown that are situations when Wu-Lin-Weng's method outperforms even the best Bayes-covariant parametric methods. In this section we thus ponder the question whether some non-Bayes covariant method would be more resilients to change of priors. We consider two facets to this question.
+
+Let us start with some notation. Consider a classification method $\boldsymbol{c}_0$ based on coupling. Suppose the priors change, and let us denote by $\boldsymbol{c}_1$ the classification model where we apply \eqref{eq:changePrior} to binary classifiers, and by $\boldsymbol{c}_2$ the classification method when we apply \eqref{eq:changePrior} after coupling. 
+
+The first question is whether for some coupling method the difference in predictions between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ would be smaller. The results are shown in Table \ref{tab:exp4}. 
+
+\input tab-exp4.tex
 
 
+The second question is whether a coupling method would more consistently provide true answers. Let us remark that Assumption 1 is inconsistent with ground truth being certain. But we may 
