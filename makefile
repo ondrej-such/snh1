@@ -86,7 +86,7 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib tab-exp4.R
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib tab-exp4.tex
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
@@ -99,4 +99,4 @@ all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
 clean:
 		rm -rf unzips
-		rm tab*.tex *.toc *.out *.pdf *.aux *.log
+		rm -f tab*.tex *.toc *.out *.pdf *.aux *.log
