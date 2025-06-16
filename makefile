@@ -98,4 +98,4 @@ all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
 clean:
 		rm -rf unzips
-		rm tab*.tex
+		rm tab*.tex *.toc *.out *.pdf *.aux *.log
