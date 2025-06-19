@@ -56,14 +56,17 @@ data/bc3_%.csv: data lda.R
 		Rscript -e "source('lda.R');pt<-par_triples(limit = 1000, score =
 		'$*');print(class(pt));print(class(pt\$$df));write.csv(pt\$$df, '$@', quote=F, row.names=F)"
  
-graphs/exp2-detail.pdf: exp2-detail.R graphs theme.R
+exp2-detail.pdf: exp2-detail.R graphs theme.R
 		Rscript -e "source('exp2-detail.R')"
 
-graphs/exp2-summary.pdf: exp2-summary.R graphs theme.R
+exp2-summary.pdf: exp2-summary.R graphs theme.R
 		Rscript -e "source('exp2-summary.R')"
 
-graphs/exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
+exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
 		Rscript -e "source('exp1-plot1.R')"
+
+exp4-truth.pdf: data/exp4.csv exp4-truth.R
+		Rscript -e "source('exp4-truth.R')"
 
 tab-sep.tex: data/separation.csv
 		Rscript -e "source('tab-sep.R')"
@@ -91,9 +94,6 @@ paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/ex
 		bibtex paper
 		pdflatex paper.tex
 		pdflatex paper.tex
-
-graph1.pdf graph2.pdf: graph12.R
-		Rscript -e "source('graph12.R')"
 
 all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
