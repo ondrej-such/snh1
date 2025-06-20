@@ -1,6 +1,23 @@
 \section{Discussion}
 
-Let us discuss our findings with the focus on applications.
+In this paper we set out to investigate the curious phenomenon of divergent prediction in one-vs-one probabilistic models. Let us first summarize the new results we have uncovered.
+
+In Section \ref{sec:theory} we have formulated the theoretical basis of one-vs-one classification. In Section \ref{sec:des:exact} we put down the basis for axiomatic development of coupling methods. In complementary Section \ref{sec:des:inexact} we formulated properties of coupling methods that are likely of importance in practice.
+
+Important examples of coupling methods has been presented in Section \ref{sec:coupling}. We were able to provide a unifying formulation for method of Hastie-Tibshirani and Wu-Lin-Weng. We discusses arboreal coupling methods, which are an important example of methods without parameters, albeit noncanonical. We recast previously known normal coupling method in a new way. Although this is a canonical example of Bayes covariant coupling methods,  it is lacking in practical performance, as  we uncovered in the experimental section. This creates impetus to study more general Bayes covariant method. The  ensembling approach we proposed in Section \ref{sec:bc2} allows one to build parametric families of Bayes covariant methods. 
+
+The results highlight key findings from the experimental section.
+
+\begin{itemize}
+	\item The orthodox method of Wu-Lin-Weng dominates others across diverse classification tasks.
+	\item The only method close to Wu-Lin-Weng is the radial coupling method.
+	\item The concern of Hinton about one-vs-one classification is unwarranted. The method that ignores binary classifiers not trained on a given sample (we call it Hinton's oracle) underperforms the method of Wu-Lin-Weng.
+	\item In more than half of classification problems we were able to find a Bayes covariant coupling method which matches performance of the Wu-Lin-Weng method. 
+\end{itemize}
+
+
+Let us now turn to recommendation to practitioners. Given 
+
 
 One-vs-one classification framework is commonly used by machine learning practitioners, for instance whenever one uses radial basis function SVM implemented in  standard libraries. Since those method rely on coupling method of Wu-Lin-Weng, one is faced with the decision how to handle differing predictions when priors change.
 
