@@ -58,7 +58,7 @@
 
 \begin{document}
 
-\title{On selection of a coupling method to cope with change of priors in one-vs-one classification }
+\title{New Bayes covariant coupling methods to cope with change of priors in one-vs-one classification }
 
 \author{\name Ondrej Šuch \email ondrejs@savbb.sk \\
        \addr Matematický ústav SAV\\
@@ -89,28 +89,18 @@
 \maketitle
 
 \begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
-\blindtext
+%\blindtext
+Label shift is one kind of distribution shift affecting classification models. Generally, one uses transformation inspired by Bayes classifiers to 
+adjust predictions of probabilistic classification models. However, there is an ambiguity how to apply this transformation in the case of  probabilistic models built in one-vs-one (also called pairwise) fashion. One-vs-one classification relies on the choice of a coupling method. Some coupling methods -- called Bayes covariant --  are not affected by the ambiguity. Adopting a Bayes covariant method would be the ideal solution to the ambiguity. However, the most commonly used coupling  method of Wu-Lin-Weng is not Bayes covariant. In our study we present elements of theory of coupling methods and exhibit new Bayes covariant coupling methods. One class is formed by arboreal methods. Still more methods can be formed by the way of ensembling. We compare their performance with that of Wu-Lin-Weng's coupling method. In majority of cases, it is possible to find a Bayes covariant method matching performance of Wu-Lin-Weng's method. 
+
+
 \end{abstract}
 
 \begin{keywords}
-  keyword one, keyword two, keyword three
+  distribution shift, label shift, pairwise coupling, one-vs-one classification, Bayes classifier
 \end{keywords}
 
-\section{Introduction}
-
-%\blindmathpaper
-
-Distribution shift is an important problem facing machine-learning practitioners  [\cite{zhang2023dive, sugiyama2007covariate}].  One particular way a distribution shift may manifest in classification problems  is when the class priors change between the training set used to train a model, and the data distribution in deployment -- the so called label shift [\cite{vsipka2022hitchhiker,lipton2018detecting}]. To make a concrete example, consider a driver assistance system recognizing traffic signs. Suppose a speed limit sign was maliciously altered to indicate 80mph limit instead of 30mph. To avoid being fooled by the alteration, the system could utilize priors. The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city. It is very unlikely to encounter 80mph limit in a city setting. By taking into account the city priors, a driver assistance is likely to make the proper classification. In general a good classification system will be able to improve its performance when supplied with a new set of class priors that correspond to the true distribution of classes. 
-
-Change of priors can be effectively dealt with in probabilistic classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} what should happen  to the prediction of the  Bayes classifier when priors change.  In practice we assume that a trained classifier closely approximates the Bayes classifier. Therefore we can make adjustment to our prediction by applying the same transformation of posterior as would happen with the Bayes classifier. 
-
-There is a subtle issue with this approach  when handling probabilistic classifiers arising in one-vs-one classification framework.   One-vs-one classification is a two-step framework to approach  multi-class classification. In the first step it reduces the multiclass problem to a series of binary classification problems. In the second step it deduces the multi-class decision by aggregating decisions for the binary problems. Since the procedure is two-step, there is a possibility to apply adjustment of priors either to the probabilistic distributions obtained after the first step, or after the second step. It is not clear what should be the preferred course of action and this problem motivates our paper.
-
-
-Our approach to the problem is to evaluate practical performance of different methods to aggregate binary predictions. Such methods -- called coupling methods -- first appeared in work of \cite{refregier1991probabilistic}. Many authors followed with alternative proposals [\cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned, wu2004probability, vsuch2015new, vsuch2016bayes}].
-
-We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. We pay special focus to methods that commute with change of priors -- Bayes covariant methods, since such methods provide an unexpected, and elegant solution to our problem. We introduce new coupling methods by forming weighted ensembles, which we prove are also Bayes covariant when a normalizing condition on weights hold (Proposition \ref{prop:ensemble}).  In Section 4 we summarize our methodology. The results of our experiments are described in Section 5. In Section 6 we summarize our findings and provide practical guidance to solving the problem.
-
+\input intro.tex
 
 \input theory.tex
 
