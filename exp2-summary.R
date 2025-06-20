@@ -19,7 +19,7 @@ write.csv(pt$df, file = "data/exp2.csv")
 
 
 ggsave(
-  filename = "graphs/exp2-summary.pdf",
+  filename = "exp2-summary.pdf",
     plot = plt1,
     width = 5.5,   # Width in inches
     height = 2.5,  # Height in inches

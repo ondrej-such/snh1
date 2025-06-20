@@ -31,7 +31,7 @@ plt2 <- xyplot(acc ~ log2(tol) | dataset, data = df, type= "l", group = method, 
 list(superpose.line = list(lty = c(1, 2,3 ,4 ))), 
 ylab = "0-1 score")
 
-pdf("graphs/exp1-plot2.pdf", width = 5.5, height = 3.5)
+pdf("exp1-plot2.pdf", width = 5.5, height = 3.5)
 print(plt2)
 dev.off()
 

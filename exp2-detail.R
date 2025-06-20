@@ -6,12 +6,13 @@ library(xtable)
 source('lda.R')
 
 
-dfs <- read_wlws(800, "letter", 0)
+dfs <- read_wlws(800, "mnist", 0)
+bcp <- get_bcp(dfs, 5, 6, 9)
 
 # W <- gen_W2(20)
 
-#bcp <- get_bcp(dfs, 5, 12, 16)
-bcp <- get_bcp(dfs, 5, 8, 12)
+# bcp <- get_bcp(dfs, 5, 12, 16)
+#bcp <- get_bcp(dfs, 5, 8, 12)
 
 # scores <- eval_scores(bcp, W, score = "acc")$scores
 
@@ -84,7 +85,7 @@ plt <- ggplot() +   geom_tile(data = df_pos1, mapping= aes(x = x, y = y,  fill =
               )
 
 ggsave(
-  filename = "graphs/exp2-detail.pdf",
+  filename = "exp2-detail.pdf",
   plot = plt,
   width = 5.5,   # Width in inches
   height = 3.5,  # Height in inches

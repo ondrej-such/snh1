@@ -56,14 +56,17 @@ data/bc3_%.csv: data lda.R
 		Rscript -e "source('lda.R');pt<-par_triples(limit = 1000, score =
 		'$*');print(class(pt));print(class(pt\$$df));write.csv(pt\$$df, '$@', quote=F, row.names=F)"
  
-graphs/exp2-detail.pdf: exp2-detail.R graphs theme.R
+exp2-detail.pdf: exp2-detail.R graphs theme.R
 		Rscript -e "source('exp2-detail.R')"
 
-graphs/exp2-summary.pdf: exp2-summary.R graphs theme.R
+exp2-summary.pdf: exp2-summary.R graphs theme.R
 		Rscript -e "source('exp2-summary.R')"
 
-graphs/exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
+exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
 		Rscript -e "source('exp1-plot1.R')"
+
+exp4-truth.pdf: data/exp4.csv exp4-truth.R
+		Rscript -e "source('exp4-truth.R')"
 
 tab-sep.tex: data/separation.csv
 		Rscript -e "source('tab-sep.R')"
@@ -74,6 +77,9 @@ tab-step2.tex: data/triples.csv
 tab-multi.tex: data/multi-acc.csv
 		Rscript -e "source('tab-multi.R')"
 
+tab-exp4.tex: data/exp4.csv
+		Rscript -e "source('tab-exp4.R')"
+
 data/ex2-%-300.csv: unzips data
 
 exp1/%-300.csv: exp1
@@ -83,17 +89,14 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf
-paper.bib tab-exp4.R
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib tab-exp4.tex
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
-
-graph1.pdf graph2.pdf: graph12.R
-		Rscript -e "source('graph12.R')"
+		pdflatex paper.tex
 
 all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
 clean:
 		rm -rf unzips
-		rm tab*.tex
+		rm -f tab*.tex *.toc *.out *.pdf *.aux *.log
