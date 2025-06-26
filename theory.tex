@@ -1,4 +1,4 @@
-\section{Theoretical basis of coupling methods}
+\section{Theoretical basis of coupling methods} \label{sec:theory}
 
 Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature space $X$. In a multi-class classification problem we are provided with the prior probabilities $\Pi = (P_1, \ldots, P_k)$ of each class. Given $x$ in $X$ we aim to find the probability that $x$ belongs to $i$-th class. 
 
@@ -28,9 +28,9 @@ Knowledge of vector $\boldsymbol{p}^\Pi(x)$ is equivalent to knowing the functio
 p_{ij}(x) = \frac{p_i^\Pi(x)}{p_i^\Pi(x) + p_j^\Pi(x)}. \label{eq:bt1}
 \end{align}
 
-Conversely, it is easy to show that  the system of equations \eqref{eq:bt1} has a unique solution.
+Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of equations \eqref{eq:bt1} has a unique solution. This result (Proposition \ref{prop:binary2multi}) can be viewed as the fundamental theorem of one-vs-one classification.
 
-\begin{prop}[Fundamental theorem of one-vs-one classification]
+\begin{prop}
 	 \label{prop:binary2multi}
 	 Knowledge of binary Bayes classifiers $p_{ij}$ determines the multiclass Bayes classifier $\boldsymbol{p}^\Pi$.
 \end{prop}
