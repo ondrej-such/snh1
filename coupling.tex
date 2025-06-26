@@ -20,25 +20,25 @@ A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional i
 \hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\hat D_{ij}^\textrm{multi}, \hat D_{ij}^\textrm{binary})
 \end{align*}
 
-A notable example which uses this principle is the coupling method introduced in [\cite{hastie1998classification}]. Their method uses Kullback-Leibler divergence $\divm_\textrm{KL}$
+A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback-Leibler divergence $\divm_\textrm{KL}$
 \begin{align*}
 	\divm\nolimits_\textrm{KL} (\boldsymbol{p}, \boldsymbol{q})= \sum p_i \log (p_i/ q_i)
 \end{align*}
 
-Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score [\cite{gneiting2007strictly, buja2005loss}].
+Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly, buja2005loss}.
  
-For instance, a popular alternative is divergence arising from the quadratic  score [\cite{gneiting2007strictly}] (also known as Brier score [\cite{brier1950verification}]). This divergence takes the form
+For instance, a popular alternative is divergence arising from the quadratic  score \cite{gneiting2007strictly} (also known as Brier score \cite{brier1950verification}). This divergence takes the form
 $$
 \divm\nolimits_\textrm{quad} (\boldsymbol{p}, \boldsymbol{q})= \sum (p_i - q_i)^2.
 $$
-Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method [\cite{wu2004probability}]. 
+Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method \cite{wu2004probability}. 
 
 Their method uses an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
 \begin{align*}
 \hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
 \end{align*}
 
-We note that the method is symmetric. The choice of quadratic scoring rule can also be viewed as canonical in view of axiomatic characterization given in  [\cite{selten1998axiomatic}].  However the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we do not view Wu-Lin-Weng's method as canonical.
+We note that the method is symmetric. The choice of quadratic scoring rule can also be viewed as canonical in view of axiomatic characterization given in  \cite{selten1998axiomatic}.  However the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we do not view Wu-Lin-Weng's method as canonical.
 
 \subsection{Arboreal methods}
 
@@ -175,9 +175,9 @@ Clearly, under the assumption $\sum_m a_m = 1$, the classifier $\bigoplus_m a_m 
 
 As an example, consider the classification problem with three classes. We have three arboreal classifiers $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ which correspond to star graphs centered respectively at classes $C_1, C_2, C_3$. The classifier 
 \begin{align}
-\boldsymbol{e}_3 \stackrel{def}{=} \frac13 \boldsymbol{s}_1 \oplus \frac13 \boldsymbol{s}_2 \oplus \frac 13 \boldsymbol{s}_3  \label{eq:bc1}
+\boldsymbol{e}_3 \stackrel{def}{=} \frac13 \boldsymbol{s}_1 \oplus \frac13 \boldsymbol{s}_2 \oplus \frac 13 \boldsymbol{s}_3  \label{eq:normal3}
 \end{align}
-is Bayes covariant \emph{and} symmetric. A key result proved in [\cite{vsuch2016bayes}] is that it is a unique  classifier having these two properties.
+is Bayes covariant \emph{and} symmetric. A key result proved in \cite{vsuch2016bayes} is that it is a unique  classifier having these two properties.
 
 \begin{thm} \label{thm:K3}
 	There exists a unique symmetric Bayes covariant coupling methods for $K=3$.
@@ -243,7 +243,7 @@ In this section  we summarize properties of coupling methods described earlier i
 & iterative method & yes & yes & yes & no & not needed & not needed\\
 \hline
 \end{tabular}
-\caption{Summary of properties of coupling methods described in Section \ref{sec:coupling}. The method of Hastie-Tibshirani is omitted from evaluation in Section \ref{sec:exp1}, because earlier evaluation showed it lacks robustness compared to the method of Wu-Lin-Weng [\cite{wu2004probability}].}
+\caption{Summary of properties of coupling methods described in Section \ref{sec:coupling}. The method of Hastie-Tibshirani is omitted from evaluation in Section \ref{sec:exp1}, because earlier evaluation showed it lacks robustness compared to the method of Wu-Lin-Weng \cite{wu2004probability}.}
 \label{tab:summaryCoupling}
 \end{table}
 
