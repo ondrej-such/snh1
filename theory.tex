@@ -136,7 +136,7 @@ this section
 
 \emph{Canonicity} refers to requirement that the method should be natural. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. 
 
-Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical [\cite{shannon1948mathematical,selten1998axiomatic}].
+Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical \cite{shannon1948mathematical,selten1998axiomatic}.
 
 \emph{Symmetry} We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
 
@@ -152,7 +152,7 @@ We say that a coupling method $V$ is \emph{symmetric} if
 		\sigma(\boldsymbol{v}(\boldsymbol{R})) = \boldsymbol{v}(\sigma(\boldsymbol{R}))\quad\textrm{for any permutation $\sigma$}.
 \end{align}
 
-\emph{Bayes covariance} is a notion introduced in  [\cite{vsuch2016bayes}]. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
+\emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
 \begin{align}
 \boldsymbol{p}^{\Pi'} \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{eq:changePrior}
 \end{align}
@@ -202,13 +202,13 @@ for any matrix $\boldsymbol{R}$ with $r_{ij}> 0$.
 
 In this section we describe several concepts that lack strict mathematical delineation, but may still be important to consider.
 
-\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists. 
+\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
 
 \emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
-Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction [\cite[p.~467]{hastie1998classification}]. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
+Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction \cite[p.~467]{hastie1998classification}. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
 
 
 %The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.
