@@ -89,11 +89,31 @@ else
 				echo "Missing rule"
 endif
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex graphs/exp2-summary.pdf graphs/exp2-detail.pdf graphs/exp1-plot1.pdf paper.bib tab-exp4.tex
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-summary.pdf exp2-detail.pdf exp1-plot1.pdf exp4-truth.pdf paper.bib tab-exp4.tex 
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
 		pdflatex paper.tex
+
+
+sp1.pdf: springer.tex
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{1} \input{%S}'" springer.tex
+		mv springer.pdf sp1.pdf
+
+sp2.pdf: springer.tex
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{2} \input{%S}'" springer.tex
+		bibtex springer
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{2} \input{%S}'" springer.tex
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{2} \input{%S}'" springer.tex
+		mv springer.pdf sp2.pdf
+
+sp3.pdf: springer.tex
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{3} \input{%S}'" springer.tex
+		bibtex springer
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{3} \input{%S}'" springer.tex
+		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{3} \input{%S}'" springer.tex
+		mv springer.pdf sp3.pdf
+
 
 all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
