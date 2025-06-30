@@ -78,6 +78,7 @@
 \usepackage[utf8]{inputenc} % Enable UTF-8 encoding
 \usepackage[T1]{fontenc}
 \usepackage{textgreek}
+\usepackage{ifthen}
 %\undef\orcidlogo
 
 
@@ -142,12 +143,10 @@
 
 
 \affil[1]{\orgdiv{Matematický ústav}, \orgname{Slovenská akadémia vied}, 
-\orgaddress{\street{Street}, \city{Banská Bystrica}, \postcode{97411}, \country{Slovakia}}}
+\orgaddress{\street{Ďumbierska 1}, \city{Banská Bystrica}, \postcode{97411}, \country{Slovakia}}}
 
 \affil*[2]{\orgdiv{Fakulta riadenia a informatiky}, \orgname{Žilinská Univerzita v Žiline}, 
-\orgaddress{\street{Street}, \city{Žilina}, \postcode{01026},  \country{Slovakia}}}
-
-
+\orgaddress{\street{Univerzitná 8215/6}, \city{Žilina}, \postcode{01026},  \country{Slovakia}}}
 
 \affil[3]{\orgdiv{Fakulta matematiky, fyziky a informatiky}, 
 \orgname{Univerzita Komenského}, \orgaddress{\street{Mlynská dolina F1}, \city{Bratislava}, \postcode{84248},  
@@ -178,8 +177,14 @@ adjust predictions of probabilistic classification models. However, there is an 
 
 %%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
 
-\maketitle
 
+\ifthenelse{\not\equal{\mysecret}{2}}{
+\maketitle
+}{
+% nothing 
+}
+
+\ifthenelse{\not\equal{\mysecret}{1}}{
 \input{intro.tex}
 
 \input{theory.tex}
@@ -190,21 +195,24 @@ adjust predictions of probabilistic classification models. However, there is an 
 
 \input{discussion.tex}
 
+
+
+
+
+
+
+}{
+}
+
+
 \backmatter
-
-\bmhead{Supplementary information}
-
-If your article has accompanying supplementary file/s please state so here. 
-
-Authors reporting data from electrophoretic gels and blots should supply the full unprocessed scans for key as part of their Supplementary information. This may be requested by the editorial team/s if it is missing.
-
-Please refer to Journal-level guidance for any specific requirements.
-
 \bmhead{Acknowledgements}
 
 Acknowledgements are not compulsory. Where included they should be brief. Grant or contribution numbers may be acknowledged.
 
 Please refer to Journal-level guidance for any specific requirements.
+
+\ifthenelse{\not\equal{\mysecret}{2}}{
 
 \section*{Declarations}
 
@@ -213,14 +221,14 @@ Some journals require declarations to be submitted in a standardised format. Ple
 Ondrej Šuch and Ali Haidar were  partially supported by grants VEGA 2/0172/22 Classification using ensembles of neural networks and VEGA 2/0056/25 Cycles and edge colorings of cubic graphs. Peter Novotný did not receive support from any organization for the submitted work.
 
 \begin{itemize}
-\item Funding
-\item Conflict of interest/Competing interests (check journal-specific guidelines for which heading to use)
-\item Ethics approval and consent to participate
-\item Consent for publication
-\item Data availability 
-\item Materials availability
-\item Code availability 
-\item Author contribution
+\item Funding Ondrej Šuch and Ali Haidar were  partially supported by grants VEGA 2/0172/22 Classification using ensembles of neural networks and VEGA 2/0056/25 Cycles and edge colorings of cubic graphs. Peter Novotný did not receive support from any organization for the submitted work.
+\item Conflict of interest/Competing interests Authors declare no competing interests.
+\item Ethics approval and consent to participate Not applicable
+\item Consent for publication Not applicable
+\item Data availability All data is available from https://www.csie.ntu.edu.tw/~cjlin/papers/svmprob/data/, and also upon request from the authors.
+\item Materials availability Not applicable
+\item Code availability code is available upon request
+\item Author contribution Not applicable
 \end{itemize}
 
 \noindent
@@ -247,6 +255,11 @@ Nature Portfolio journals: \url{https://www.nature.com/nature-research/editorial
 BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies}
 \end{flushleft}
 
+}{
+}
+
+\ifthenelse{\not\equal{\mysecret}{1}}{
+
 \begin{appendices}
 
 \input{appendix.tex}
@@ -267,6 +280,7 @@ BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies
 %% Appendices may be used for helpful, supporting or essential material that would otherwise 
 %% clutter, break up or be distracting to the text. Appendices can consist of sections, figures, 
 %% tables and equations etc.
+% }{} 
 
 \end{appendices}
 
@@ -279,6 +293,8 @@ BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies
 
 %\bibliography{sn-bibliography}% common bib file
 \bibliography{paper}% common bib file
+}{
+}
 %% if required, the content of .bbl file can be included here once bbl is generated
 %%\input sn-article.bbl
 

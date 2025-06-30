@@ -97,21 +97,21 @@ paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-summary.pdf exp2-detail.pdf 
 
 
 sp1.pdf: springer.tex
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{1} \input{%S}'" springer.tex
+		pdflatex "\\def\\mysecret{1} \\input{springer.tex}" 
 		mv springer.pdf sp1.pdf
 
 sp2.pdf: springer.tex
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{2} \input{%S}'" springer.tex
+		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		bibtex springer
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{2} \input{%S}'" springer.tex
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{2} \input{%S}'" springer.tex
+		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
+		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		mv springer.pdf sp2.pdf
 
 sp3.pdf: springer.tex
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{3} \input{%S}'" springer.tex
+		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
 		bibtex springer
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{3} \input{%S}'" springer.tex
-		latexmk -pdf -pdflatex="pdflatex '\def\showsecret{3} \input{%S}'" springer.tex
+		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
+		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
 		mv springer.pdf sp3.pdf
 
 
