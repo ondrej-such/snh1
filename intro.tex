@@ -3,7 +3,8 @@
 %\blindmathpaper
 
 
-Distribution shift is an important problem facing machine-learning practitioners  [\cite{zhang2023dive, sugiyama2007covariate}].  Using probabilistic formulation, we say the distribution shift occurs if there is a change  in the joint probability distribution $p(X,Y)$ of covariates $X$ with the dependent variable $Y$  between training and testing. Noting the factorizations 
+Distribution shift is an important problem facing machine-learning practitioners 
+\cite{zhang2023dive, sugiyama2007covariate}.  Using probabilistic formulation, we say the distribution shift occurs if there is a change  in the joint probability distribution $p(X,Y)$ of covariates $X$ with the dependent variable $Y$  between training and testing. Noting the factorizations 
 $$
 p(X,Y) = p(Y\mid X)p(X) = p(X \mid Y )p(Y)
 $$
@@ -14,17 +15,54 @@ one may distinguish the following subcategories of distribution shift:
 	\item concept shift, if $p(Y \mid X)$ itself changes.
 \end{itemize}
 
-We will be concerned with label shift in classification problems, where $p(Y)$ is just the prior on classes.   To provide a concrete example, consider a driver assistance system recognizing traffic signs. Suppose a speed limit sign was maliciously altered to indicate 80mph limit instead of 30mph. To avoid being fooled by the alteration, the system could utilize priors. The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city. It is very unlikely to encounter 80mph limit in a city setting. By taking into account the city priors, the system is likely to make the proper classification. In general a well-designed classification system will be able to improve its performance when supplied with a new set of class priors that correspond to the true distribution of classes. 
+We will be concerned with label shift in classification problems, where $p(Y)$ 
+is just the prior on classes.  Some aspects of label shift were studied in
+earlier works including test time adaptation
+\cite{vsipka2022hitchhiker}, shift detection and quantification 
+\cite{lipton2018detecting}, 
+statistical properties of label shift estimators \cite{garg2020unified}, 
+and Fisher consistency of estimators of priors \cite{tasche2017fisher}. 
+Let us consider  the question 
+how to adapt a classifier when the  prior is updated.
 
-Change of priors can be effectively dealt with in probabilistic classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} what should happen  to the prediction of the  Bayes classifier when priors change (see \eqref{eq:changePrior}).  In practice we assume that a trained classifier closely approximates the Bayes classifier. Therefore we can make adjustment to our prediction by applying the same transformation of posterior as would happen with the Bayes classifier. 
+To provide a concrete example, consider a driver assistance system recognizing traffic signs. 
+Suppose a speed limit sign was maliciously altered to indicate 80mph limit instead of 30mph.
+To avoid being fooled by the alteration, the system could utilize priors.
+The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city.
+unlikely to encounter 80mph limit in a city setting. By taking into account 
+the city priors, the system would be more likely to make the proper classification. 
 
-There is a subtle issue with this approach  when handling probabilistic classifiers arising in one-vs-one classification framework.   One-vs-one classification is a two-step framework to solve  multi-class classification problems. In the first step it reduces the multiclass problem to a series of binary classification problems. In the second step it deduces the multi-class decision by aggregating decisions for the binary problems. Since the procedure is two-step, there is a possibility to apply the adjustment of priors either to the probabilistic distributions obtained after the first step, or after the second step. It is not clear what should be the preferred course of action and this problem motivates our paper. 
+Some systems are unable to do incorporate new priors without rebuilding 
+the classifier  e.g. those based 
+on fuzzy logic, or some tree methods. 
+However, change of priors can be effectively dealt with in probabilistic 
+classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} 
+what should happen  to the prediction of the  Bayes classifier when priors 
+change (see \eqref{eq:changePrior}).  In practice we assume that a trained 
+classifier closely approximates the Bayes classifier. Therefore we can make 
+adjustment to our prediction by applying the same transformation of posterior 
+as would happen with the Bayes classifier. 
 
-Some aspects of label shift were studied in earlier works including test time adaptation
-\cite{vsipka2022hitchhiker}, shift detection and quantification \cite{lipton2018detecting}, statistical properties of label shift estimators \cite{garg2020unified}, and Fisher consistency of estimators of priors \cite{tasche2017fisher}.
+There is a subtle issue with this approach  when handling probabilistic 
+classifiers arising in one-vs-one classification framework.   
+One-vs-one classification is a two-step framework to solve 
+multi-class classification problems.
+In the first step it reduces the multiclass problem to a series of binary
+classification problems. 
+In the second step it deduces the multi-class decision by aggregating decisions 
+for the binary problems. Since the procedure is two-step, there is a possibility 
+to apply the adjustment of priors either to the probabilistic distributions 
+obtained after the first step, or after the second step. It is not clear what 
+should be the preferred course of action and this problem motivates our paper. 
 
 
-Our approach to the problem is to evaluate practical performance of different methods to aggregate binary predictions. Such methods -- called coupling methods -- first appeared in work of \cite{refregier1991probabilistic}. Many authors followed with alternative proposals \cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned, wu2004probability, vsuch2015new, vsuch2016bayes}.
+Our approach to the problem is to evaluate practical performance of different 
+methods to aggregate binary predictions. Such methods -- called coupling methods
+-- first appeared in work of \cite{refregier1991probabilistic} when making 
+multi-class classification using neural networks. 
+Many authors followed with alternative proposals 
+\cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned,
+wu2004probability, vsuch2015new, vsuch2016bayes}.
 
 We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. 
 We pay special attention to methods that commute with change of priors -- Bayes covariant methods, 
