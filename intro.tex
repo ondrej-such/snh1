@@ -26,4 +26,10 @@ Some aspects of label shift were studied in earlier works including test time ad
 
 Our approach to the problem is to evaluate practical performance of different methods to aggregate binary predictions. Such methods -- called coupling methods -- first appeared in work of \cite{refregier1991probabilistic}. Many authors followed with alternative proposals \cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned, wu2004probability, vsuch2015new, vsuch2016bayes}.
 
-We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. We pay special focus to methods that commute with change of priors -- Bayes covariant methods, since such methods provide an unexpected, and elegant solution to our problem. We introduce new coupling methods by forming weighted ensembles, which we prove are also Bayes covariant when a normalizing condition on weights hold (Proposition \ref{prop:ensemble}).  In Section 4 we summarize our methodology. The results of our experiments are described in Section 5. In Section 6 we summarize our findings, provide practical guidance and outline future research directions.
+We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. 
+We pay special attention to methods that commute with change of priors -- Bayes covariant methods, 
+since such methods provide an unexpected, and elegant solution to our problem. 
+We introduce new coupling methods by forming weighted ensembles. We prove such ensemble of Bayes covariant methods is again Bayes covariant
+when a normalizing condition on weights hold (Proposition \ref{prop:ensemble}).  
+Our experiments are described in Section 4. In Section 5 we summarize our findings, 
+provide practical guidance and outline future research directions.
