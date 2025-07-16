@@ -8,21 +8,21 @@ There is a plethora of methods available for coupling. In this section we descri
 
 A multi-class estimate $\hat{\boldsymbol{p}}$ obtained by a coupling method implies via \eqref{eq:bt1} probability distributions on each pair of classes:
 \begin{align*}
-	\hat D_{ij}^\textrm{multi}= \biggl(\frac{\hat{p_i}}{\hat p_i + \hat p_j},\frac{\hat{p_j}}{\hat p_i + \hat p_j}\biggr)	
+	\boldsymbol{d}_{ij}^\textrm{multi}= \biggl(\frac{\hat{p_i}}{\hat p_i + \hat p_j},\frac{\hat{p_j}}{\hat p_i + \hat p_j}\biggr)	
 \end{align*}
 On the other hand, binary classifiers provide another distribution for each pair of  classes, namely
 \begin{align*}
-\hat D_{ij}^\textrm{binary} = (\hat r_{ij}, \hat r_{ji}).
+\boldsymbol{d}_{ij}^\textrm{binary} = ( r_{ij},  r_{ji}).
 \end{align*}
 
 A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional incorporating divergence measures between these distributions
 \begin{align*}
-\hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\hat D_{ij}^\textrm{multi}, \hat D_{ij}^\textrm{binary})
+\hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\boldsymbol{d}_{ij}^\textrm{multi}, \boldsymbol{d}_{ij}^\textrm{binary})
 \end{align*}
 
 A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback-Leibler divergence $\divm_\textrm{KL}$
 \begin{align*}
-	\divm\nolimits_\textrm{KL} (\boldsymbol{p}, \boldsymbol{q})= \sum p_i \log (p_i/ q_i)
+	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= \sum d_i \log (d_i/ d'_i)
 \end{align*}
 
 Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly, buja2005loss}.
@@ -31,8 +31,8 @@ For instance, a popular alternative is divergence arising from the quadratic  sc
 $$
 \divm\nolimits_\textrm{quad} (\boldsymbol{p}, \boldsymbol{q})= \sum (p_i - q_i)^2.
 $$
-Unlike Kullback-Leibler divergence, the penalty for incorrect prediction with arbitrarily low probability is bounded (by one). This quadratic score is the basis of the popular Wu-Lin-Weng's method \cite{wu2004probability}. 
 
+The quadratic score is the basis of the popular Wu-Lin-Weng's method \cite{wu2004probability}. 
 Their method uses an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
 \begin{align*}
 \hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
@@ -44,7 +44,7 @@ We note that the method is symmetric. The choice of quadratic scoring rule can a
 
 System of equations \eqref{eq:bt2} is overdetermined because there are $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one.  Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
 
-An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes 1 and 3. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
+An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes $C_1$ and $C_3$. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
 \begin{equation}
 	\begin{split}
 		\frac{\hat p_1}{\hat p_1 + \hat p_2} &= {r}_{12}\\
@@ -58,9 +58,8 @@ For $K=3$, there are three different arboreal coupling methods, which we shall c
 
 For $K>3$ the three methods can be generalized to corresponds to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$.
 
-More generally, to obtain a regular system of equations for  any of $K$ , it is necessary that the tree corresponding to an arboreal method forms a spanning tree. Note that any arboreal method is non-canonical, because there is no natural way to choose a tree in a complete graph. In fact, a stronger statement is true -- no arboreal method is symmetric.
+More generally, to obtain a regular system of equations for  any of $K$ , it is necessary and sufficient that the tree formed by edges for which we include equations from Bradley-Terry system is  a spanning tree. Note that any arboreal method is non-canonical, because there is no natural way to choose a spanning tree in a complete graph. In fact, a stronger statement is true -- no arboreal method is symmetric.
 %However, we will see in Section \ref{sec:bc2} that by ``averaging'' several stars we can obtain a canonical 
-
 
 
 \subsection{Methods emphasizing Hinton's minimality}
@@ -201,7 +200,7 @@ Let us point out one consequence of the theorem. We could define another ensembl
 \[
 \tilde{\boldsymbol{e}} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
 \]
-Note that here we use the plus symbol to denote the vector addition of vectors representing  probability distributions over $K$ classes. This is a different classifier from the one given by  \eqref{eq:bc1} (see Appendix \ref{app:explicit}), and since it is symmetric, it cannot be Bayes covariant.
+Note that here we use the plus symbol to denote the vector addition of vectors representing  probability distributions over $K$ classes. This is a different classifier from the one given by  \eqref{eq:normal3} , and since it is symmetric, it cannot be Bayes covariant.
 
 The classifier $\boldsymbol{e}_3$ has a canonical generalization for any $K>3$, namely the classifier
 \begin{align}
@@ -209,41 +208,4 @@ The classifier $\boldsymbol{e}_3$ has a canonical generalization for any $K>3$, 
 \end{align}
 We call this coupling method the \emph{normal} coupling method.
 
-\subsection{Properties of coupling methods}
-
-In this section  we summarize properties of coupling methods described earlier in this section.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
-\begin{itemize}
-	\item whether a coupling method amounts to a linear system of equations,
-	\item if the coupling method amounts to a linear system of equations, whether the equations are of a special form (e.g. a Markov matrix) that facilitates their solution,
-	\item whether the authors who published the method provide an iterative method that implements the estimate. Iterative methods are often  faster than Gaussian elimination, and less prone to numerical issues.
-\end{itemize}
-
- %interpretation of exact desiderate is unambiguous. 
-
-
-%The following table indicates which properties are enjoyed by each coupling method we described in this section.
-
-\begin{table}[!ht]
-\begin{tabular}{cm{2.5cm}m{1.5cm}m{1.5cm}ccm{1.5cm}m{1.5cm}}
-&property & Hastie-Tibshirani & Wu-Lin-Weng & radial & normal & arboreal & Hinton's oracle \\
-\hline 
-\multirow{5}{*}{\begin{turn}{90}\makecell{exact}\end{turn}}
-&uniqueness &  yes & yes & yes & yes & yes & yes \\
-&Bradley-Terry consistency & yes & yes & yes & yes & yes & yes \\
-&canonicity & yes & no & yes & yes & no & yes \\
-&symmetry & yes & yes & yes & yes & no & yes \\
-& Bayes covariant & no & no & no & yes & yes & yes \\
-\hline
-\multirow{5}{*}{\begin{turn}{90}\makecell{non-exact}\end{turn}}
-&Hinton's minimality & N/A & \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
-&robustness & N/A & \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
-&lack of parameters & yes & yes & yes & yes & yes & yes \\
-& amounts to a linear system & no & yes & yes & yes & yes & yes\\
-& linear system of special form & N/A & no & yes & yes & yes & yes \\
-& iterative method & yes & yes & yes & no & not needed & not needed\\
-\hline
-\end{tabular}
-\caption{Summary of properties of coupling methods described in Section \ref{sec:coupling}. The method of Hastie-Tibshirani is omitted from evaluation in Section \ref{sec:exp1}, because earlier evaluation showed it lacks robustness compared to the method of Wu-Lin-Weng \cite{wu2004probability}.}
-\label{tab:summaryCoupling}
-\end{table}
 
