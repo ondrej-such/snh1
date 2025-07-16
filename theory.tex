@@ -1,6 +1,9 @@
 \section{Theoretical basis of coupling methods} \label{sec:theory}
 
-Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature space $X$. In a multi-class classification problem we are provided with the prior probabilities $\Pi = (P_1, \ldots, P_k)$ of each class. Given $x$ in $X$ we aim to find the probability that $x$ belongs to $i$-th class. 
+Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature 
+space $X$. In a multi-class classification problem we are provided with 
+the prior probabilities $\Pi = (P_1, \ldots, P_K)$ of each class. Given $x$ in $X$ we aim to find 
+the probability that $x$ belongs to the $i$-th class. 
 
 
 \subsection{One-vs-one classification} \label{sec:one-vs-one}
@@ -14,25 +17,28 @@ For all $x$ in the feature space we have $d_i(x) P_i > 0$.
 
 The Bayes classifier predicts that the probability of $x$ belonging to the $i$-th class is
 \begin{align}
- p^\Pi_i(x) = \frac{d_i(x) P_i}{\sum_{k=1}^K d_k(x)P_k}.
+ p^\textrm{multi}_i(x) = \frac{d_i(x) P_i}{\sum_{k=1}^K d_k(x)P_k}.
 \end{align}
 
-Besides the multi-class classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of classes. Assuming prior on the two classes is proportional to $(P_i, P_j)$, the binary Bayes classifier predicts the probability of $i$-th class as 
+Besides the multi-class classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of 
+classes. Assuming the prior on the two classes is proportional to $(P_i, P_j)$, the binary Bayes classifier 
+predicts the probability of the $i$-th class as 
 
 \begin{align}
-	p_{ij}(x) = \frac{d_i(x) P_i}{d_i(x)P_i + d_j(x)P_j}.
+	p_{ij}^\textrm{binary}(x) = \frac{d_i(x) P_i}{d_i(x)P_i + d_j(x)P_j}.
 \end{align}
 
-Knowledge of vector $\boldsymbol{p}^\Pi(x)$ is equivalent to knowing the functions $p^\Pi_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
+Knowledge of vector $\boldsymbol{p}^\textrm{multi}(x)$ is equivalent to knowing the functions $p^\textrm{binary}_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
 \begin{align}
-p_{ij}(x) = \frac{p_i^\Pi(x)}{p_i^\Pi(x) + p_j^\Pi(x)}. \label{eq:bt1}
+p_{ij}^\textrm{binary}(x) = \frac{p_i^\textrm{multi}(x)}{p_i^\textrm{multi}(x) + p_j^\textrm{multi}(x)}. \label{eq:bt1}
 \end{align}
 
 Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of equations \eqref{eq:bt1} has a unique solution. This result (Proposition \ref{prop:binary2multi}) can be viewed as the fundamental theorem of one-vs-one classification.
 
 \begin{prop}
 	 \label{prop:binary2multi}
-	 Knowledge of binary Bayes classifiers $p_{ij}$ determines the multiclass Bayes classifier $\boldsymbol{p}^\Pi$.
+	 Knowledge of binary Bayes classifiers $p^\textrm{binary}_{ij}$ determines the multiclass Bayes classifier 
+	 $\boldsymbol{p}^\textrm{multi}$.
 \end{prop}
 \begin{proof}
 	Given a multiclass distribution $\boldsymbol{p} = (p_1, \ldots,p_K)$ on $K$ classes, let $\alpha_{ij}(\boldsymbol{p})$ denote the odds of $C_i$ to $C_j$:
@@ -42,7 +48,8 @@ Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of e
 	
 	From \eqref{eq:bt1} we can deduce the odds of classes $C_j$ to $C_i$ for the Bayes classifier since
 	\begin{align}
-	\alpha_{ji}(\boldsymbol{p}^\Pi) = \frac{p_j^\Pi(x)}{p_i^\Pi(x)} = \frac{1}{p_{ij}(x)}- 1.
+	\alpha_{ji}(\boldsymbol{p}^\textrm{multi}) = \frac{p_j^\textrm{multi}(x)}{p_i^\textrm{multi}(x)}
+	=  \frac{d_j(x) P_j}{d_i(x) P_i} = \frac{1}{p^\textrm{binary}_{ij}(x)}- 1.
 	\end{align}
 	Knowing the odds of $C_2$ to $C_1$, $C_3$ to $C_2$ up to $C_{K}$ to $C_{K-1}$ together with the requirement that probabilities sum to one uniquely determines the whole vector $\boldsymbol{p}^\Pi(x)$.
 \end{proof}
@@ -56,7 +63,13 @@ Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of e
 
 \subsection{Coupling methods}
 
-In practice one does not have know true probability distributions and hence cannot construct Bayes classifies. However, given a sample from the distribution, we can train binary classifiers to provide approximations $r_{ij}(x)$ to pairwise Bayes classifiers $p_{ij}^\Pi(x)$. The goal of probabilistic one-vs-one classification is to deduce for any $x$ in the feature space $X$ an estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\Pi(x)$. One does it by finding an approximate solution of the system of equations
+In practice one does not  know true distributions of samples and hence cannot 
+construct Bayes classifiers. However, given a sample from the distribution, 
+we can train binary classifiers to provide approximations $r_{ij}(x)$ to 
+pairwise Bayes classifiers $p_{ij}^\textrm{multi}(x)$. The goal of probabilistic
+one-vs-one classification is to deduce for any $x$ in the feature space $X$ an 
+estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\textrm{multi}(x)$. 
+One does it by finding an approximate solution of the system of equations
 %\begin{align}
 %
 %\end{align}
@@ -113,7 +126,16 @@ The system of Bradley-Terry equations is usually inconsistent and additional ass
 %Let us outline what kind of exact conditions may be desirable in a coupling method. 
 In %Section \ref{sec:des:exact} 
 this section
- we will describe exact mathematical criteria that one may impose on a coupling method, while in section \ref{sec:des:inexact} we shall describe more flexible properties.
+ we will describe exact mathematical criteria that one may impose on a coupling method, while in section \ref{sec:des:inexact} we shall describe more flexible properties. 
+
+\begin{itemize}
+\item  unique solution(under Assumption \ref{ass:2}),
+\item Bradley-Terry consistency,
+\item canonicity,
+\item symmetry,
+\item Bayes covariance.
+\end{itemize}
+
 
 %\begin{itemize}
 %\item a coupling method should should always provide a unique solution, at least when all $r_{ij}>0$,
@@ -173,7 +195,7 @@ then we define $D^\pi$ by requiring
 \begin{align}
 D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{def:prior:effect}
 \end{align}
-We now say that a method if Bayes covariant if
+We now say that a method is Bayes covariant if
 \begin{align}
 \boldsymbol{v}(\boldsymbol{R}^\pi)=	\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi,
 \end{align}
@@ -202,7 +224,7 @@ for any matrix $\boldsymbol{R}$ with $r_{ij}> 0$.
 
 In this section we describe several concepts that lack strict mathematical delineation, but may still be important to consider.
 
-\emph{Good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
+\emph{Robustness -- good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
 
 \emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
 
