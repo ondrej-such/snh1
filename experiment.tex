@@ -1,4 +1,14 @@
-\section{Methodology.}
+\section{Experiments.}
+
+The choice of a coupling method is an important task for practitioners. We aim to help by posing the following interrelated questions 
+
+\begin{itemize}
+	\item[a)] Which coupling methods without parameters show good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng (see Section \ref{sec:exp1})? 
+	\item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric Bayes covariant method which  matches its performance ((see Section \ref{sec:exp2} and \ref{sec:exp3}))?
+	\item[c)] If the answer to b) is negative, is it better to apply the change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice ((see Section \ref{sec:exp4}))?
+\end{itemize}
+
+These questions will be put to test in Sections \ref{sec:exp1} --\ref{sec:exp4}. The methodology of our experiments is describe in the next two subsections.
 
 \subsection{Datasets}
 
@@ -31,19 +41,6 @@ Small probabilities generally have very little effect on the implementation of B
 %	\includegraphics[width = 0.5\linewidth]{graph/waveform-lda.pdf}
 %	\caption{Projections of three-class datasets using LDA Left: dna, right: waveform}
 %\end{figure}
-
-\section{Experimental results.}
-
-The choice of a coupling method is an important task for practitioners. We aim to help by posing the following interrelated questions 
-
-\begin{itemize}
-\item[a)] Which coupling methods without parameters show good performance across diverse data sets? Is it the orthodox method of Wu-Lin-Weng?
-\item[b)] If the answer to a) is a coupling method which is not Bayes covariant, can we find a parametric Bayes covariant method which  matches its performance?
-\item[c)] If the answer to b) is negative, is it better to apply the change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice?
-\end{itemize}
-
-These questions will be put to test in Sections \ref{sec:exp1} --\ref{sec:exp4}.
-
 
 
 \subsection{Experiment: Accuracy of canonical coupling methods} \label{sec:exp1}
