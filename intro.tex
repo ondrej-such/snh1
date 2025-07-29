@@ -44,7 +44,7 @@ adjustment to our prediction by applying the same transformation of posterior
 as would happen with the Bayes classifier. 
 
 There is a subtle issue with this approach  when handling probabilistic 
-classifiers arising in one-vs-one classification framework.   
+classifiers arising in \emph{probabilistic} one-vs-one classification framework.   
 One-vs-one classification is a two-step framework to solve 
 multi-class classification problems.
 In the first step it reduces the multiclass problem to a series of binary
@@ -53,11 +53,12 @@ In the second step it deduces the multi-class decision by aggregating decisions
 for the binary problems. Since the procedure is two-step, there is a possibility 
 to apply the adjustment of priors either to the probabilistic distributions 
 obtained after the first step, or after the second step. It is not clear what 
-should be the preferred course of action and this problem motivates our paper. 
+should be the preferred course of action and this problem motivates our paper. We note that the dilemma does not appear
+in \emph{non-probabilistic} one-vs-one classification e.g. when voting is used in the second step \cite{galar2011overview}.
 
 
 Our approach to the problem is to evaluate practical performance of different 
-methods to aggregate binary predictions. Such methods -- called coupling methods
+methods to aggregate probabilistic binary predictions. Such methods -- called coupling methods
 -- first appeared in work of \cite{refregier1991probabilistic} when making 
 multi-class classification using neural networks. 
 Many authors followed with alternative proposals 
@@ -66,8 +67,8 @@ wu2004probability, vsuch2015new, vsuch2016bayes}.
 
 We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. 
 We pay special attention to methods that commute with change of priors -- Bayes covariant methods, 
-since such methods provide an unexpected, and elegant solution to our problem. 
+since such methods provide an  elegant solution to our problem. 
 We introduce new coupling methods by forming weighted ensembles. We prove such ensemble of Bayes covariant methods is again Bayes covariant
-when a normalizing condition on weights hold (Proposition \ref{prop:ensemble}).  
+when a normalizing condition on weights holds (Proposition \ref{prop:ensemble}).  
 Our experiments are described in Section 4. In Section 5 we summarize our findings, 
 provide practical guidance and outline future research directions.

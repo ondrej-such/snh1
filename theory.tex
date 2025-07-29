@@ -51,7 +51,7 @@ Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of e
 	\alpha_{ji}(\boldsymbol{p}^\textrm{multi}) = \frac{p_j^\textrm{multi}(x)}{p_i^\textrm{multi}(x)}
 	=  \frac{d_j(x) P_j}{d_i(x) P_i} = \frac{1}{p^\textrm{binary}_{ij}(x)}- 1.
 	\end{align}
-	Knowing the odds of $C_2$ to $C_1$, $C_3$ to $C_2$ up to $C_{K}$ to $C_{K-1}$ together with the requirement that probabilities sum to one uniquely determines the whole vector $\boldsymbol{p}^\Pi(x)$.
+	Knowing the odds of $C_2$ to $C_1$, $C_3$ to $C_2$ up to $C_{K}$ to $C_{K-1}$ together with the requirement that probabilities sum to one uniquely determines the whole vector $\boldsymbol{p}^\textrm{multi}(x)$.
 \end{proof}
 %\begin{proof}
 %Indeed, we have 
@@ -66,7 +66,7 @@ Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of e
 In practice one does not  know true distributions of samples and hence cannot 
 construct Bayes classifiers. However, given a sample from the distribution, 
 we can train binary classifiers to provide approximations $r_{ij}(x)$ to 
-pairwise Bayes classifiers $p_{ij}^\textrm{multi}(x)$. The goal of probabilistic
+pairwise Bayes classifiers $p_{ij}^\textrm{binary}(x)$. The goal of probabilistic
 one-vs-one classification is to deduce for any $x$ in the feature space $X$ an 
 estimate $\hat{\boldsymbol{p}}(x)$ for $\boldsymbol{p}^\textrm{multi}(x)$. 
 One does it by finding an approximate solution of the system of equations
@@ -104,7 +104,7 @@ For any $x$ in the feature space $r_{ij}(x) > 0$.
 
 Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines all satisfy this assumption.
 	
-A method to solve Bradley-Terry equations is called a \emph{coupling method}. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries being $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
+A method to solve Bradley-Terry equations is called a \emph{coupling method}. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries representing predicted probabilities $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
 
 \begin{figure}[!h]
 	\centering
@@ -118,7 +118,7 @@ A method to solve Bradley-Terry equations is called a \emph{coupling method}. It
 \end{figure}
 
 
-The system of Bradley-Terry equations is usually inconsistent and additional assumptions are needed to construct an estimator. In Sections \ref{sec:des:exact} and \ref{sec:des:inexact} we review various approaches to construct coupling methods.
+The system of Bradley-Terry equations is usually inconsistent and additional assumptions are needed to construct an estimator. In Sections \ref{sec:des:exact} and \ref{sec:des:inexact} we review various desiderata used to construct and compare coupling methods.
 
 
 \subsection{Exact desiderata on coupling method} \label{sec:des:exact}
@@ -160,7 +160,7 @@ this section
 
 Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical \cite{shannon1948mathematical,selten1998axiomatic}.
 
-\emph{Symmetry} We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
+\emph{Symmetry} refers to transformations of multi-class predictions when permuting classes. We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
 
 \begin{itemize}
 	\item Given  distributions on the classes $\boldsymbol{p}= (p_1, \ldots, p_K)$, we can define
@@ -169,7 +169,7 @@ Note that potentially there may be multiple canonical methods, derived from (or 
 	\end{align}
 	 \item $\sigma$ also acts on the matrix of binary predictions. Namely, the entry of $\sigma(\boldsymbol{R})$ in $i$-th row and $j$-th column is defined to be $r_{\sigma(i), \sigma(j)}$.
 	 \end{itemize}
-We say that a coupling method $V$ is \emph{symmetric} if 
+We say that a coupling method $\boldsymbol{v}$ is \emph{symmetric} if 
 \begin{align}
 		\sigma(\boldsymbol{v}(\boldsymbol{R})) = \boldsymbol{v}(\sigma(\boldsymbol{R}))\quad\textrm{for any permutation $\sigma$}.
 \end{align}
@@ -181,11 +181,11 @@ We say that a coupling method $V$ is \emph{symmetric} if
 
 When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical, for all initial pairwise data $\boldsymbol{R}$, then we say that the coupling method is \emph{Bayes covariant}. 
 
-Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_2^{ij}(D)$ by requiring
+Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_{ij}(D)$ by requiring
 $$
-\pi_2^{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
+\pi_{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
 $$
-We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $\pi_2^{ij}(r_{ij})$. The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
+We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $\pi_{ij}(r_{ij})$. The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
 
 On the other hand we can apply \eqref{eq:changePrior} after coupling. Say we have a distribution on $K$ classes
 \begin{align}
@@ -226,7 +226,7 @@ In this section we describe several concepts that lack strict mathematical delin
 
 \emph{Robustness -- good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
 
-\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel, which requires choosing two hyper-parameters. 
+\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel that requires choosing two hyper-parameters. 
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
