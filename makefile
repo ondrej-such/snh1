@@ -102,14 +102,14 @@ sp1.pdf: springer.tex $(TEX_FILES)
 		pdflatex "\\def\\mysecret{1} \\input{springer.tex}" 
 		mv springer.pdf sp1.pdf
 
-sp2.pdf: springer.tex $(TEX_FILES)
+sp2.pdf: springer.tex $(TEX_FILES) paper.bib
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		bibtex springer
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		mv springer.pdf sp2.pdf
 
-sp3.pdf: springer.tex  $(TEX_FILES)
+sp3.pdf: springer.tex  $(TEX_FILES) paper.bib
 		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
 		bibtex springer
 		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
