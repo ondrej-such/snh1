@@ -171,7 +171,7 @@ Note that potentially there may be multiple canonical methods, derived from (or 
 	 \end{itemize}
 We say that a coupling method $\boldsymbol{v}$ is \emph{symmetric} if 
 \begin{align}
-		\sigma(\boldsymbol{v}(\boldsymbol{R})) = \boldsymbol{v}(\sigma(\boldsymbol{R}))\quad\textrm{for any permutation $\sigma$}.
+		\sigma(\boldsymbol{v}(\boldsymbol{R})) = \boldsymbol{v}(\sigma(\boldsymbol{R}))\quad\textrm{for any permutation $\sigma$}. \label{eq:symmetry}
 \end{align}
 
 \emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 

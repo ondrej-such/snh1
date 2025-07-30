@@ -42,7 +42,7 @@ We note that the method is symmetric. The choice of quadratic scoring rule can a
 
 \subsection{Arboreal methods}
 
-System of equations \eqref{eq:bt2} is overdetermined because there are $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one.  Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
+System of equations \eqref{eq:bt2} is overdetermined because there are $K$ unknowns and $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one.  Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
 
 An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes $C_1$ and $C_3$. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
 \begin{equation}
@@ -54,12 +54,23 @@ An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A
 	\label{eq:arb1}
 \end{equation}
 
+It is useful to consider the graph on $K$ vertices, where vertices correspond to the classes and edges to the selected equations. It cannot have a cycle, otherwise the subsystem of Bradley-Terry equations would be overdetermined for unknowns representing the vertices of the cycle. Therefore it has to be a spanning tree.
+
 For $K=3$, there are three different arboreal coupling methods corresponding to three different spanning trees on three vertices. We shall call them $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the coupling method $\boldsymbol{s}_i$ includes only the equations that involve class $i$. In particular, \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
 
 For $K>3$ the three methods can be generalized to corresponds to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$.
 
-More generally, to obtain a regular system of equations for  any of $K$ , it is necessary and sufficient that the tree formed by edges for which we include equations from Bradley-Terry system is  a spanning tree. Note that any arboreal method is non-canonical, because there is no natural way to choose a spanning tree in a complete graph. In fact, a stronger statement is true -- no arboreal method is symmetric. 
-To see that, consider the action of the transposition of a vertex $v$ of degree one and another vertex $v'$ of degree $>1$ in a spanning tree. The results of coupling involves different number of equations for classes $C_v$ and $C_v'$ which is a contradiction.
+%More generally, to obtain a regular system of equations for  any of $K$ , it is necessary and sufficient that the tree formed by edges for which we include equations from Bradley-Terry system is  a spanning tree. 
+
+Note that any arboreal method is non-canonical, because there is no natural way to choose a spanning tree in a complete graph. 
+%In fact, a stronger statement is true -- no arboreal method is symmetric. 
+In fact, a stronger statement is true.
+\begin{prop}
+No arboreal method is symmetric. 
+\end{prop}
+\begin{proof}
+First note that any spanning tree has a vertex $v$ of degree one and another vertex $v'$ of degree $>1$. Now consider the transposition $\sigma$ exchanging  vertices $v$  and $v'$. Since coupling involves different number of equations for classes $C_v$ and $C_{v'}$ the required condition \eqref{eq:symmetry} cannot hold for $\sigma$.
+\end{proof}
 %However, we will see in Section \ref{sec:bc2} that by ``averaging'' several stars we can obtain a canonical 
 
 
