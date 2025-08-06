@@ -11,7 +11,7 @@ $$
 one may distinguish the following subcategories of distribution shift:
 \begin{itemize}
 	\item covariate shift, if $p(X)$ changes, but $p(Y\mid X)$ is unchanged,
-	\item label shift, if $p(Y)$ changes, but $P(X \mid Y)$ remains the same,
+	\item label shift, if $p(Y)$ changes, but $p(X \mid Y)$ remains the same,
 	\item concept shift, if $p(Y \mid X)$ itself changes.
 \end{itemize}
 
@@ -29,12 +29,12 @@ To provide a concrete example, consider a driver assistance system recognizing t
 Suppose a speed limit sign was maliciously altered to indicate 80mph limit instead of 30mph.
 To avoid being fooled by the alteration, the system could utilize priors.
 The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city.
-unlikely to encounter 80mph limit in a city setting. By taking into account 
-the city priors, the system would be more likely to make the proper classification. 
+It is very unlikely to encounter 80mph limit in a city setting. By taking 
+the city priors  into account, the system would be more likely to make the proper classification. 
 
-Some systems are unable to do incorporate new priors without rebuilding 
-the classifier  e.g. those based 
-on fuzzy logic, or some tree methods. 
+Some systems are unable to incorporate new priors without rebuilding 
+the classifier, e.g., those based 
+on fuzzy logic or some tree methods. 
 However, change of priors can be effectively dealt with in probabilistic 
 classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} 
 what should happen  to the prediction of the  Bayes classifier when priors 
@@ -46,27 +46,26 @@ as would happen with the Bayes classifier.
 There is a subtle issue with this approach  when handling probabilistic 
 classifiers arising in \emph{probabilistic} one-vs-one classification framework.   
 One-vs-one classification is a two-step framework to solve 
-multi-class classification problems.
+multiclass classification problems.
 In the first step it reduces the multiclass problem to a series of binary
 classification problems. 
-In the second step it deduces the multi-class decision by aggregating decisions 
+In the second step it deduces the multiclass decision by aggregating decisions 
 for the binary problems. Since the procedure is two-step, there is a possibility 
 to apply the adjustment of priors either to the probabilistic distributions 
 obtained after the first step, or after the second step. It is not clear what 
 should be the preferred course of action and this problem motivates our paper. We note that the dilemma does not appear
-in \emph{non-probabilistic} one-vs-one classification e.g. when voting is used in the second step \cite{galar2011overview}.
+in \emph{non-probabilistic} one-vs-one classification, e.g., when voting is used in the second step \cite{galar2011overview}.
 
 
 Our approach to the problem is to evaluate practical performance of different 
-methods to aggregate probabilistic binary predictions. Such methods -- called coupling methods
--- first appeared in work of \cite{refregier1991probabilistic} when making 
+methods to aggregate probabilistic binary predictions. Such methods---called coupling methods---first appeared in work of \cite{refregier1991probabilistic} when making 
 multi-class classification using neural networks. 
 Many authors followed with alternative proposals 
 \cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned,
 wu2004probability, vsuch2015new, vsuch2016bayes}.
 
 We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. 
-We pay special attention to methods that commute with change of priors -- Bayes covariant methods, 
+We pay special attention to methods that commute with change of priors---Bayes covariant methods, 
 since such methods provide an  elegant solution to our problem. 
 We introduce new coupling methods by forming weighted ensembles. We prove such ensemble of Bayes covariant methods is again Bayes covariant
 when a normalizing condition on weights holds (Proposition \ref{prop:ensemble}).  
