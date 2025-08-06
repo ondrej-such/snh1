@@ -28,25 +28,25 @@ predicts the probability of the $i$-th class as
 	p_{ij}^\textrm{binary}(x) = \frac{d_i(x) P_i}{d_i(x)P_i + d_j(x)P_j}.
 \end{align}
 
-Knowledge of vector $\boldsymbol{p}^\textrm{multi}(x)$ is equivalent to knowing the functions $p^\textrm{binary}_{ij}(x)$. Indeed under Assumption \ref{ass:1} we have
+Knowledge of vector $\boldsymbol{p}^\textrm{multi}(x)$ is equivalent to knowing the functions $p^\textrm{binary}_{ij}(x)$. Indeed, under Assumption \ref{ass:1} we have
 \begin{align}
 p_{ij}^\textrm{binary}(x) = \frac{p_i^\textrm{multi}(x)}{p_i^\textrm{multi}(x) + p_j^\textrm{multi}(x)}. \label{eq:bt1}
 \end{align}
 
-Conversely, it is easy to show that  given values of $p_{ij}(x)$ the system of equations \eqref{eq:bt1} has a unique solution. This result (Proposition \ref{prop:binary2multi}) can be viewed as the fundamental theorem of one-vs-one classification.
+Conversely, it is easy to show that  given values of $p_{ij}^\textrm{binary}(x)$, the system of equations \eqref{eq:bt1} has a unique solution. This result (Proposition \ref{prop:binary2multi}) can be viewed as the fundamental theorem of one-vs-one classification.
 
 \begin{prop}
 	 \label{prop:binary2multi}
-	 Knowledge of binary Bayes classifiers $p^\textrm{binary}_{ij}$ determines the multiclass Bayes classifier 
+	 Under Assumption \ref{ass:1}, knowledge of binary Bayes classifiers $p^\textrm{binary}_{ij}$ determines the multiclass Bayes classifier 
 	 $\boldsymbol{p}^\textrm{multi}$.
 \end{prop}
 \begin{proof}
-	Given a multiclass distribution $\boldsymbol{p} = (p_1, \ldots,p_K)$ on $K$ classes, let $\alpha_{ij}(\boldsymbol{p})$ denote the odds of $C_i$ to $C_j$:
+	Given a multiclass distribution $\boldsymbol{p} = (p_1, \ldots,p_K)$ on $K$ classes, let $\alpha_{ij}(\boldsymbol{p})$ denote the odds of classes $C_i$ to $C_j$:
 	\begin{align}
 		\alpha_{ij}(\boldsymbol{p}) = \frac{p_i}{p_j} \label{eq:alpha}
 	\end{align}
 	
-	From \eqref{eq:bt1} we can deduce the odds of classes $C_j$ to $C_i$ for the Bayes classifier since
+	From \eqref{eq:bt1} we can deduce the odds of  $C_j$ to $C_i$ for the Bayes classifier since
 	\begin{align}
 	\alpha_{ji}(\boldsymbol{p}^\textrm{multi}) = \frac{p_j^\textrm{multi}(x)}{p_i^\textrm{multi}(x)}
 	=  \frac{d_j(x) P_j}{d_i(x) P_i} = \frac{1}{p^\textrm{binary}_{ij}(x)}- 1.
@@ -96,7 +96,7 @@ One does it by finding an approximate solution of the system of equations
 %\item when probabilities are parametrized in other ways (e.g. other common parametrizations are as odds, or log-odds), the system of equations \eqref{eq:bt} is non-linear.
 %\end{itemize}
 
-Equations forming system \eqref{eq:bt2} are called Bradley-Terry equations. In parallel to Assumption \ref{ass:1} it is customary to make the following assumption on estimates $r_{ij}$.
+Equations forming system \eqref{eq:bt2} are called Bradley--Terry equations. In parallel to Assumption \ref{ass:1} it is customary to make the following assumption on estimates $r_{ij}$.
 
 \begin{assumption} \label{ass:2}
 For any $x$ in the feature space $r_{ij}(x) > 0$.
@@ -104,12 +104,12 @@ For any $x$ in the feature space $r_{ij}(x) > 0$.
 
 Commonly used classifiers such as linear discriminant analysis, (penalized) logistic regression or support vector machines all satisfy this assumption.
 	
-A method to solve Bradley-Terry equations is called a \emph{coupling method}. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries representing predicted probabilities $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
+A method to solve Bradley--Terry equations is called a \emph{coupling method}. Its input can be represented by a matrix $\boldsymbol{R}(x)$ with off-diagonal entries representing predicted probabilities $r_{ij}(x)$. Schematically, classification using coupling method $\boldsymbol{v}$ proceeds as indicated in Figure \ref{fig:coupling}.
 
 \begin{figure}[!h]
 	\centering
 	\begin{tikzcd}[column sep=3cm]
-		\textrm{sample $x$}\arrow[r, "binary~classifiers"] \arrow[dr,dotted,swap, "multi-class~ prediction"] & \boldsymbol{R}(x) %\arrow{d}{coupling}[swap]{\boldsymbol{v}} \\
+		\textrm{observation $x$}\arrow[r, "binary~classifiers"] \arrow[dr,dotted,swap, "multi-class~ prediction"] & \boldsymbol{R}(x) %\arrow{d}{coupling}[swap]{\boldsymbol{v}} \\
 		\arrow{d}{coupling} \\
 		 & \boldsymbol{v}(\boldsymbol{R}(x)) 
 	\end{tikzcd}
@@ -118,7 +118,7 @@ A method to solve Bradley-Terry equations is called a \emph{coupling method}. It
 \end{figure}
 
 
-The system of Bradley-Terry equations is usually inconsistent and additional assumptions are needed to construct an estimator. In Sections \ref{sec:des:exact} and \ref{sec:des:inexact} we review various desiderata used to construct and compare coupling methods.
+The system of Bradley--Terry equations is usually inconsistent and additional assumptions are needed to construct an estimator. In Sections \ref{sec:des:exact} and \ref{sec:des:inexact} we review various desiderata used to construct and compare coupling methods.
 
 
 \subsection{Exact desiderata on coupling method} \label{sec:des:exact}
