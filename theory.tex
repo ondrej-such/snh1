@@ -1,7 +1,7 @@
 \section{Theoretical basis of coupling methods} \label{sec:theory}
 
 Suppose we have $K$ classes of objects, each distributed with density $d_i$, $i=1,\ldots, K$ on a feature 
-space $X$. In a multi-class classification problem we are provided with 
+space $X$. In a  classification problem we are provided with 
 the prior probabilities $\Pi = (P_1, \ldots, P_K)$ of each class. Given $x$ in $X$ we aim to find 
 the probability that $x$ belongs to the $i$-th class. 
 
@@ -20,7 +20,7 @@ The Bayes classifier predicts that the probability of $x$ belonging to the $i$-t
  p^\textrm{multi}_i(x) = \frac{d_i(x) P_i}{\sum_{k=1}^K d_k(x)P_k}.
 \end{align}
 
-Besides the multi-class classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of 
+Besides the multiclass classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of 
 classes. Assuming the prior on the two classes is proportional to $(P_i, P_j)$, the binary Bayes classifier 
 predicts the probability of the $i$-th class as 
 
@@ -109,11 +109,11 @@ A method to solve Bradley--Terry equations is called a \emph{coupling method}. I
 \begin{figure}[!h]
 	\centering
 	\begin{tikzcd}[column sep=3cm]
-		\textrm{observation $x$}\arrow[r, "binary~classifiers"] \arrow[dr,dotted,swap, "multi-class~ prediction"] & \boldsymbol{R}(x) %\arrow{d}{coupling}[swap]{\boldsymbol{v}} \\
+		\textrm{observation $x$}\arrow[r, "binary~classifiers"] \arrow[dr,dotted,swap, "multiclass~ prediction"] & \boldsymbol{R}(x) %\arrow{d}{coupling}[swap]{\boldsymbol{v}} \\
 		\arrow{d}{coupling} \\
 		 & \boldsymbol{v}(\boldsymbol{R}(x)) 
 	\end{tikzcd}
-	\caption{Multi-class classification using a coupling method $\boldsymbol{v}$}
+	\caption{Multiclass classification using a coupling method $\boldsymbol{v}$}
 	\label{fig:coupling}
 \end{figure}
 
@@ -152,15 +152,15 @@ this section
 
 
 
-\emph{Unique solution} refers to the fact that the procedure to compute a multi-class probabilistic prediction always converges to a unique solution. One way to satisfy this condition would be that it amounts to a linear system of equations in $K$ variables, and the matrix of the system would be invertible. Another example would be when the procedure amounts to finding the minimum of a strongly convex function. 
+\emph{Unique solution} refers to the fact that the procedure to compute a multiclass probabilistic prediction always converges to a unique solution. One way to satisfy this condition would be that it amounts to a linear system of equations in $K$ variables, and the matrix of the system would be invertible. Another example would be when the procedure amounts to finding the minimum of a strongly convex function. 
 
-\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multi-class Bayes classifier i.e. satisfies \eqref{eq:bt1}.
+\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multiclass Bayes classifier i.e. satisfies \eqref{eq:bt1}.
 
 \emph{Canonicity} refers to requirement that the method should be natural. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. 
 
 Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical \cite{shannon1948mathematical,selten1998axiomatic}.
 
-\emph{Symmetry} refers to transformations of multi-class predictions when permuting classes. We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
+\emph{Symmetry} refers to transformations of multiclass predictions when permuting classes. We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
 
 \begin{itemize}
 	\item Given  distributions on the classes $\boldsymbol{p}= (p_1, \ldots, p_K)$, we can define
@@ -174,7 +174,7 @@ We say that a coupling method $\boldsymbol{v}$ is \emph{symmetric} if
 		\sigma(\boldsymbol{v}(\boldsymbol{R})) = \boldsymbol{v}(\sigma(\boldsymbol{R}))\quad\textrm{for any permutation $\sigma$}. \label{eq:symmetry}
 \end{align}
 
-\emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}. It refers to the behavior of a probabilistic multi-class method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
+\emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}. It refers to the behavior of a probabilistic multiclass method built in one-vs-one fashion, when the priors change. Any Bayes classifier, whether binary or multiclass changes its prediction when the priors change. Let us describe the process. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
 \begin{align}
 \boldsymbol{p}^{\Pi'} \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{eq:changePrior}
 \end{align}
@@ -230,7 +230,7 @@ In this section we describe several concepts that lack strict mathematical delin
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
-Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multi-class prediction \cite[p.~467]{hastie1998classification}. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
+Let us finally mention \emph{Hinton's minimality}. Geoffrey Hinton is reported to object to the underlying principle of one-vs-one classification, where any single classifier influences the multiclass prediction \cite[p.~467]{hastie1998classification}. Suppose we are classifying objects from CIFAR-10 dataset.  If the true class is  a ``dog'', why should we care what is the output of the classifier distinguishing ``airplanes'' from ``ships''? The binary classifier is trained only on airplanes and ships, and has never seen a dog. One may thus prefer a classifier which somehow suppresses noisy output of (seemingly) irrelevant classifiers.
 
 
 %The first that the five conditions have a clear mathematical definition, whereas the rest are not exact. For instance while the ideal situation for a coupling method is to have no parameters, the presence of one or two trainable parameters may be justified, if it yields noticeably better performance.

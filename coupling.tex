@@ -6,7 +6,7 @@ There is a plethora of methods available for coupling. In this section we descri
 
 \subsection{Methods aiming to minimize binary divergence}
 
-A multi-class estimate $\hat{\boldsymbol{p}}$ obtained by a coupling method implies via \eqref{eq:bt1} probability distributions on each pair of classes:
+A multiclass estimate $\hat{\boldsymbol{p}}$ obtained by a coupling method implies via \eqref{eq:bt1} probability distributions on each pair of classes:
 \begin{align*}
 	\boldsymbol{d}_{ij}^\textrm{multi}= \biggl(\frac{\hat{p_i}}{\hat p_i + \hat p_j},\frac{\hat{p_j}}{\hat p_i + \hat p_j}\biggr)	
 \end{align*}
@@ -129,7 +129,7 @@ An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on t
 
 Given several Bayes covariant methods one can form  their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make the construction explicit.
 
-Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multi-class classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_i a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
+Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multiclass classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_i a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
 \begin{align*}
  	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_M \boldsymbol{v}_M\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(x),
 \end{align*}
