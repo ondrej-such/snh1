@@ -87,7 +87,7 @@ $$
 
 For any observation belonging to class $C_t$, its result is identical to the arboreal method where the underlying tree forms a star with center at $C_t$. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at the class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\hat\boldsymbol{p}$, i.e.,
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at the class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\hat{\boldsymbol{p}}$, i.e.,
 \begin{equation}
 	\begin{split}
 	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1(x) + \ldots + \hat p_K \boldsymbol{s}_K(x),\\
@@ -104,19 +104,19 @@ There are many Bayes covariant methods. The simplest example are arboreal coupli
 
 A very helpful aid to study Bayes covariant methods is property $BC_{ij}$ (the notation stands for \emph{Bayes covariant when restricted to classes} $i$ and $j$). A coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ if for any change of priors $\pi$ and any  pairwise data $\boldsymbol{R}$ the odds of classes $C_i$ to $C_j$ predicted by $\boldsymbol{v}(\boldsymbol{R}^\pi)$ and $\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi$ are equal. Using earlier notation for odds (see \eqref{eq:alpha}), one requires
 \begin{align}
-	\alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R}^\pi) \bigr) = \alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R})^\pi \bigr)
+	\alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R}^\pi) \bigr) = \alpha_{ij}\biggl( \bigl(\boldsymbol{v}(\boldsymbol{R}) \bigr)^\pi\biggr)
 \end{align}
 
 Let us list some easy to verify properties of this concept:
 
 \begin{itemize}
-	\item[a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$ (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
+	\item[(a)] a Bayes covariant coupling method satisfies $BC_{ij}$ for any $i\not= j$ (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
 	%\item[b)] if a coupling method satisfies $BC_{12}, BC_{23}, \ldots, BC_{(K-1),K}$ then it is Bayes covariant (see Proposition \ref{prop:bcprop}),
-	\item[b)] conversely, if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
-	\item[c)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$ (see Lemma \ref{lem:transitivity} in Appendix \ref{app:bc1}).
+	\item[(b)] conversely, if a coupling method satisfies $BC_{ij}$ for all $i\not= j$ then it is Bayes covariant (see Proposition \ref{prop:bcprop} in Appendix \ref{app:bc1}),
+	\item[(c)] if a coupling method satisfies $BC_{ij}$ and $BC_{jk}$ then it satisfies $BC_{ik}$ (see Lemma \ref{lem:transitivity} in Appendix \ref{app:bc1}).
 \end{itemize}
 
-Now we are ready to prove the our first key result.
+Now we are ready to prove  our first key result.
 
 \begin{prop}
 Any arboreal method is Bayes covariant.
@@ -127,9 +127,9 @@ An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on t
 	
 \end{proof}
 
-Given several Bayes covariant methods one can form  their ``linear combination'' - an ensemble which is also Bayes covariant. Let us make the construction explicit.
+Given several Bayes covariant methods one can form  their ``linear combination''---an ensemble which is also Bayes covariant. Let us make the construction explicit.
 
-Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multiclass classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_i a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
+Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multiclass classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_m a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
 \begin{align*}
  	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_M \boldsymbol{v}_M\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(x),
 \end{align*}
@@ -137,18 +137,18 @@ where the symbol $\odot$ denotes componentwise multiplication, and exponentials 
 
 \begin{prop}
 	\label{prop:ensemble}
-Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are Bayes covariant. If $\sum a_m = 1$, then $\boldsymbol{e} = \bigoplus_m a_m \boldsymbol{v}_m$ is also a Bayes covariant coupling method.
+Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are Bayes covariant. If $\sum a_m = 1$, then $\boldsymbol{e} = \bigoplus_m a_m \boldsymbol{v}_m$ is also a Bayes covariant.
 \end{prop}
 
 \begin{proof}
 It is sufficient to show that $BC_{ij}$ holds for any $i\not= j$. 
 
-Let $\pi$ be a change of priors from $(P_1, \ldots, P_K)$  to $(P'_1, \ldots, P'_K)$. Let $o_m$ denotes the odds of classes $C_i$ and $C_j$ predicted by coupling method $\boldsymbol{v}_m$ i.e.
+Let $\pi$ be a change of priors from $(P_1, \ldots, P_K)$  to $(P'_1, \ldots, P'_K)$. Let $o_m$ denotes the odds of classes $C_i$ and $C_j$ predicted by coupling method $\boldsymbol{v}_m$, i.e.,
 $$
 o_m = \alpha_{ij}(\boldsymbol{v}_m(\boldsymbol{R})).
 $$
 
-From the definition of linear combination of coupling methods that the odds of $C_i$ to $C_j$ for $\boldsymbol{e}$ are
+From the definition of linear combination of coupling methods the odds of $C_i$ to $C_j$ for $\boldsymbol{e}$ are
 \begin{align}
 \prod_m o_m^{a_m}.
 \end{align}
@@ -184,27 +184,27 @@ Clearly, under the assumption $\sum_m a_m = 1$, the classifier $\bigoplus_m a_m 
 %	\bigl(\alpha 	\boldsymbol{B} \oplus \beta \boldsymbol{\tilde B}\bigr)(x)\propto (\,p_1^\alpha \tilde p_1^\beta, \ldots, p_K^\alpha \tilde p_K^\beta).
 %\end{align*}
 
-As an example, consider the classification problem with three classes. We have three arboreal classifiers $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ which correspond to star graphs centered respectively at classes $C_1, C_2, C_3$. The classifier 
+As an example, consider the classification problem with three classes. We have three arboreal classifiers $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$, which correspond to star graphs centered  at classes $C_1, C_2, C_3$ respectively. The classifier 
 \begin{align}
 \boldsymbol{e}_3 \stackrel{def}{=} \frac13 \boldsymbol{s}_1 \oplus \frac13 \boldsymbol{s}_2 \oplus \frac 13 \boldsymbol{s}_3  \label{eq:normal3}
 \end{align}
 is Bayes covariant \emph{and} symmetric. A key result proved in \cite{vsuch2016bayes} is that it is a unique  classifier having these two properties.
 
 \begin{thm} \label{thm:K3}
-	There exists a unique symmetric Bayes covariant coupling methods for $K=3$.
+	There exists a unique symmetric Bayes covariant coupling method for $K=3$.
 \end{thm}
 
 \begin{proof}
 Let 
 \begin{align}
-	\boldsymbol{R}_s \stackrel{def}{=} \begin{pmatrix} \cdot & s & 1 -s \\  1-s & \cdot & s \\ s & 1-s & \cdot \end{pmatrix}
+	\boldsymbol{R}_s \stackrel{def}{=} \begin{pmatrix} \cdot & s & 1 -s \\  1-s & \cdot & s \\ s & 1-s & \cdot \end{pmatrix}.
 \end{align}
 Since $R_s$ is invariant under the action of any permutation of 3 elements, 
 for a symmetric coupling method we have 
 \begin{align}
 	\boldsymbol{v} (\boldsymbol{R}_s) = \biggl(\frac 13, \frac 13, \frac 13 \biggr).
 \end{align}
-Now applying  Proposition \ref{prop:bc3} from Appendix \ref{app:bc1} yields uniqueness. The existence of the method was already shown above using Proposition \ref{prop:ensemble}.
+Applying  Proposition \ref{prop:bc3} from Appendix \ref{app:bc1} yields uniqueness. The existence of the method was already shown above using Proposition \ref{prop:ensemble}.
 \end{proof}
 
 
@@ -212,11 +212,11 @@ Let us point out one consequence of the theorem. We could define another ensembl
 \[
 \tilde{\boldsymbol{e}} = \frac13 \boldsymbol{s}_1(x) + \frac13 \boldsymbol{s}_2(x) + \frac 13 \boldsymbol{s}_3(x).
 \]
-Note that here we use the plus symbol to denote the vector addition of vectors representing  probability distributions over $K$ classes. This is a different classifier from the one given by  \eqref{eq:normal3} , and since it is symmetric, it cannot be Bayes covariant.
+Note that here we use the plus symbol to denote the vector addition of vectors representing  probability distributions over $K$ classes. This is a different classifier from the one given by  \eqref{eq:normal3}, and since it is symmetric, it cannot be Bayes covariant.
 
 The classifier $\boldsymbol{e}_3$ has a canonical generalization for any $K>3$, namely the classifier
 \begin{align}
-\boldsymbol{e}_K \stackrel{def}{=} \frac1K \boldsymbol{s}_1 \oplus \frac1K \boldsymbol{s}_2 \oplus \ldots \oplus \frac 1K \boldsymbol{s}_K  \label{eq:bc1}
+\boldsymbol{e}_K \stackrel{def}{=} \frac1K \boldsymbol{s}_1 \oplus \frac1K \boldsymbol{s}_2 \oplus \ldots \oplus \frac 1K \boldsymbol{s}_K.  \label{eq:bc1}
 \end{align}
 We call this coupling method the \emph{normal} coupling method.
 
