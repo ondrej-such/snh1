@@ -68,10 +68,10 @@ exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
 exp4-truth.pdf: data/exp4.csv exp4-truth.R
 		Rscript -e "source('exp4-truth.R')"
 
-tab-sep.tex: data/separation.csv
+tab-sep.tex: data/separation.csv tab-sep.R
 		Rscript -e "source('tab-sep.R')"
 
-tab-step2.tex: data/triples.csv
+tab-step2.tex: data/triples.csv tab-step2.R
 		Rscript -e "source('tab-step2.R')"
 
 tab-multi.tex: data/multi-acc.csv
@@ -89,7 +89,7 @@ else
 				echo "Missing rule"
 endif
 
-TEX_FILES= intro.tex theory.tex experiment.tex coupling.tex discussion.tex appendix.tex
+TEX_FILES= intro.tex theory.tex experiment.tex coupling.tex discussion.tex appendix.tex tab-sep.tex
 
 paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-summary.pdf exp2-detail.pdf exp1-plot1.pdf exp4-truth.pdf paper.bib tab-exp4.tex 
 		pdflatex paper.tex

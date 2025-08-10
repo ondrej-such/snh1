@@ -10,11 +10,13 @@ df1 <- df |> group_by(dataset, status, K) |> summarize(count = n() ) |>
               names_from = "status", 
               values_from = "pct", 
               values_fill = 0) |>
-  mutate(separable = optimal) |>
-  select(dataset, K)
+  mutate(separable = optimal)  |>
+ select(dataset, K, optimal)
+
+colnames(df1) <- c("Dataset", "$K$", "Portion linearly separable")
 
 sink("tab-sep.tex")
-print(xtable(df1, label = "tab:sep", digits = 2,
-             caption = "The benchmark datasets with indication of the number of classes $K$ ",
-),  include.rownames = FALSE)
+print(xtable(df1, label = "tab:sep", digits = 3,
+             caption = "The benchmark datasets with indication of the number of classes $K$ and the portion of binary classification problems that are linearly separable",
+),  include.rownames = FALSE, sanitize.colnames.function = identity)
 sink()
