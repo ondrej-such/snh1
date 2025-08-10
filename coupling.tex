@@ -15,17 +15,17 @@ On the other hand, binary classifiers provide another distribution for each pair
 \boldsymbol{d}_{ij}^\textrm{binary} = ( r_{ij},  r_{ji}).
 \end{align*}
 
-A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional incorporating divergence measures between these distributions
+A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional incorporating divergence measures between these distributions:
 \begin{align*}
-\hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\boldsymbol{d}_{ij}^\textrm{multi}, \boldsymbol{d}_{ij}^\textrm{binary})
+\hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{ij} w_{ij} \divm (\boldsymbol{d}_{ij}^\textrm{multi}, \boldsymbol{d}_{ij}^\textrm{binary}).
 \end{align*}
 
-A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback-Leibler divergence $\divm_\textrm{KL}$
+A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback--Leibler divergence 
 \begin{align*}
 	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= \sum d_i \log (d_i/ d'_i)
 \end{align*}
 
-Kullback-Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy , one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly, buja2005loss}.
+Kullback--Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy, one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly, buja2005loss}.
  
 For instance, a popular alternative is divergence arising from the quadratic  score \cite{gneiting2007strictly} (also known as Brier score \cite{brier1950verification}). This divergence takes the form
 $$
@@ -44,7 +44,7 @@ We note that the method is symmetric. The choice of quadratic scoring rule can a
 
 System of equations \eqref{eq:bt2} is overdetermined because there are $K$ unknowns and $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one.  Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
 
-An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes $C_1$ and $C_3$. The two equations form \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations
+An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes $C_1$ and $C_3$. The two equations from \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations:
 \begin{equation}
 	\begin{split}
 		\frac{\hat p_1}{\hat p_1 + \hat p_2} &= {r}_{12}\\
@@ -58,7 +58,7 @@ It is useful to consider the graph on $K$ vertices, where vertices correspond to
 
 For $K=3$, there are three different arboreal coupling methods corresponding to three different spanning trees on three vertices. We shall call them $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the coupling method $\boldsymbol{s}_i$ includes only the equations that involve class $i$. In particular, \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
 
-For $K>3$ the three methods can be generalized to corresponds to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$.
+For $K>3$ the three methods can be generalized to correspond to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$.
 
 %More generally, to obtain a regular system of equations for  any of $K$ , it is necessary and sufficient that the tree formed by edges for which we include equations from Bradley-Terry system is  a spanning tree. 
 
@@ -80,18 +80,18 @@ A variant on arboreal methods is the following oracle method which we shall call
 $$
 \frac{\hat p_t}{\hat p_t + \hat p_j} = {r}_{tj},\quad \textrm{for }j\not = t,
 $$
-together the  with total sum equation
+together   with the total sum equation
 $$
 \sum_{i=1}^K  \hat p_i = 1.
 $$
 
-For any one sample belonging to class $C_t$, its result is identical to the arboreal method where the underlying tree forms a star with center at $C_t$. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
+For any observation belonging to class $C_t$, its result is identical to the arboreal method where the underlying tree forms a star with center at $C_t$. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centred at the class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\boldsymbol{p}$ i.e.
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at the class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\hat\boldsymbol{p}$, i.e.,
 \begin{equation}
 	\begin{split}
-	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1(x) + \ldots + \hat p_K \boldsymbol{s}_K(x)\\
-	1 &= \hat p_1 + \ldots + \hat p_K
+	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1(x) + \ldots + \hat p_K \boldsymbol{s}_K(x),\\
+	1 &= \hat p_1 + \ldots + \hat p_K.
 	\end{split}
 	 \label{eq:radial}
 \end{equation}
