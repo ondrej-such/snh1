@@ -126,17 +126,17 @@ The system of Bradley--Terry equations is usually inconsistent and additional as
 %Let us outline what kind of exact conditions may be desirable in a coupling method. 
 In %Section \ref{sec:des:exact} 
 this section
- we will describe exact mathematical criteria that one may impose on a coupling method, while in section \ref{sec:des:inexact} we shall describe more flexible properties. 
+ we will describe the following criteria that one may impose on a coupling method
 
 \begin{itemize}
-\item  unique solution(under Assumption \ref{ass:2}),
-\item Bradley-Terry consistency,
+\item unique solution (under Assumption \ref{ass:2}),
+\item Bradley--Terry consistency,
 \item canonicity,
 \item symmetry,
 \item Bayes covariance.
 \end{itemize}
 
-
+These criteria are all \emph{exact}, meaning they have a strict mathematical definition, whereas  in section \ref{sec:des:inexact} we shall describe more flexible properties. 
 %\begin{itemize}
 %\item a coupling method should should always provide a unique solution, at least when all $r_{ij}>0$,
 %\item Bradley-Terry consistency,
@@ -154,20 +154,20 @@ this section
 
 \emph{Unique solution} refers to the fact that the procedure to compute a multiclass probabilistic prediction always converges to a unique solution. One way to satisfy this condition would be that it amounts to a linear system of equations in $K$ variables, and the matrix of the system would be invertible. Another example would be when the procedure amounts to finding the minimum of a strongly convex function. 
 
-\emph{Bradley-Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multiclass Bayes classifier i.e. satisfies \eqref{eq:bt1}.
+\emph{Bradley--Terry consistency} refers to the outcome of a procedure providing a unique solution. The requirement states that should we apply the coupling procedure to binary Bayes classifiers, then the result is the output of multiclass Bayes classifier, i.e., satisfies \eqref{eq:bt1}.
 
-\emph{Canonicity} refers to requirement that the method should be natural. Borrowing an example from regression analysis, Gauss-Markov theorem states that ordinary least squares (OLS) estimates is best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. 
+\emph{Canonicity} refers to requirement that the method should be natural. Borrowing an example from regression analysis, Gauss--Markov theorem states that ordinary least squares (OLS) estimate is the best linear unbiased estimate of the coefficients of a linear model. Therefore OLS  is a \emph{canonical} way to estimate parameters of a regression model. 
 
 Note that potentially there may be multiple canonical methods, derived from (or satisfying) differing sets of assumptions. For instance, in the theory of scoring rules, both logarithmic and quadratic scores can be viewed as canonical \cite{shannon1948mathematical,selten1998axiomatic}.
 
-\emph{Symmetry} refers to transformations of multiclass predictions when permuting classes. We can define two natural actions on permutation group on $K$-elements. Suppose $\sigma$ is a permutation on $K$ elements. 
+\emph{Symmetry} refers to transformations of multiclass predictions when permuting classes. We can define two natural actions on permutation group on $K$ elements. Suppose $\sigma$ is a permutation on $K$ elements. 
 
 \begin{itemize}
 	\item Given  distributions on the classes $\boldsymbol{p}= (p_1, \ldots, p_K)$, we can define
 	\begin{align}
 		\sigma(\boldsymbol{p})= (p_{\sigma(1)},p_{\sigma(2)}, \ldots, p_{\sigma(K)}).
 	\end{align}
-	 \item $\sigma$ also acts on the matrix of binary predictions. Namely, the entry of $\sigma(\boldsymbol{R})$ in $i$-th row and $j$-th column is defined to be $r_{\sigma(i), \sigma(j)}$.
+	 \item $\sigma$ also acts on the matrix of binary predictions. Namely, the entry of $\sigma(\boldsymbol{R})$ in the $i$-th row and $j$-th column is defined to be $r_{\sigma(i), \sigma(j)}$.
 	 \end{itemize}
 We say that a coupling method $\boldsymbol{v}$ is \emph{symmetric} if 
 \begin{align}
@@ -179,7 +179,7 @@ We say that a coupling method $\boldsymbol{v}$ is \emph{symmetric} if
 \boldsymbol{p}^{\Pi'} \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{eq:changePrior}
 \end{align}
 
-When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical, for all initial pairwise data $\boldsymbol{R}$, then we say that the coupling method is \emph{Bayes covariant}. 
+When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical for all initial pairwise data $\boldsymbol{R}$, then we say that the coupling method is \emph{Bayes covariant}. 
 
 Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_{ij}(D)$ by requiring
 $$
@@ -189,9 +189,9 @@ We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $\pi_{ij}(
 
 On the other hand we can apply \eqref{eq:changePrior} after coupling. Say we have a distribution on $K$ classes
 \begin{align}
-D \propto (p_1, \ldots, p_K)
+D \propto (p_1, \ldots, p_K).
 \end{align}
-then we define $D^\pi$ by requiring 
+Then we define $D^\pi$ by requiring 
 \begin{align}
 D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{def:prior:effect}
 \end{align}
@@ -199,7 +199,7 @@ We now say that a method is Bayes covariant if
 \begin{align}
 \boldsymbol{v}(\boldsymbol{R}^\pi)=	\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi,
 \end{align}
-for any matrix $\boldsymbol{R}$ with $r_{ij}> 0$.
+for any matrix $\boldsymbol{R}$ satisfying $r_{ij}> 0$ and $r_{ij} = 1 - r_{ji}$.
 
 
 
@@ -224,7 +224,7 @@ for any matrix $\boldsymbol{R}$ with $r_{ij}> 0$.
 
 In this section we describe several concepts that lack strict mathematical delineation, but may still be important to consider.
 
-\emph{Robustness -- good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
+\emph{Robustness---good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
 
 \emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel that requires choosing two hyper-parameters. 
 
