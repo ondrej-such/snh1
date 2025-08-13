@@ -89,7 +89,7 @@ else
 				echo "Missing rule"
 endif
 
-TEX_FILES= intro.tex theory.tex experiment.tex coupling.tex discussion.tex appendix.tex tab-sep.tex
+TEX_FILES= intro.tex theory.tex experiment.tex coupling.tex discussion.tex appendix.tex tab-sep.tex tab-step2.tex
 
 paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-summary.pdf exp2-detail.pdf exp1-plot1.pdf exp4-truth.pdf paper.bib tab-exp4.tex 
 		pdflatex paper.tex
