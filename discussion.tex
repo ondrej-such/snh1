@@ -1,21 +1,21 @@
 \section{Discussion}
 
-In this paper we set out to investigate how to handle change of priors n in one-vs-one probabilistic models. Let us first summarize our contributions.
+In this paper we set out to investigate how to handle change of priors in one-vs-one probabilistic models. Let us first summarize our contributions, both theoretical and experimental.
 
 \subsection{Theoretical insights}
 
 In Section \ref{sec:theory} we have formulated the theoretical basis of one-vs-one classification. In Section \ref{sec:des:exact} we put down the basis for axiomatic development of coupling methods. In complementary Section \ref{sec:des:inexact} we formulated properties of coupling methods that are likely of importance in practice.
 
-Important examples of coupling methods has been presented in Section \ref{sec:coupling}. We were able to provide a unifying formulation for method of Hastie-Tibshirani and Wu-Lin-Weng. We discusses arboreal coupling methods, which are an important example of methods without parameters, albeit noncanonical. We recast previously known normal coupling method in a new way. Although this is a canonical example of Bayes covariant coupling methods,  it is lacking in practical performance, as  we uncovered in the experimental section. This creates impetus to study more general Bayes covariant method. The  ensembling approach we proposed in Section \ref{sec:bc2} allows one to build parametric families of Bayes covariant methods.
+Important examples of coupling methods has been presented in Section \ref{sec:coupling}. We were able to provide a unifying formulation for method of Hastie--Tibshirani and Wu--Lin--Weng. We introduced arboreal coupling methods, which are an important example of methods without parameters, albeit noncanonical. We recast previously known normal coupling method in a new way. Although this is a canonical example of Bayes covariant coupling methods,  it is lacking in practical performance, as  we uncovered in the experimental section. This creates impetus to study more general Bayes covariant methods. The  ensembling approach we proposed in Section \ref{sec:bc2} allows one to build parametric families of Bayes covariant methods.
 
 \subsection{Experimental findings} 
 
 The results highlight key findings from the experimental section.
 
 \begin{itemize}
-	\item The orthodox method of Wu-Lin-Weng dominates others across diverse classification tasks.
-	\item The only method close to Wu-Lin-Weng is the radial coupling method.
-	\item The concern of Hinton about one-vs-one classification is unwarranted. The method that ignores binary classifiers not trained on a given sample (we call it Hinton's oracle) underperforms the method of Wu-Lin-Weng.
+	\item The orthodox method of Wu--Lin--Weng dominates others across diverse classification tasks.
+	\item The only method close to Wu--Lin--Weng is the radial coupling method.
+	\item The concern of Hinton about one-vs-one classification is unwarranted. The method that ignores binary classifiers not trained on a given sample (we call it Hinton's oracle) underperforms the method of Wu--Lin--Weng.
 	\item In more than half of classification problems we were able to find a Bayes covariant coupling method which matches performance of the Wu-Lin-Weng method. 
 \end{itemize}
 
@@ -26,18 +26,15 @@ The results highlight key findings from the experimental section.
 Let us now turn to recommendation to practitioners on how to handle change of priors in one-vs-one probabilistic models. It is possible to choose any of the following approaches
 
 \begin{itemize}
-\item[1.] One can treat the decision on when to apply change of priors -- whether before or after coupling -- as a boolean hyperparameter and use standard machine learning techniques to find the optimal value.
-\item[2.] One can investigate applicability of a Bayes covariant method. This may take two forms, either choose a Bayes covariant coupling method, or experiment with changing of algorithm to construct binary classifiers. 
-\item[3.] Choose another multiclass probabilistic classification algorithm outside of one-vs-one framework. 
+\item[1.] One can treat the decision on when to apply change of priors---whether before or after coupling---as a boolean hyperparameter and use standard machine learning techniques to find the optimal value.
+\item[2.] One can investigate applicability of a Bayes covariant method. 
 \end{itemize}
+%\subsection{Properties of coupling methods}
 
-
-\subsection{Properties of coupling methods}
-
-In this section  we summarize properties of coupling methods discussed in our work.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
+In order to ease the second approach,   we now summarize properties of parameterless coupling methods discussed in our work.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
 \begin{itemize}
 	\item whether a coupling method amounts to a linear system of equations,
-	\item if the coupling method amounts to a linear system of equations, whether the equations are of a special form (e.g. a Markov matrix) that facilitates their solution,
+	\item if the coupling method amounts to a linear system of equations, whether the equations are of a special form (e.g., a Markov matrix) that facilitates their solution,
 	\item whether the authors who published the method provide an iterative method that implements the estimate. Iterative methods are often  faster than Gaussian elimination, and less prone to numerical issues.
 \end{itemize}
 
@@ -47,26 +44,39 @@ In this section  we summarize properties of coupling methods discussed in our wo
 %The following table indicates which properties are enjoyed by each coupling method we described in this section.
 
 \begin{table}[!ht]
-	\begin{tabular}{cm{2.5cm}|m{1.5cm}|m{1.5cm}ccm{1.5cm}|m{1.5cm}}
-		&& less competitive & \multicolumn{4}{c|}{competitive method} & oracle \\
+	\begin{tabular}{cm{2.5cm}|m{1.5cm}ccm{1.5cm}|m{1.5cm}}
+	%	&& less competitive & \multicolumn{4}{c|}{competitive method} & oracle \\
 		\hline 
-		&methods & Hastie-Tibshirani & Wu-Lin-Weng & radial & normal & arboreal & Hinton's oracle \\
+		&methods % & Hastie-Tibshirani 
+			& Wu--Lin--Weng & radial & normal & arboreal & Hinton's oracle \\
 		\hline 
-		&source & \cite{hastie1998classification} & \cite{wu2004probability} & \cite{vsuch2015new} & \cite{vsuch2016bayes} & this work & this work \\
+		&source % & \cite{hastie1998classification} 
+			& \cite{wu2004probability} & \cite{vsuch2015new} & \cite{vsuch2016bayes} & this work & this work \\
 		\multirow{5}{*}{\begin{turn}{90}\makecell{exact}\end{turn}}
-		&uniqueness &  yes & yes & yes & yes & yes & yes \\
-		&Bradley-Terry consistency & yes & yes & yes & yes & yes & yes \\
-		&canonicity & yes & no & yes & yes & no & yes \\
-		&symmetry & yes & yes & yes & yes & no & yes \\
-		& Bayes covariant & no & no & no & yes & yes & yes \\
+		&uniqueness % &  yes 
+			& yes & yes & yes & yes & yes \\
+		&Bradley--Terry consistency %& yes 
+			& yes & yes & yes & yes & yes \\
+		&canonicity %& yes 
+			& no & yes & yes & no & yes \\
+		&symmetry % & yes 
+			& yes & yes & yes & no & yes \\
+		& Bayes covariant %& no 
+			& no & no & yes & yes & yes \\
 		\hline
 		\multirow{5}{*}{\begin{turn}{90}\makecell{non-exact}\end{turn}}
-		&Hinton's minimality & N/A & \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
-		&robustness & N/A & \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
-		&lack of parameters & yes & yes & yes & yes & yes & yes \\
-		& amounts to a linear system & no & yes & yes & yes & yes & yes\\
-		& linear system of special form & N/A & no & yes & yes & yes & yes \\
-		& iterative method & yes & yes & yes & no & not needed & not needed\\
+		&Hinton's minimality %& N/A 
+			& \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
+		&robustness %& N/A 
+			& \multicolumn{5}{c}{see Section \ref{sec:exp1}} \\
+		&lack of parameters %& yes 
+			& yes & yes & yes & yes & yes \\
+		& amounts to a linear system % & no 
+			& yes & yes & yes & yes & yes\\
+		& linear system of special form % & N/A 
+			& no & yes & yes & yes & yes \\
+		& iterative method %& yes 
+			& yes & yes & no & not needed & not needed\\
 		\hline
 	\end{tabular}
 	\caption{Summary of properties of coupling methods described in Section \ref{sec:coupling}. The method of Hastie-Tibshirani is omitted from evaluation in Section \ref{sec:exp1}, because earlier evaluation showed it lacks robustness compared to the method of Wu-Lin-Weng \cite{wu2004probability}.}

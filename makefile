@@ -52,6 +52,10 @@ data/exp4.csv: data lda.R  exp4.R
 data/triples.csv: data lda.R
 		Rscript -e "source('lda.R'); write_triples(1)"
 
+data/exp2.csv: data exp2-summary.R
+		Rscript -e "source('exp2-summary.R')"
+
+
 data/bc3_%.csv: data lda.R
 		Rscript -e "source('lda.R');pt<-par_triples(limit = 1000, score =
 		'$*');print(class(pt));print(class(pt\$$df));write.csv(pt\$$df, '$@', quote=F, row.names=F)"
@@ -59,8 +63,8 @@ data/bc3_%.csv: data lda.R
 exp2-detail.pdf: exp2-detail.R graphs theme.R
 		Rscript -e "source('exp2-detail.R')"
 
-exp2-summary.pdf: exp2-summary.R graphs theme.R
-		Rscript -e "source('exp2-summary.R')"
+exp2-plot2.pdf: exp2-plot2.R graphs theme.R data/exp2.csv
+		Rscript -e "source('exp2-plot2.R')"
 
 exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
 		Rscript -e "source('exp1-plot1.R')"
