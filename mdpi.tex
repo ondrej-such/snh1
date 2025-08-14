@@ -1,0 +1,142 @@
+%\documentclass[twoside,11pt]{article}
+\documentclass[journal,article,submit,pdftex,moreauthors]{Definitions/mdpi} 
+
+\usepackage{blindtext}
+
+% Any additional packages needed should be included after jmlr2e.
+% Note that jmlr2e.sty includes epsfig, amssymb, natbib and graphicx,
+% and defines many common macros, such as 'proof' and 'example'.
+%
+% It also sets the bibliographystyle to plainnat; for more information on
+% natbib citation styles, see the natbib documentation, a copy of which
+% is archived at http://www.jmlr.org/format/natbib.pdf
+
+% Available options for package jmlr2e are:
+%
+%   - abbrvbib : use abbrvnat for the bibliography style
+%   - nohyperref : do not load the hyperref package
+%   - preprint : remove JMLR specific information from the template,
+%         useful for example for posting to preprint servers.
+%
+% Example of using the package with custom options:
+%
+% \usepackage[abbrvbib, preprint]{jmlr2e}
+
+\usepackage{amsmath, amsthm, amssymb}
+%\usepackage{jmlr2e}
+
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{tikz-cd}
+\usepackage[utf8]{inputenc} % Enable UTF-8 encoding
+\usepackage[T1]{fontenc}
+\usepackage{textgreek}
+
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{assumption}{Assumption}
+
+% Definitions of handy macros can go here
+
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+\DeclareMathOperator*{\divm}{div}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
+
+\usepackage{lastpage}
+\jmlrheading{23}{2025}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Author One and Author Two}
+
+% Short headings should be running head and authors last names
+
+\ShortHeadings{Probabilistic OVO}{Probabilistic OVO}
+\firstpageno{1}
+
+\begin{document}
+
+\title{On selection of a coupling method to cope with change of priors in one-vs-one classification }
+
+\author{\name Ondrej Šuch \email ondrejs@savbb.sk \\
+       \addr Matematický ústav SAV\\
+       Ďumbierska 1\\
+       Banská Bystrica, 974 01, Slovakia
+       \AND
+       \name Peter Novotný \email peter.novotny@fri.uniza.sk \\
+       \addr Fakulta informatiky a riadenia\\
+       Žilinská Univerzita v Žiline\\
+       Žilina, 010 26, Slovakia
+       \AND
+       \name Ali Haidar \email haidar@savbb.sk \\
+       \begin{minipage}[t]{0.45\textwidth}
+       \addr Matematický ústav SAV\\
+       Ďumbierska 1\\
+       Banská Bystrica, 974 01, Slovakia
+       \end{minipage}\hfill
+       \begin{minipage}[t]{0.45\textwidth}
+       \addr Fakulta matematiky, fyziky a informatiky\\
+       Univerzity Komenského \\
+       Mlynská dolina F1 \\
+       Bratislava, 842 48, Slovakia
+       \end{minipage}
+       }
+
+\editor{My editor}
+
+\maketitle
+
+\begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
+\blindtext
+\end{abstract}
+
+\begin{keywords}
+  keyword one, keyword two, keyword three
+\end{keywords}
+
+\section{Introduction}
+
+%\blindmathpaper
+
+Distribution shift is an important problem facing machine-learning practitioners  [\cite{zhang2023dive, sugiyama2007covariate}].  One particular way a distribution shift may manifest in classification problems  is when the class priors change between the training set used to train a model, and the data distribution in deployment -- the so called label shift [\cite{vsipka2022hitchhiker,lipton2018detecting}]. To make a concrete example, consider a driver assistance system recognizing traffic signs. Suppose a speed limit sign was maliciously altered to indicate 80mph limit instead of 30mph. To avoid being fooled by the alteration, the system could utilize priors. The distribution of traffic signs will change markedly when the car leaves highway and enters streets in a city. It is very unlikely to encounter 80mph limit in a city setting. By taking into account the city priors, a driver assistance is likely to make the proper classification. In general a good classification system will be able to improve its performance when supplied with a new set of class priors that correspond to the true distribution of classes. 
+
+Change of priors can be effectively dealt with in probabilistic classifiers. The basic idea is that Bayes theorem stipulates \emph{exactly} what should happen  to the prediction of the  Bayes classifier when priors change.  In practice we assume that a trained classifier closely approximates the Bayes classifier. Therefore we can make adjustment to our prediction by applying the same transformation of posterior as would happen with the Bayes classifier. 
+
+There is a subtle issue with this approach  when handling probabilistic classifiers arising in one-vs-one classification framework.   One-vs-one classification is a two-step framework to approach  multi-class classification. In the first step it reduces the multiclass problem to a series of binary classification problems. In the second step it deduces the multi-class decision by aggregating decisions for the binary problems. Since the procedure is two-step, there is a possibility to apply adjustment of priors either to the probabilistic distributions obtained after the first step, or after the second step. It is not clear what should be the preferred course of action and this problem motivates our paper.
+
+
+Our approach to the problem is to evaluate practical performance of different methods to aggregate binary predictions. Such methods -- called coupling methods -- first appeared in work of \cite{refregier1991probabilistic}. Many authors followed with alternative proposals [\cite{price1994pairwise, hastie1998classification,  zahorian1999partitioned, wu2004probability, vsuch2015new, vsuch2016bayes}].
+
+We formulate the underlying principles of one-vs-one probabilistic classification in Section 2. In Section 3 we present  different classes of coupling methods. We pay special focus to methods that commute with change of priors -- Bayes covariant methods, since such methods provide an unexpected, and elegant solution to our problem. We introduce new coupling methods by forming weighted ensembles, which we prove are also Bayes covariant when a normalizing condition on weights hold (Proposition \ref{prop:ensemble}).  In Section 4 we summarize our methodology. The results of our experiments are described in Section 5. In Section 6 we summarize our findings and provide practical guidance to solving the problem.
+
+
+\input theory.tex
+
+\input coupling.tex
+
+\input experiment.tex
+
+\input discussion.tex
+
+% Acknowledgements and Disclosure of Funding should go at the end, before appendices and references
+
+\acks{All acknowledgements go at the end of the paper before appendices and references.
+Moreover, you are required to declare funding (financial activities supporting the
+submitted work) and competing interests (related financial activities outside the submitted work).
+More information about this disclosure can be found on the JMLR website.}
+
+% Manual newpage inserted to improve layout of sample file - not
+% needed in general before appendices/bibliography.
+
+\newpage
+
+\input appendix.tex
+
+
+\vskip 0.2in 
+\bibliography{paper}
+
+\end{document}

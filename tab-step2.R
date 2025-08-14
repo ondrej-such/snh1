@@ -19,7 +19,7 @@ df1 <- df |> mutate(omit = pmax(omit12, omit13, omit23)) |>
 sink("tab-step2.tex")
 print(xtable(df1, label = "tab:step2", digits = 2,
 	     align = c("r", "l", "r"),
-             caption = "Comparison of Wu-Lin-Weng's method $\\boldsymbol{wlw}$ and  parameterless coupling methods on three class subsets. "), 
+             caption = "Comparison of Wu--Lin--Weng's method $\\boldsymbol{wlw}$ and  parameterless coupling methods on three class subsets. "), 
     sanitize.text.function = identity,
     include.rownames = FALSE)
 sink()

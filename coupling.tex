@@ -32,13 +32,13 @@ $$
 \divm\nolimits_\textrm{quad} (\boldsymbol{d}, \boldsymbol{d'})= \sum (d_i - d'_i)^2.
 $$
 
-The quadratic score is the basis of the popular Wu-Lin-Weng's method \cite{wu2004probability}. 
+The quadratic score is the basis of the popular Wu--Lin--Weng's method \cite{wu2004probability}. 
 Their method uses an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
 \begin{align*}
 \hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
 \end{align*}
 
-We note that the method is symmetric. The choice of quadratic scoring rule can also be viewed as canonical in view of axiomatic characterization given in  \cite{selten1998axiomatic}.  However the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we do not view Wu-Lin-Weng's method as canonical.
+We note that the method is symmetric. The choice of quadratic scoring rule can also be viewed as canonical in view of axiomatic characterization given in  \cite{selten1998axiomatic}.  However the choice of weights $w_{ij}$ to make the method computationally amenable is somewhat arbitrary. Thus we do not view Wu--Lin--Weng's method as canonical.
 
 \subsection{Arboreal methods}
 

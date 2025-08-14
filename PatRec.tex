@@ -1,0 +1,187 @@
+%\documentclass[twoside,11pt]{article}
+\documentclass[a4paper,fleqn]{cas-sc}
+
+\usepackage[authoryear,longnamesfirst]{natbib}
+
+\usepackage{blindtext}
+
+% Any additional packages needed should be included after jmlr2e.
+% Note that jmlr2e.sty includes epsfig, amssymb, natbib and graphicx,
+% and defines many common macros, such as 'proof' and 'example'.
+%
+% It also sets the bibliographystyle to plainnat; for more information on
+% natbib citation styles, see the natbib documentation, a copy of which
+% is archived at http://www.jmlr.org/format/natbib.pdf
+
+% Available options for package jmlr2e are:
+%
+%   - abbrvbib : use abbrvnat for the bibliography style
+%   - nohyperref : do not load the hyperref package
+%   - preprint : remove JMLR specific information from the template,
+%         useful for example for posting to preprint servers.
+%
+% Example of using the package with custom options:
+%
+% \usepackage[abbrvbib, preprint]{jmlr2e}
+
+\usepackage{amsmath, amsthm, amssymb}
+%\usepackage{jmlr2e}
+
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{tikz-cd}
+\usepackage[utf8]{inputenc} % Enable UTF-8 encoding
+\usepackage[T1]{fontenc}
+\usepackage{textgreek}
+
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{assumption}{Assumption}
+
+% Definitions of handy macros can go here
+
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+\DeclareMathOperator*{\divm}{div}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
+
+\usepackage{lastpage}
+%\jmlrheading{23}{2025}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Author One and Author Two}
+%
+%% Short headings should be running head and authors last names
+%
+%\ShortHeadings{Probabilistic OVO}{Probabilistic OVO}
+%\firstpageno{1}
+
+%%%Author macros
+\def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
+\tsc{WGM}
+\tsc{QE}
+\tsc{EP}
+\tsc{PMS}
+\tsc{BEC}
+\tsc{DE}
+%%%
+
+\begin{document}
+	
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
+\shorttitle{Leveraging social media news}
+\shortauthors{J.K. Krishnan et~al.}
+%\begin{frontmatter}
+	
+%	\title [mode = title]{This is a specimen $a_b$ title}                      
+\title{New Bayes covariant coupling methods to cope with change of priors in one-vs-one classification }
+\tnotemark[1,2]
+	
+\tnotetext[1]{This document is the results of the research
+		project funded by the National Science Foundation.}
+	
+\tnotetext[2]{The second title footnote which is a longer text matter
+		to fill through the whole text width and overflow into
+		another line in the footnotes area of the first page.}
+
+
+
+\author[1]{O. Šuch}
+\cormark[1]
+\ead{ondrejs@savbb.sk}
+
+\affiliation[1]{organization={Matematický ústav Slovenskej Akadémie Vied},
+		addressline={Ďumbierska 1},
+		city = {Banská Bystrica},
+		postcode = {97411},
+		country = {Slovakia}}
+		
+\author[2]{P. Novotný}
+\cormark[2]
+\ead{peter.novotny@fri.uniza.sk}
+
+\affiliation[2]{organization = {Žilinská Univerzita v Žiline},
+addressline={Univerzitná 8215/1},
+city={Žilina},
+postcode = {01026},
+country = {Slovakia}}
+
+
+%\author{\name Ondrej Šuch \email ondrejs@savbb.sk \\
+%       \addr Matematický ústav SAV\\
+%       Ďumbierska 1\\
+%       Banská Bystrica, 974 01, Slovakia
+%       \AND
+%       \name Peter Novotný \email peter.novotny@fri.uniza.sk \\
+%       \addr Fakulta informatiky a riadenia\\
+%       Žilinská Univerzita v Žiline\\
+%       Žilina, 010 26, Slovakia
+%       \AND
+%       \name Ali Haidar \email haidar@savbb.sk \\
+%       \begin{minipage}[t]{0.45\textwidth}
+%       \addr Matematický ústav SAV\\
+%       Ďumbierska 1\\
+%       Banská Bystrica, 974 01, Slovakia
+%       \end{minipage}\hfill
+%       \begin{minipage}[t]{0.45\textwidth}
+%       \addr Fakulta matematiky, fyziky a informatiky\\
+%       Univerzity Komenského \\
+%       Mlynská dolina F1 \\
+%       Bratislava, 842 48, Slovakia
+%       \end{minipage}
+%       }
+
+%\editor{My editor}
+
+
+
+\begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
+%\blindtext
+Label shift is one kind of distribution shift affecting classification models. Generally, one uses transformation inspired by Bayes classifiers to 
+adjust predictions of probabilistic classification models. However, there is an ambiguity how to apply this transformation in the case of  probabilistic models built in one-vs-one (also called pairwise) fashion. One-vs-one classification relies on the choice of a coupling method. Some coupling methods -- called Bayes covariant --  are not affected by the ambiguity. Adopting a Bayes covariant method would be the ideal solution to the ambiguity. However, the most commonly used coupling  method of Wu-Lin-Weng is not Bayes covariant. In our study we present elements of theory of coupling methods and exhibit new Bayes covariant coupling methods. One class is formed by arboreal methods. Still more methods can be formed by the way of ensembling. We compare their performance with that of Wu-Lin-Weng's coupling method. In majority of cases, it is possible to find a Bayes covariant method matching performance of Wu-Lin-Weng's method. 
+\end{abstract}
+
+\begin{highlights}
+\item New Bayes covariant coupling methods
+\item New way to create ensembles of multiple Bayes covariant methods
+\item Unification of Hastie-Tibshirani and Wu-Lin-Weng method
+\item Rigorous evaluation of coupling methods
+\end{highlights}
+
+\begin{keywords}
+  distribution shift \sep label shift \sep pairwise coupling \sep one-vs-one classification \sep Bayes classifier
+\end{keywords}
+
+\maketitle
+
+\input intro.tex
+
+\input theory.tex
+
+\input coupling.tex
+
+\input experiment.tex
+
+\input discussion.tex
+
+% Acknowledgements and Disclosure of Funding should go at the end, before appendices and references
+
+\acks{Research on this paper was partially supported by grant VEGA 2/0172/22 Classification using ensembles of neural networks. We thank Muhammad Azeem for helpful discussion during preparation of our paper. }
+
+% Manual newpage inserted to improve layout of sample file - not
+% needed in general before appendices/bibliography.
+
+\newpage
+
+\input appendix.tex
+
+
+\vskip 0.2in 
+\bibliography{paper}
+
+\end{document}
