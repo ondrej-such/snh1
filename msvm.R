@@ -1,7 +1,7 @@
 library(e1071)
 suppressPackageStartupMessages(library(dplyr))
 library(Rcpp)
-library(ParBayesianOptimization)
+# library(ParBayesianOptimization)
 suppressPackageStartupMessages(library(furrr))
 library(future)
 library(magrittr)

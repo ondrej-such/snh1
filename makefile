@@ -81,7 +81,7 @@ tab-step2.tex: data/triples.csv tab-step2.R
 tab-multi.tex: data/multi-acc.csv
 		Rscript -e "source('tab-multi.R')"
 
-tab-exp4.tex: data/exp4.csv
+tab-exp4.tex: data/exp4.csv tab-exp4.R
 		Rscript -e "source('tab-exp4.R')"
 
 data/ex2-%-300.csv: unzips data
@@ -94,26 +94,27 @@ else
 endif
 
 TEX_FILES= intro.tex theory.tex experiment.tex coupling.tex discussion.tex appendix.tex tab-sep.tex tab-step2.tex
+FIG_FILES= exp2-plot2.pdf 
 
-paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-summary.pdf exp2-detail.pdf exp1-plot1.pdf exp4-truth.pdf paper.bib tab-exp4.tex 
+paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-plot2.pdf exp2-summary.pdf exp2-detail.pdf exp1-plot1.pdf exp4-truth.pdf paper.bib tab-exp4.tex 
 		pdflatex paper.tex
 		bibtex paper
 		pdflatex paper.tex
 		pdflatex paper.tex
 
 
-sp1.pdf: springer.tex $(TEX_FILES)
+sp1.pdf: springer.tex $(TEX_FILES) $(FIG_FILES)
 		pdflatex "\\def\\mysecret{1} \\input{springer.tex}" 
 		mv springer.pdf sp1.pdf
 
-sp2.pdf: springer.tex $(TEX_FILES) paper.bib
+sp2.pdf: springer.tex $(TEX_FILES) paper.bib $(FIG_FILES)
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		bibtex springer
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		mv springer.pdf sp2.pdf
 
-sp3.pdf: springer.tex  $(TEX_FILES) paper.bib
+sp3.pdf: springer.tex  $(TEX_FILES) paper.bib $(FIG_FILES)
 		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
 		bibtex springer
 		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 

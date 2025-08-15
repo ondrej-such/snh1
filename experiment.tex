@@ -125,7 +125,7 @@ We can see that only in minority of cases we found a parametric Bayes covariant 
 \subsection{Experiment: Effect of change of priors}  \label{sec:exp4}
 %\subsection{Wu--Lin--Weng's method}
 
-We have shown that are situations when Wu--Lin--Weng's method outperforms even the best Bayes-covariant parametric methods. In this section we thus ponder the question whether some non-Bayes covariant method would be more resilients to change of priors. We consider two facets to this question.
+We have shown that there are situations when Wu--Lin--Weng's method outperforms all Bayes covariant parametric methods we considered. In this section we thus ponder the question whether some non-Bayes-covariant method would be more resilient to change of priors. We consider two facets to this question.
 
 Let us start with some notation. Consider a classification method $\boldsymbol{c}_0$ based on coupling. Suppose the priors change, and let us denote by $\boldsymbol{c}_1$ the classification model where we apply \eqref{eq:changePrior} to binary classifiers, and by $\boldsymbol{c}_2$ the classification method when we apply \eqref{eq:changePrior} after coupling. 
 
@@ -133,7 +133,7 @@ The first question is whether for some coupling method the difference in predict
 
 \input {tab-exp4.tex}
 
-The results, as expected, detect no change between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for 3 datasets (letter, mnist, usps datasets), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
+The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
 
 The second question is whether a coupling method would more consistently provide true answers. Let us remark under Assumption 1 the Bayes classifier \emph{should} change prediction of any sample if the change of priors is sufficiently large. Thus to evaluate this question 
 
