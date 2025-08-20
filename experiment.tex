@@ -135,10 +135,12 @@ The first question is whether for some coupling method the difference in predict
 
 The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
 
-The second question is whether a coupling method would more consistently provide true answers. Let us remark under Assumption 1 the Bayes classifier \emph{should} change prediction of any sample if the change of priors is sufficiently large. Thus to evaluate this question 
+The second question is whether a coupling method would more consistently provide true answers. In Figure \ref{fig:score} we show the difference of accuracies of the classification models $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ after ten-fold change of priors. Again we can see, that there is no uniform advantage to either method.
+% Let us remark under Assumption 1 the Bayes classifier \emph{should} change prediction of any sample if the change of priors is sufficiently large. Thus to evaluate this question 
+
 
 \begin{figure}[!ht]
 	\includegraphics{exp4-truth.pdf}
-	\caption{Difference in accuracies of $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ for radial and Wu--Lin--Weng's coupling method.}
+	\caption{Difference in accuracies of $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ for radial and Wu--Lin--Weng's coupling method after change of priors.}
 	\label{fig:score}
 \end{figure}
