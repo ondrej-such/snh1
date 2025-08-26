@@ -6,7 +6,7 @@ df <- read.csv("data/exp4.csv") |>  mutate(step2 = multi) |> mutate(step1 = bina
 
 df$class = as.factor(df$changed - 1)
 
-df1 <- df |> filter(dataset ==  "mnist") |> group_by(class) |> mutate(diff = mean(step2 - step1))
+df1 <- df |> filter(dataset ==  "mnist") |> group_by(class, method) |> mutate(diff = mean(step2 - step1))
 
 plt1 <- ggplot(df1, aes(x = class, y = diff, fill = method, color = method)) +  facet_wrap(~ method) + 
 	geom_col(data = df1, aes(x = class, y = diff, color = method), width = 0.7) +
