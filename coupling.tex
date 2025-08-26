@@ -22,7 +22,7 @@ A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional i
 
 A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback--Leibler divergence 
 \begin{align*}
-	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= \sum d_i \log (d_i/ d'_i)
+	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= \sum d_i \log (d_i/ d'_i).
 \end{align*}
 
 Kullback--Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy, one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly, buja2005loss}.
@@ -54,7 +54,7 @@ An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A
 	\label{eq:arb1}
 \end{equation}
 
-It is useful to consider the graph on $K$ vertices, where vertices correspond to the classes and edges to the selected equations. It cannot have a cycle, otherwise the subsystem of Bradley-Terry equations would be overdetermined for unknowns representing the vertices of the cycle. Therefore it has to be a spanning tree.
+It is useful to consider the graph on $K$ vertices, where vertices correspond to the classes and edges to the selected equations. It cannot have a cycle, otherwise the subsystem of Bradley--Terry equations would be overdetermined for unknowns representing the vertices of the cycle. Therefore it has to be a spanning tree.
 
 For $K=3$, there are three different arboreal coupling methods corresponding to three different spanning trees on three vertices. We shall call them $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the coupling method $\boldsymbol{s}_i$ includes only the equations that involve class $i$. In particular, \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
 
@@ -104,7 +104,7 @@ There are many Bayes covariant methods. The simplest example are arboreal coupli
 
 A very helpful aid to study Bayes covariant methods is property $BC_{ij}$ (the notation stands for \emph{Bayes covariant when restricted to classes} $i$ and $j$). A coupling method $\boldsymbol{v}$ satisfies $BC_{ij}$ if for any change of priors $\pi$ and any  pairwise data $\boldsymbol{R}$ the odds of classes $C_i$ to $C_j$ predicted by $\boldsymbol{v}(\boldsymbol{R}^\pi)$ and $\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi$ are equal. Using earlier notation for odds (see \eqref{eq:alpha}), one requires
 \begin{align}
-	\alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R}^\pi) \bigr) = \alpha_{ij}\biggl( \bigl(\boldsymbol{v}(\boldsymbol{R}) \bigr)^\pi\biggr)
+	\alpha_{ij} \bigl(\boldsymbol{v}(\boldsymbol{R}^\pi) \bigr) = \alpha_{ij}\biggl( \bigl(\boldsymbol{v}(\boldsymbol{R}) \bigr)^\pi\biggr).
 \end{align}
 
 Let us list some easy to verify properties of this concept:
@@ -137,7 +137,7 @@ where the symbol $\odot$ denotes componentwise multiplication, and exponentials 
 
 \begin{prop}
 	\label{prop:ensemble}
-Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are Bayes covariant. If $\sum a_m = 1$, then $\boldsymbol{e} = \bigoplus_m a_m \boldsymbol{v}_m$ is also a Bayes covariant.
+Suppose the coupling methods $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are Bayes covariant. If $\sum a_m = 1$, then $\boldsymbol{e} = \bigoplus_m a_m \boldsymbol{v}_m$ is also Bayes covariant.
 \end{prop}
 
 \begin{proof}
