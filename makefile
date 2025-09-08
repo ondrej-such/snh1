@@ -102,6 +102,11 @@ paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-plot2.pdf exp2-summary.pdf e
 		pdflatex paper.tex
 		pdflatex paper.tex
 
+els.pdf: els.tex $(TEX_FILES) $(FIG_FILES)
+	pdflatex els.tex
+	bibtex paper
+	pdflatex els.tex
+	pdflatex els.tex
 
 sp1.pdf: springer.tex $(TEX_FILES) $(FIG_FILES)
 		pdflatex "\\def\\mysecret{1} \\input{springer.tex}" 

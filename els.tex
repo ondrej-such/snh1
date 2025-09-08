@@ -1,0 +1,441 @@
+%\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+\documentclass[preprint,12pt]{elsarticle}
+%%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
+%%\documentclass[pdflatex,sn-vancouver-ay]{sn-jnl}% Vancouver Author Year Reference Style
+%%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+\journal{Pattern Recognition}
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{tikz-cd}
+\usepackage[utf8]{inputenc} % Enable UTF-8 encoding
+\usepackage[T1]{fontenc}
+\usepackage{textgreek}
+\usepackage{ifthen}
+%\undef\orcidlogo
+
+
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{assumption}{Assumption}
+
+% Definitions of handy macros can go here
+
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+\DeclareMathOperator*{\divm}{div}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\usepackage{etoolbox}
+\let\orcidlogo\relax
+\usepackage{orcidlink}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{New Bayes covariant coupling methods for adapting to change of priors in one-vs-one classification}
+%%=============================================================%%
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% \author*[1,2]{\fnm{Joergen W.} \spfx{van der} \sur{Ploeg} 
+%%  \sfx{IV}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+%\author{\fnm{Ondrej} \sur{Šuch}\orcidlink{0000-0002-8140-241X}}\email{ondrejs@savbb.sk}
+%%\equalcont{These authors contributed equally to this work.}
+%
+%\author{\fnm{Peter} \sur{Novotný}\orcidlink{0000-0002-7949-5215}}\email{peter.novotny@fri.uniza.sk}
+%
+%\author{\fnm{Ali} \sur{Haidar}\orcidlink{0000-0002-7498-4220}}\email{haidar@savbb.sk}
+%%\equalcont{These authors contributed equally to this work.}
+%
+%%
+%\affil[1]{\orgdiv{Matematický ústav}, \orgname{Slovenská akadémia vied}, 
+%\orgaddress{\street{Ďumbierska 1}, \city{Banská Bystrica}, \postcode{97411}, \country{Slovakia}}}
+%
+%\affil[2]{\orgdiv{Fakulta riadenia a informatiky}, \orgname{Žilinská Univerzita v Žiline}, 
+%\orgaddress{\street{Univerzitná 8215/1}, \city{Žilina}, \postcode{01026},  \country{Slovakia}}}
+%
+%\affil[3]{\orgdiv{Fakulta matematiky, fyziky a informatiky}, 
+%\orgname{Univerzita Komenského}, \orgaddress{\street{Mlynská dolina F1}, \city{Bratislava}, \postcode{84248},  
+%\country{Slovakia}}}
+%\author{hhhh}
+%\title{} %% Article title
+
+%% Authors
+\author[1]{Ondrej Šuch}
+\ead{ondrejs@savbb.sk}
+
+\author[2]{Peter Novotný}
+\ead{peter.novotny@fri.uniza.sk}
+
+\author[1,3]{Ali Haidar}
+\ead{haidar@savbb.sk}
+
+%% Corresponding author note
+\cortext[cor1]{Corresponding author. Email: haidar@savbb.sk}
+
+%% Affiliations
+\affiliation[1]{organization={Matematický ústav, Slovenská akadémia vied},%
+            addressline={Ďumbierska 1}, 
+            city={Banská Bystrica},
+            postcode={97411}, 
+            country={Slovakia}}
+
+\affiliation[2]{organization={Fakulta riadenia a informatiky, Žilinská Univerzita v Žiline},%
+            addressline={Univerzitná 8215/1}, 
+            city={Žilina},
+            postcode={01026}, 
+            country={Slovakia}}
+
+\affiliation[3]{organization={Fakulta matematiky, fyziky a informatiky, Univerzita Komenského},%
+            addressline={Mlynská dolina F1}, 
+            city={Bratislava},
+            postcode={84248}, 
+            country={Slovakia}}
+
+%%==================================%%
+%% Sample for unstructured abstract %%
+%%==================================%%
+
+\begin{abstract}
+Label shift is one kind of distribution shift affecting classification models. 
+To address label shift one can use transformation inspired by Bayes classifiers to 
+adjust predictions of probabilistic classification models. 
+However, there is an ambiguity how to apply this transformation in the case of  probabilistic models built 
+in one-vs-one (also called pairwise) fashion. One-vs-one classification relies on the choice of a coupling
+method. Some coupling methods---called Bayes covariant---are not affected by the ambiguity. 
+Adopting a Bayes covariant method would be the ideal solution to the ambiguity. 
+However, the most commonly used coupling  method of Wu--Lin--Weng is not Bayes covariant. 
+In our study we present elements of theory of coupling methods and exhibit new Bayes covariant coupling methods.
+One class is formed by arboreal methods. 
+Additional methods can be formed by the way of ensembling. We compare their performance with that of Wu--Lin--Weng's coupling method. In majority of cases, it is possible to find a Bayes covariant method matching performance of Wu--Lin--Weng's method. 
+\end{abstract}
+
+
+\begin{keyword}
+ distribution shift\sep label shift\sep pairwise coupling\sep one-vs-one classification\sep Bayes classifier.
+\end{keyword}
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+
+\end{frontmatter}
+%\maketitle
+
+% \ifthenelse{\not\equal{\mysecret}{1}}{
+\input{intro.tex}
+
+\input{theory.tex}
+
+\input{coupling.tex}
+
+\input{experiment.tex}
+
+\input{discussion.tex}
+
+
+
+
+
+
+
+% }{
+% }
+
+
+%\backmatter
+%\bmhead{Acknowledgements}
+
+%Acknowledgements are not compulsory. Where included they should be brief. Grant or contribution numbers may be acknowledged.
+
+%Please refer to Journal-level guidance for any specific requirements.
+
+%\ifthenelse{\not\equal{\mysecret}{2}}{
+
+\section*{Declarations}
+
+%Some journals require declarations to be submitted in a standardised format. Please check the Instructions for Authors of the journal to which you are submitting to see if you need to complete this section. If yes, your manuscript must contain the following sections under the heading `Declarations':
+
+
+\begin{itemize}
+\item Funding Ondrej Šuch and Ali Haidar were  partially supported by grants VEGA 2/0172/22 Classification using ensembles of neural networks and VEGA 2/0056/25 Cycles and edge colorings of cubic graphs. Peter Novotný did not receive support from any organization for the submitted work.
+\item Conflict of interest/Competing interests: Authors declare no competing interests.
+\item Ethics approval and consent to participate: Not applicable.
+\item Consent for publication: Not applicable.
+\item Data availability: All data is available from https://www.csie.ntu.edu.tw/~cjlin/papers/svmprob/data/, and also upon request from the authors.
+\item Materials availability: Not applicable.
+\item Code availability: Code is available upon request.
+\item Author contribution: All authors contributed equally to preparation of manuscript.
+\item Acknowledgement: We thank to Muhammad Azeem for help with proof reading this paper
+\end{itemize}
+
+\noindent
+%If any of the sections are not relevant to your manuscript, please include the heading and write `Not applicable' for that section. 
+
+%%===================================================%%
+%% For presentation purpose, we have included        %%
+%% \bigskip command. Please ignore this.             %%
+%%===================================================%%
+%\bigskip
+%\begin{flushleft}%
+%Editorial Policies for:
+
+%\bigskip\noindent
+%Springer journals and proceedings: \url{https://www.springer.com/gp/editorial-policies}
+
+%\bigskip\noindent
+%Nature Portfolio journals: \url{https://www.nature.com/nature-research/editorial-policies}
+
+%\bigskip\noindent
+%\textit{Scientific Reports}: \url{https://www.nature.com/srep/journal-policies/editorial-policies}
+
+%\bigskip\noindent
+%BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies}
+%\end{flushleft}
+%
+%}{
+%}
+
+%\ifthenelse{\not\equal{\mysecret}{1}}{
+
+\begin{appendices}
+
+\input{appendix.tex}
+%\section{Section title of first appendix}\label{secA1}
+%
+%An appendix contains supplementary information that is not an essential part of the text itself but which may be helpful in providing a more comprehensive understanding of the research problem or it is information that is too cumbersome to be included in the body of the paper.
+
+%%=============================================%%
+%% For submissions to Nature Portfolio Journals %%
+%% please use the heading ``Extended Data''.   %%
+%%=============================================%%
+
+%%=============================================================%%
+%% Sample for another appendix section			       %%
+%%=============================================================%%
+
+%% \section{Example of another appendix section}\label{secA2}%
+%% Appendices may be used for helpful, supporting or essential material that would otherwise 
+%% clutter, break up or be distracting to the text. Appendices can consist of sections, figures, 
+%% tables and equations etc.
+% }{} 
+
+\end{appendices}
+
+%%===========================================================================================%%
+%% If you are submitting to one of the Nature Portfolio journals, using the eJP submission   %%
+%% system, please include the references within the manuscript file itself. You may do this  %%
+%% by copying the reference list from your .bbl file, paste it into the main manuscript .tex %%
+%% file, and delete the associated \verb+\bibliography+ commands.                            %%
+%%===========================================================================================%%
+
+%\bibliography{sn-bibliography}% common bib file
+%\nocite{*}
+%\bibliographystyle{elsarticle-num} % or elsarticle-harv
+%\bibliography{paper}% common bib file
+%}{
+%}
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+\begin{thebibliography}{00}
+
+\bibitem{chow:68}
+C.~K. Chow and C.~N. Liu.
+Approximating discrete probability distributions with dependence trees.
+\emph{IEEE Transactions on Information Theory}, 14(3):462--467, 1968.
+
+\bibitem{pearl:88}
+J.~Pearl.
+\emph{Probabilistic Reasoning in Intelligent Systems: Networks of Plausible Inference}.
+Morgan Kaufman Publishers, San Mateo, CA, 1988.
+
+\bibitem{shannon1948mathematical}
+C.~E. Shannon.
+A mathematical theory of communication.
+\emph{The Bell System Technical Journal}, 27(3):379--423, 1948.
+
+\bibitem{wu2004probability}
+T.-F. Wu, C.-J. Lin, and R.~C. Weng.
+Probability estimates for multi-class classification by pairwise coupling.
+\emph{Journal of Machine Learning Research}, 5:975--1005, 2004.
+
+\bibitem{hastie1998classification}
+T.~Hastie and R.~Tibshirani.
+Classification by pairwise coupling.
+\emph{Annals of Statistics}, 26(3):451--471, 1998.
+
+\bibitem{brier1950verification}
+G.~W. Brier.
+Verification of forecasts expressed in terms of probability.
+\emph{Monthly Weather Review}, 78(1):1--3, 1950.
+
+\bibitem{selten1998axiomatic}
+R.~Selten.
+Axiomatic characterization of the quadratic scoring rule.
+\emph{Experimental Economics}, 1:43--61, 1998.
+
+\bibitem{vsuch2016bayes}
+O.~{\v{S}}uch and S.~Barreda.
+Bayes covariant multi-class classification.
+\emph{Pattern Recognition Letters}, 84:99--106, 2016.
+
+\bibitem{james2013introduction}
+G.~James, D.~Witten, T.~Hastie, R.~Tibshirani, et al.
+\emph{An Introduction to Statistical Learning}.
+Springer, New York, 2013.
+
+\bibitem{buja2005loss}
+A.~Buja, W.~Stuetzle, and Y.~Shen.
+Loss functions for binary class probability estimation and classification: Structure and applications.
+\emph{Working draft}, 3:13, 2005.
+
+\bibitem{gneiting2007strictly}
+T.~Gneiting and A.~E. Raftery.
+Strictly proper scoring rules, prediction, and estimation.
+\emph{Journal of the American Statistical Association}, 102(477):359--378, 2007.
+
+\bibitem{vsuch2015new}
+O.~{\v{S}}uch, {\v{S}}. Benu{\v{s}}, and A.~Tinajov{\'a}.
+A new method to combine probability estimates from pairwise binary classifiers.
+\emph{RMJ}, 1:12, 2015.
+
+\bibitem{garg2020unified}
+S.~Garg, Y.~Wu, S.~Balakrishnan, and Z.~Lipton.
+A unified view of label shift estimation.
+\emph{Advances in Neural Information Processing Systems}, 33:3290--3300, 2020.
+
+\bibitem{tasche2017fisher}
+D.~Tasche.
+Fisher consistency for prior probability shift.
+\emph{Journal of Machine Learning Research}, 18(95):1--32, 2017.
+
+\bibitem{kressel19991999}
+U.~Kressel.
+1999 Pairwise Classification and Support Vector Machines.
+In \emph{Advances in Kernel Methods: Support Vector Learning}. MIT Press, 1999.
+
+\bibitem{barnard1935secular}
+M.~M. Barnard.
+The secular variations of skull characters in four series of Egyptian skulls.
+\emph{Annals of Eugenics}, 6(4):352--371, 1935.
+
+\bibitem{martin1936study}
+E.~S. Martin.
+A study of an Egyptian series of mandibles, with special reference to mathematical methods of sexing.
+\emph{Biometrika}, 28(1/2):149--178, 1936.
+
+\bibitem{galar2011overview}
+M.~Galar, A.~Fern{\'a}ndez, E.~Barrenechea, H.~Bustince, and F.~Herrera.
+An overview of ensemble methods for binary classifiers in multi-class problems: Experimental study on one-vs-one and one-vs-all schemes.
+\emph{Pattern Recognition}, 44(8):1761--1776, 2011.
+
+\bibitem{vsipka2022hitchhiker}
+T.~{\v{S}}ipka, M.~{\v{S}}ulc, and J.~Matas.
+The hitchhiker's guide to prior-shift adaptation.
+In \emph{Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision}, pages 1516--1524, 2022.
+
+\bibitem{lipton2018detecting}
+Z.~Lipton, Y.-X. Wang, and A.~Smola.
+Detecting and correcting for label shift with black box predictors.
+In \emph{International Conference on Machine Learning}, pages 3122--3130. PMLR, 2018.
+
+\bibitem{zhang2023dive}
+A.~Zhang, Z.~C. Lipton, M.~Li, and A.~J. Smola.
+\emph{Dive into Deep Learning}.
+Cambridge University Press, Cambridge, 2023.
+
+\bibitem{sugiyama2007covariate}
+M.~Sugiyama, M.~Krauledat, and K.-R. M{\"u}ller.
+Covariate shift adaptation by importance weighted cross validation.
+\emph{Journal of Machine Learning Research}, 8(5), 2007.
+
+\bibitem{refregier1991probabilistic}
+P.~Refregier and F.~Vallet.
+Probabilistic approach for multiclass classification with neural networks.
+In \emph{Artificial Neural Networks}, pages 1003--1006. Elsevier, Amsterdam, 1991.
+
+\bibitem{price1994pairwise}
+D.~Price, S.~Knerr, L.~Personnaz, and G.~Dreyfus.
+Pairwise neural network classifiers with probabilistic outputs.
+In \emph{Advances in Neural Information Processing Systems}, 7, 1994.
+
+\bibitem{zahorian1999partitioned}
+S.~A. Zahorian and Z.~B. Nossair.
+A partitioned neural network approach for vowel classification using smoothed time/frequency features.
+\emph{IEEE Transactions on Speech and Audio Processing}, 7(4):414--425, 1999.
+
+\end{thebibliography}
+
+
+
+
+
+
+\end{document}
