@@ -30,7 +30,7 @@
  
 %%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
 %%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
-\documentclass[pdflatex,sn-basic]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+%\documentclass[pdflatex,sn-basic]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
 %%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
 %%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
 %%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
@@ -40,6 +40,9 @@
 
 %%%% Standard Packages
 %%<additional latex packages if required can be included here>
+
+\documentclass[pdflatex, sn-basic]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+% \usepackage[style=asa, backend=biber]{biblatex}
 
 \usepackage{graphicx}%
 \usepackage{multirow}%
@@ -134,6 +137,7 @@
 %%  \sfx{IV}}\email{iauthor@gmail.com}
 %%=============================================================%%
 
+\ifthenelse{\not\equal{\mysecret}{2}}{
 \author[1]{\fnm{Ondrej} \sur{Šuch}\orcidlink{0000-0002-8140-241X}}\email{ondrejs@savbb.sk}
 %\equalcont{These authors contributed equally to this work.}
 
@@ -152,6 +156,9 @@
 \affil[3]{\orgdiv{Fakulta matematiky, fyziky a informatiky}, 
 \orgname{Univerzita Komenského}, \orgaddress{\street{Mlynská dolina F1}, \city{Bratislava}, \postcode{84248},  
 \country{Slovakia}}}
+}{
+% nothing 
+}
 
 %%==================================%%
 %% Sample for unstructured abstract %%
@@ -188,11 +195,11 @@ Additional methods can be formed by the way of ensembling. We compare their perf
 %%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
 
 
-\ifthenelse{\not\equal{\mysecret}{2}}{
+%\ifthenelse{\not\equal{\mysecret}{2}}{
 \maketitle
-}{
+%}{
 % nothing 
-}
+%}
 
 \ifthenelse{\not\equal{\mysecret}{1}}{
 \input{intro.tex}
@@ -303,6 +310,9 @@ Additional methods can be formed by the way of ensembling. We compare their perf
 %%===========================================================================================%%
 
 %\bibliography{sn-bibliography}% common bib file
+
+\bibliographystyle{sn-mathphys}
+
 \bibliography{paper}% common bib file
 }{
 }
