@@ -75,7 +75,7 @@ In particular, \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$
 
 For $K>3$ the three methods can be generalized to correspond to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$. They predict multi-class posterior
 $$
-p_j^\textrm{multi} = \frac{P_j \frac{f_j(x)}{f_i(x)}}{\sum_{k=1}^K P_k \frac{f_k(x)}{f_i(x)}.
+p_j^\textrm{multi} = \frac{P_j \frac{f_j(x)}{f_i(x)}}{\sum_{k=1}^K P_k \frac{f_k(x)}{f_i(x)}}.
 $$
 
 %More generally, to obtain a regular system of equations for  any of $K$ , it is necessary and sufficient that the tree formed by edges for which we include equations from Bradley-Terry system is  a spanning tree. 
@@ -117,9 +117,9 @@ Let us now define \emph{radial} coupling method. The  method requires that if st
 	\end{split}
 	 \label{eq:radial}
 \end{equation}
-%
+
 The intuition behind \eqref{eq:radial} is that if some component $\hat p_i$ of $\hat{\boldsymbol{p}} =(\hat p_1, \ldots, \hat p_K) $ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by ${\boldsymbol{s}}_i$. 
-In order to extend the method to situations where star independence may not hold we define $\hat\boldsymbol{p}$ 
+In order to extend the method to situations where star independence may not hold we define $\hat{\boldsymbol{p}}$ 
 to be the least square solution of the  system of linear equations \ref{eq:radial}.
 
 \subsection{Bayes covariant methods} \label{sec:bc2}
