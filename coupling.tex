@@ -21,8 +21,10 @@ A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional i
 \end{align*}
 
 A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback--Leibler divergence 
+which measures a difference between two probability distributions $\boldsymbol{d}, \boldsymbol{d'}$ on the set $\{C_i, C_j\}$. 
 \begin{align*}
-	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= \sum d_i \log (d_i/ d'_i).
+	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= 
+	  \sum_{k\in\{i,j\}} d_k \log (d_k/ d'_k).
 \end{align*}
 
 Kullback--Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy, one could advantageously use other Bregman divergence derived from a proper score \cite{gneiting2007strictly, buja2005loss}.
@@ -42,9 +44,19 @@ We note that the method is symmetric. The choice of quadratic scoring rule can a
 
 \subsection{Arboreal methods}
 
-System of equations \eqref{eq:bt2} is overdetermined because there are $K$ unknowns and $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one.  Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. This principle underlies arboreal coupling methods.
+System of equations \eqref{eq:bt2} is overdetermined because there are $K$ unknowns and $\binom{K}{2}$ equations together with the requirement that the total sum of predicted probabilities is one. 
+Given an overdetermined system of equations, a common approach is to select a minimal subset of equations needed to solve for the unknowns. 
+Such a subset corresponds to a graph $G$ on $K$ vertices where each vertex represents a class.  
 
-An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes $C_1$ and $C_3$. The two equations from \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations:
+Let us recall several concepts from graph theory \cite{harary1969graph}. 
+A path of length $s$ in $G$ is a sequence of edges 
+$(C_{i_1}, C_{i_2}), (C_{i_2}, C_{i_3}), \ldots,  (C_{i_{s}}, C_{i_{s+1}})$. 
+A cycle is a path with length $s\geq 3$ such  all vertices $C_{i_1}, \ldots, C_{i_s}$ are distinct and the starting and the ending vertices coincide i.e. $i_1 = i_{s+1}$. A tree is a graph without a cycle.
+A spanning tree is a tree for which there is a path between any pair of vertices $C_i$ and $C_j$. Such a path is necessarily unique \cite[Theorem 4.1]{harary1969graph}. 
+All spanning trees have exactly $K-1$ edges. The degree of a vertex is the number of edges of the graph 
+containing the vertex. Any spanning tree has a vertex of degree one.
+
+Now we are ready to describe  arboreal coupling methods. Such a coupling method ignores all but $K-1$ of the pairwise predictions. A simple example for 3 classes is the classifier which ignores prediction of the binary classifier distinguishing between classes $C_1$ and $C_3$. The two equations from \eqref{eq:bt2} together with the requirement that the prediction probabilities should sum to 1 yield the following system of equations:
 \begin{equation}
 	\begin{split}
 		\frac{\hat p_1}{\hat p_1 + \hat p_2} &= {r}_{12}\\
@@ -56,9 +68,15 @@ An arboreal coupling method ignores all but $K-1$ of the pairwise predictions. A
 
 It is useful to consider the graph on $K$ vertices, where vertices correspond to the classes and edges to the selected equations. It cannot have a cycle, otherwise the subsystem of Bradley--Terry equations would be overdetermined for unknowns representing the vertices of the cycle. Therefore it has to be a spanning tree.
 
-For $K=3$, there are three different arboreal coupling methods corresponding to three different spanning trees on three vertices. We shall call them $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the coupling method $\boldsymbol{s}_i$ includes only the equations that involve class $i$. In particular, \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
+For $K=3$, there are three different arboreal coupling methods corresponding to three different spanning trees on three vertices.
+We shall call them $\boldsymbol{s}_1$, $\boldsymbol{s}_2$, $\boldsymbol{s}_3$, where the coupling method $\boldsymbol{s}_i$ 
+includes only the equations that involve class $i$. 
+In particular, \eqref{eq:arb1} represents the coupling method $\boldsymbol{s}_2$.
 
-For $K>3$ the three methods can be generalized to correspond to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$.
+For $K>3$ the three methods can be generalized to correspond to the trees having the graph structure  of a star centered at class $C_i$ for $i=1, \ldots, K$. They predict multi-class posterior
+$$
+p_j^\textrm{multi} = \frac{P_j \frac{f_j(x)}{f_i(x)}}{\sum_{k=1}^K P_k \frac{f_k(x)}{f_i(x)}.
+$$
 
 %More generally, to obtain a regular system of equations for  any of $K$ , it is necessary and sufficient that the tree formed by edges for which we include equations from Bradley-Terry system is  a spanning tree. 
 
@@ -87,16 +105,22 @@ $$
 
 For any observation belonging to class $C_t$, its result is identical to the arboreal method where the underlying tree forms a star with center at $C_t$. This method is clearly the optimal one with respect to Hinton's minimality criterion, because it ignores the output of any classifier not trained on the true class. It is not a true classification method, however, because it ``peeks'' at the label. Its main utility is to provide a way to benchmark other methods with respect to Hinton's minimality.
 
-In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method, where the underlying tree is a star centered at the class $C_i$. The predictions will generally span the vector space $R^K$. In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be expressed as a linear combination of $\boldsymbol{s}_i(x)$. Let us now define \emph{radial} coupling method. The  method requires that for the  weights we could in fact use the components of $\hat{\boldsymbol{p}}$, i.e.,
+In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  
+Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method for a sample $x$, where the underlying tree is a star centered at the class $C_i$. 
+Suppose the predictions $\boldsymbol{s}_1, \ldots, \boldsymbol{s}_K$ span the vector space $R^K$. We call this condition ``star independence''.  In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be uniquely expressed as a linear combination of $\boldsymbol{s}_i(x)$. 
+
+Let us now define \emph{radial} coupling method. The  method requires that if star independence holds then for the  weights we could in fact use the components of $\hat{\boldsymbol{p}}$ itself, i.e.,
 \begin{equation}
 	\begin{split}
-	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1(x) + \ldots + \hat p_K \boldsymbol{s}_K(x),\\
+	\hat {\boldsymbol{p}} &= \hat p_1 \boldsymbol{s}_1 + \ldots + \hat p_K \boldsymbol{s}_K,\\
 	1 &= \hat p_1 + \ldots + \hat p_K.
 	\end{split}
 	 \label{eq:radial}
 \end{equation}
 %
-The intuition behind \eqref{eq:radial} is that if some component $\hat p_i$ of $\hat{\boldsymbol{p}} =(\hat p_1, \ldots, \hat p_K) $ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by ${\boldsymbol{s}}_i$.
+The intuition behind \eqref{eq:radial} is that if some component $\hat p_i$ of $\hat{\boldsymbol{p}} =(\hat p_1, \ldots, \hat p_K) $ is close to 1 (and thus the remaining components are close to zero), then the prediction $\hat{\boldsymbol{p}}$ should be close to the prediction of Hinton's oracle which is provided by ${\boldsymbol{s}}_i$. 
+In order to extend the method to situations where star independence may not hold we define $\hat\boldsymbol{p}$ 
+to be the least square solution of the  system of linear equations \ref{eq:radial}.
 
 \subsection{Bayes covariant methods} \label{sec:bc2}
 
@@ -127,9 +151,9 @@ An arboreal coupling method $\boldsymbol{t}$ induced by a spanning tree $T$ on t
 	
 \end{proof}
 
-Given several Bayes covariant methods one can form  their ``linear combination''---an ensemble which is also Bayes covariant. Let us make the construction explicit.
+Given several Bayes covariant methods one can form  their ``weighted combination''---an ensemble which is also Bayes covariant. Let us make the construction explicit.
 
-Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multiclass classification methods satisfying Assumption \ref{ass:2}. We define their linear combination $\bigoplus_m a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
+Suppose first that $a_1, \ldots,a_M$ are real numbers and $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_M$ are probabilistic multiclass classification methods satisfying Assumption \ref{ass:2}. We define their weighted combination $\bigoplus_m a_m \boldsymbol{v}_m$ as the classification method that for any $x$ yields the probability distribution on $K$ classes that satisfies
 \begin{align*}
  	\bigl(a_1 \boldsymbol{v}_1 \oplus \ldots \oplus a_M \boldsymbol{v}_M\bigr)(x) \propto \boldsymbol{v}_1^{a_1}(x) \odot \cdots \odot \boldsymbol{v}_M^{a_M}(x),
 \end{align*}

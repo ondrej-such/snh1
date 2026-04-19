@@ -26,12 +26,12 @@ The results highlight key findings from the experimental section.
 Let us now turn to recommendation to practitioners on how to handle change of priors in one-vs-one probabilistic models. It is possible to choose any of the following approaches:
 
 \begin{itemize}
-\item[1.] One can treat the decision on when to apply change of priors---whether before or after coupling---as a boolean hyperparameter and use standard machine learning techniques to find the optimal value.
-\item[2.] One can investigate applicability of a Bayes covariant method. 
+\item[1.] One can treat the decision on when to apply change of priors---whether before or after coupling---as a boolean hyperparameter and use standard machine learning techniques to find the optimal value, or 
+\item[2.] one may opt for a Bayes covariant method, of which there are many. We note that the number of arboreal coupling methods corresponds to the number of spanning trees on $K$ vertices which is $K^{K-2}$ (\cite{cayley1878theorem). Additionally, new methods can be constructed by taking weighted combinations as described in Section \ref{sec:bc2}.
 \end{itemize}
 %\subsection{Properties of coupling methods}
 
-In order to ease the second approach,   we now summarize properties of parameterless coupling methods discussed in our work.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
+Finally,  for convenience we  summarize properties of parameterless coupling methods discussed in our work.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
 \begin{itemize}
 	\item whether a coupling method amounts to a linear system of equations,
 	\item if the coupling method amounts to a linear system of equations, whether the equations are of a special form (e.g., a Markov matrix) that facilitates their solution,

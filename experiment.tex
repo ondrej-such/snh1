@@ -14,7 +14,7 @@ These questions will be put to test in Sections \ref{sec:exp1}--\ref{sec:exp4}. 
 
 It is natural to consider the benchmark datasets used in previous evaluation of coupling methods \cite{wu2004probability}. The authors considered altogether seven datasets with number of classes ranging from 3 to 26. For each dataset they extracted 40 pairs of training and testing datasets. Half of these were smaller (300 training samples and 500 testing samples) and the other half were larger (800 training samples and 1000 testing samples). In our experiments we use only the larger pairs. 
 
-As a preliminary step we conducted analysis of linear separability of the datasets. We used ECOS solver in CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
+As a preliminary step we conducted analysis of linear separability of pairs of classes in the datasets. We used ECOS solver in CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
 
 \input{tab-sep.tex}
 
@@ -142,7 +142,8 @@ The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbo
 \end{figure}
 
 
-The second question is whether a coupling method would more consistently provide true answers. In Figure \ref{fig:score} we show the difference of accuracies of the classification models $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ after ten-fold change of priors for 'mnist' dataset. Again we can see, that there is no uniform advantage to either method.
+The second question is whether a coupling method would more consistently provide true answers. In Figure \ref{fig:score} we show the difference of accuracies of the classification models $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ after ten-fold change of priors for 'mnist' dataset. 
+There appears to be some advantage to method $\boldsymbol{c}_2$, although it is not uniform.
 % Let us remark under Assumption 1 the Bayes classifier \emph{should} change prediction of any sample if the change of priors is sufficiently large. Thus to evaluate this question 
 
 
