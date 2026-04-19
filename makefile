@@ -23,14 +23,14 @@ $(info EXP3 Is [${EXP3}])
 
 .ONESHELL:
 unzips: ${ZIP_FILES}
-	mkdir unzips
-	mkdir unzips/n300
-	mkdir unzips/n800
-	for F in ${ZIP300}; do 
-		unzip -n -j $${F}  -d unzips/n300 
+	mkdir -p unzips
+	mkdir -p unzips/n300
+	mkdir -p unzips/n800
+	for F in ${ZIP300}; do  \
+		unzip -n -j $$F  -d unzips/n300; \
 	done
-	for F in ${ZIP800}; do 
-		unzip -n -j $${F}  -d unzips/n800 
+	for F in ${ZIP800}; do  \
+		unzip -n -j $$F  -d unzips/n800; \
 	done
 
 data: unzips
@@ -40,23 +40,23 @@ graphs:
 		mkdir -p graphs
 
 
-data/separation.csv: data separation.R
+data/separation.csv: separation.R | data
 		Rscript -e "source('separation.R'); plan(multicore, workers = 4); df <- future_map(files, check_sep) |> list_rbind(); write.csv(df, '$@', quote=F, row.names = F)"
 
-data/multi-acc.csv: data lda.R
+data/multi-acc.csv: lda.R | data
 		Rscript -e "source('lda.R'); write_multi(1, tol = 1/2^(4:12))"
 		
-data/exp4.csv: data lda.R  exp4.R
+data/exp4.csv: lda.R  exp4.R | data
 		Rscript -e "source('exp4.R')"
 
-data/triples.csv: data lda.R
+data/triples.csv: lda.R | data
 		Rscript -e "source('lda.R'); write_triples(1)"
 
-data/exp2.csv: data exp2-summary.R
+data/exp2.csv: exp2-summary.R | data
 		Rscript -e "source('exp2-summary.R')"
 
 
-data/bc3_%.csv: data lda.R
+data/bc3_%.csv: lda.R | data
 		Rscript -e "source('lda.R');pt<-par_triples(limit = 1000, score =
 		'$*');print(class(pt));print(class(pt\$$df));write.csv(pt\$$df, '$@', quote=F, row.names=F)"
  
