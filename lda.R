@@ -555,21 +555,58 @@ write_multi <- function(runs = 20, workers = 11, tol = 1/2^(2:12), score = "acc"
 }
 
 write_triples <- function(runs = 20, workers = 11) {
+    # 1. Set up the plan (use 'multisession' for cross-platform stability)
     plan(multicore, workers = workers)
-    n1 <- dataset_names()
-    df <- map(dataset_names(), function(f) {
-        print(f)
-        future_map(0:(runs - 1), function (r) {
-            dfs <- read_wlws(800, f, r)
-            df1 <- lda_triples(dfs) |> 
-                pivot_wider(names_from = "method", values_from = "acc")
-            df1$dataset = f
-            df1$run = r
-            df1
-        }) |> list_rbind()
-    }) |> list_rbind() 
-    write.csv(df, file = "data/triples.csv", row.names = F, quote = F)
+    
+    # 2. Create a dataframe of all combinations (dataset x run)
+    tasks <- expand.grid(
+        f = dataset_names(),
+        r = 0:(runs - 1),
+        stringsAsFactors = FALSE
+    )
+    
+    # 3. Use future_pmap to iterate over the rows of the task grid
+    df <- future_pmap(tasks, function(f, r) {
+        # It's helpful to have a message, but print() in parallel 
+        # often won't show up in your main console.
+        
+        dfs <- read_wlws(800, f, r)
+        
+        df1 <- lda_triples(dfs) |>
+            pivot_wider(names_from = "method", values_from = "acc")
+        
+        df1$dataset <- f
+        df1$run <- r
+        
+        return(df1)
+        
+    }, .options = furrr_options(seed = TRUE)) |> # Essential if your LDA uses random seeds
+        list_rbind()
+    
+    # 4. Save results
+    stopifnot(dir.exists("data")) # dir.create("data")
+    write.csv(df, file = "data/triples.csv", row.names = FALSE, quote = FALSE)
+    
+    # Clean up workers
+    plan(sequential)
 }
+
+# write_triples <- function(runs = 20, workers = 11) {
+    # plan(multicore, workers = workers)
+    # n1 <- dataset_names()
+    # df <- map(dataset_names(), function(f) {
+        # print(f)
+        # future_map(0:(runs - 1), function (r) {
+            # dfs <- read_wlws(800, f, r)
+            # df1 <- lda_triples(dfs) |> 
+                # pivot_wider(names_from = "method", values_from = "acc")
+            # df1$dataset = f
+            # df1$run = r
+            # df1
+        # }) |> list_rbind()
+    # }) |> list_rbind() 
+    # write.csv(df, file = "data/triples.csv", row.names = F, quote = F)
+# }
 
 # Generate probability distributions on qL classses with denominators = div
 #
