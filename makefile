@@ -52,7 +52,7 @@ data/exp4.csv: lda.R  exp4.R | data
 data/triples.csv: lda.R | data
 		Rscript -e "source('lda.R'); write_triples(1)"
 
-data/exp2.csv: exp2-summary.R | data
+data/exp2.csv: exp2-summary.R data/triples.csv | data
 		Rscript -e "source('exp2-summary.R')"
 
 
