@@ -17,7 +17,7 @@ plt1 <- ggplot(df, aes(x = log2(tol),
   ylab("0-1 score")  + pub_theme
 
 ggsave(
-  filename = "graphs/exp1-plot1.pdf",
+  filename = "exp1-plot1.pdf",
   plot = plt1,
   width = 5.5,
   height = 3.5,

@@ -1,6 +1,7 @@
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(forcats)
 
 source("theme.R")
 
@@ -12,7 +13,7 @@ df1 <- read.csv("data/exp2.csv") |>
 
 df1$outcome = as.factor(df1$outcome)
 
-plt1 <- ggplot(df1, aes(x = dataset, y = count, fill = outcome)) + 
+plt1 <- ggplot(df1, aes(x = fct_rev(dataset), y = count, fill = outcome)) + 
     geom_col(width = 0.5) + theme_minimal(base_size = 9) + coord_flip() + pub_theme + 
     	scale_fill_manual(
           values = c("gt" = "seagreen", "lt" = "brown"),
