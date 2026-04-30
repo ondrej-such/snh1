@@ -20,7 +20,7 @@ plt1 <- ggplot(df1, aes(x = fct_rev(dataset), y = count, fill = outcome)) +
 	  labels = c(expression(parametric >= bolditalic(wlw)),
 		     expression(parametric < bolditalic(wlw))),
 	  name = "accuracy comparison"
-	  ) + ylab("dataset")
+	  ) + xlab("dataset")
 
 ggsave(
   filename = "exp2-plot2.pdf",
