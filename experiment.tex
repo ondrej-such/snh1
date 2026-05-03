@@ -93,12 +93,13 @@ Selecting parameters for methods in family \eqref{eq:family} requires several me
 
 \begin{figure}[!ht]
 \includegraphics{exp2-plot2.pdf}
-\caption{Comparison of accuracy for parametric Bayes covariant methods \eqref{eq:family} vs. Wu--Lin--Weng's method}
+\caption{Comparison of accuracy for parametric Bayes covariant methods \eqref{eq:family} vs. Wu--Lin--Weng's method. Accuracy is based on repeated five-fold cross-validation to avoid parameter selection bias, and is evaluated on the subsets where normal method $\boldsymbol{e}_3$ was outperformed by Wu-Lin-Weng's method.}
 \label{fig:par-bc}
 \end{figure}
 
 The summary statistics are shown in Figure \ref{fig:par-bc}.
 We can see that only in a minority of cases we found a parametric Bayes covariant coupling method matching the performance of Wu--Lin--Weng's method. 
+In contrast to the direct evaluations in Table \ref{tab:step2}, this performance drop reflects the practical difficulty of parameter selection and the generalization penalty inherent to cross-validation.
 
 %\subsection{Experiment: }
 %
