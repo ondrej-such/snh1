@@ -17,7 +17,7 @@ For all $x$ in the feature space we have $f_i(x) P_i > 0$.
 
 The Bayes classifier predicts that the probability of $x$ belonging to the $i$-th class is
 \begin{align}
- p^\textrm{multi}_i(x) = \frac{d_i(x) P_i}{\sum_{k=1}^K f_k(x)P_k}.
+ p^\textrm{multi}_i(x) = \frac{f_i(x) P_i}{\sum_{k=1}^K f_k(x)P_k}.
 \end{align}
 
 Besides the multiclass classifier we may also consider the binary Bayes classifiers for any pair $(i,j)$ of 
@@ -25,7 +25,7 @@ classes. Assuming the prior on the two classes is proportional to $(P_i, P_j)$, 
 predicts the probability of the $i$-th class as 
 
 \begin{align}
-	p_{ij}^\textrm{binary}(x) = \frac{d_i(x) P_i}{f_i(x)P_i + f_j(x)P_j}.
+	p_{ij}^\textrm{binary}(x) = \frac{f_i(x) P_i}{f_i(x)P_i + f_j(x)P_j}.
 \end{align}
 
 Knowledge of vector $\boldsymbol{p}^\textrm{multi}(x)$ is equivalent to knowing the functions $p^\textrm{binary}_{ij}(x)$. Indeed, under Assumption \ref{ass:1} we have
