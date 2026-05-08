@@ -21,17 +21,17 @@ A natural way to find  $\hat{\boldsymbol{p}}$ is thus to minimize a functional i
 \end{align*}
 
 A notable example which uses this principle is the coupling method introduced in \cite{hastie1998classification}. Their method uses Kullback--Leibler divergence 
-which measures a difference between two probability distributions $\boldsymbol{d}, \boldsymbol{d'}$ on the set $\{C_i, C_j\}$. 
 \begin{align*}
 	\divm\nolimits_\textrm{KL} (\boldsymbol{d}, \boldsymbol{d'})= 
-	  \sum_{k\in\{i,j\}} d_k \log (d_k/ d'_k).
+	  \sum_{k\in\{i,j\}} d_k \log (d_k/ d'_k)
 \end{align*}
+which measures a difference between two probability distributions $\boldsymbol{d}, \boldsymbol{d'}$ on the set $\{C_i, C_j\}$. 
 
 Kullback--Leibler divergence strongly penalizes  mispredictions when the true class is predicted to have very low probability. In the context of classification, when we are primarily concerned with accuracy, one could advantageously employ alternative members of the Bregman divergence family derived from proper scoring rules \cite{gneiting2007strictly, buja2005loss}.
  
 For instance, a popular alternative is divergence arising from the quadratic  score \cite{gneiting2007strictly} (also known as Brier score \cite{brier1950verification}). This divergence takes the form
 $$
-\divm\nolimits_\textrm{quad} (\boldsymbol{d}, \boldsymbol{d'})= \sum (d_i - d'_i)^2.
+\divm\nolimits_\textrm{quad} (\boldsymbol{d}, \boldsymbol{d'})= \sum_{k\in\{i,j\}} (d_k - d'_k)^2.
 $$
 
 The quadratic score is the basis of the popular Wu--Lin--Weng's method \cite{wu2004probability}. 
