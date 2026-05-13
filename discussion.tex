@@ -6,7 +6,7 @@ In this paper we set out to investigate how to handle change of priors in one-vs
 
 In Section \ref{sec:theory} we have formulated the theoretical basis of one-vs-one classification. In Section \ref{sec:des:exact} we put down the basis for axiomatic development of coupling methods. In complementary Section \ref{sec:des:inexact} we formulated properties of coupling methods that are likely of importance in practice.
 
-Important examples of coupling methods has been presented in Section \ref{sec:coupling}. We were able to provide a unifying formulation for method of Hastie--Tibshirani and Wu--Lin--Weng. We introduced arboreal coupling methods, which are an important example of methods without parameters, albeit noncanonical. We recast previously known normal coupling method in a new way. Although this is a canonical example of Bayes covariant coupling methods,  it is lacking in practical performance, as  we uncovered in the experimental section. This creates impetus to study more general Bayes covariant methods. The  ensembling approach we proposed in Section \ref{sec:bc2} allows one to build parametric families of Bayes covariant methods.
+Important examples of the coupling methods have been presented in Section \ref{sec:coupling}. We were able to provide a unifying formulation for method of Hastie--Tibshirani and Wu--Lin--Weng. We introduced the arboreal coupling methods, which are an important example of methods without parameters, albeit noncanonical. We recast the previously known normal coupling method in a new way. Although this is a canonical example of Bayes covariant coupling methods,  it is lacking in practical performance, as  we uncovered in the experimental section. This creates impetus to study more general Bayes covariant methods. The  ensembling approach we proposed in Section \ref{sec:bc2} allows one to build parametric families of Bayes covariant methods.
 
 \subsection{Experimental findings} 
 
@@ -16,17 +16,17 @@ The results highlight key findings from the experimental section.
 	\item The orthodox method of Wu--Lin--Weng dominates others across diverse classification tasks.
 	\item The only method close to Wu--Lin--Weng is the radial coupling method.
 	\item The concern of Hinton about one-vs-one classification is unwarranted. The method that ignores binary classifiers not trained on a given sample (we call it Hinton's oracle) underperforms the method of Wu--Lin--Weng.
-	\item In more than half of classification problems we were able to find a Bayes covariant coupling method which matches performance of the Wu--Lin--Weng method. 
+	\item In more than half of the classification problems we were able to find a Bayes covariant coupling method which matches performance of the Wu--Lin--Weng method. 
 \end{itemize}
 
 
 
 \subsection{Practical recommendation}
 
-Let us now turn to recommendation to practitioners on how to handle change of priors in one-vs-one probabilistic models. It is possible to choose any of the following approaches:
+Let us now turn to recommendation to practitioners on how to handle a change of priors in one-vs-one probabilistic models. It is possible to choose any of the following approaches:
 
 \begin{itemize}
-\item[1.] One can treat the decision on when to apply change of priors---whether before or after coupling---as a boolean hyperparameter and use standard machine learning techniques to find the optimal value, or 
+\item[1.] One can treat the decision on when to apply a change of priors---whether before or after coupling---as a boolean hyperparameter and use standard machine learning techniques to find the optimal value, or 
 \item[2.] one may opt for a Bayes covariant method, of which there are many. We note that the number of arboreal coupling methods equals to the number of spanning trees on $K$ vertices which is $K^{K-2}$ (\cite{cayley1878theorem}). Additionally, new methods can be constructed by taking weighted combinations as described in Section \ref{sec:bc2}.
 \end{itemize}
 %\subsection{Properties of coupling methods}
