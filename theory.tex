@@ -189,17 +189,23 @@ When we use a coupling method and the prior changes, we  can apply \eqref{eq:cha
 $$\boldsymbol{R} = \boldsymbol{R}(x) = (p_{ij}^{\textrm{binary}}(x),$$ 
 then we say that the coupling method is \emph{Bayes covariant}. 
 
-Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_{ij}(D)$ by requiring
-$$
-\pi_{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
-$$
-We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $\pi_{ij}(r_{ij})$. The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
+Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. 
+Denote $B = B_{ij}$ the binary classifier  predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$ before change of priors. 
+After the change $\pi$ the equation \eqref{eq:changePrior} yields the following expression for the probability of class $C_i$:
+% $$
+% \pi_{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
+% $$
+\begin{align}
+p_B^\pi(C_i) = \frac{p \frac{P'_i}{P_i}}{p \frac{P'_i}{P_i} + p' \frac{P'_j}{P_j}}.
+\end{align}
+We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $p_{B_{ij}}^\pi(C_i)$ in $i$-th row and $j$-the column.
+The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
 
 On the other hand we can apply \eqref{eq:changePrior} after coupling. Say we have a distribution on $K$ classes
 \begin{align}
 D \propto (p_1, \ldots, p_K).
 \end{align}
-Then we define $D^\pi$ by requiring 
+Then we define the distribution $D^\pi$ by requiring 
 \begin{align}
 D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{def:prior:effect}
 \end{align}

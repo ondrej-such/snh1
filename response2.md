@@ -3,6 +3,7 @@ Major Concerns:
 ---------------
 
 *1. page 6; I found this notation to be needlessly confusing. Is it possible to give more explicit examples or change the forms? R^\pi means \pi(r_{ij}) is my primary problem.*
+We agree. The notation was not only confusing, but also incorrect. We made it more precise and hopefully clearer.
 
 *2. page 15; tol=0.05 is not clearly justified. From the references figure, it should be 2^-4 or possibly higher.*
 
