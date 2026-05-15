@@ -4,9 +4,7 @@ Major Concerns:
 
 *1. page 6; I found this notation to be needlessly confusing. Is it possible to give more explicit examples or change the forms? R^\pi means \pi(r_{ij}) is my primary problem.*
 
-We agree that the original notation was confusing because the operator \pi_{ij} was formally defined on binary distributions (D \propto (p,p')), while later we wrote expressions of the form \pi_{ij}(r_{ij}), where r_{ij} denotes only a scalar probability.
-
-To make the construction explicit, we revised the notation. We abandoned the definition of \pi_{ij} completely and now define the transformed matrix R^\pi through pairwise distributions:
+We agree. The notation was not only confusing, but also incorrect, because the operator \pi_{ij} was formally defined on binary distributions (D \propto (p,p')), while later we wrote expressions of the form \pi_{ij}(r_{ij}), where r_{ij} denotes only a scalar probability. We made it more precise and hopefully clearer. We abandoned the definition of \pi_{ij} completely and now we define the transformed matrix R^\pi through pairwise distributions:
 (r^\pi_{ij},r^\pi_{ji}) \propto (r_{ij}\frac{P_i'}{P_i}, r_{ji}\frac{P_j'}{P_j}).
 
 *2. page 15; tol=0.05 is not clearly justified. From the references figure, it should be 2^-4 or possibly higher.*

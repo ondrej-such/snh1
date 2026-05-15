@@ -17,8 +17,8 @@ plt1 <- ggplot(df1, aes(x = fct_rev(dataset), y = count, fill = outcome)) +
     geom_col(width = 0.5) + theme_minimal(base_size = 9) + coord_flip() + pub_theme + 
     	scale_fill_manual(
           values = c("gt" = "seagreen", "lt" = "brown"),
-	  labels = c(expression(parametric >= bolditalic(wlw)),
-		     expression(parametric < bolditalic(wlw))),
+	  labels = c("gt" = expression(parametric >= bolditalic(wlw)),
+		     "lt" = expression(parametric < bolditalic(wlw))),
 	  name = "accuracy comparison"
 	  ) + xlab("dataset")
 

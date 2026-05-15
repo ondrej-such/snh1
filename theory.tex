@@ -189,12 +189,7 @@ When we use a coupling method and the prior changes, we  can apply \eqref{eq:cha
 $$\boldsymbol{R} = \boldsymbol{R}(x) = (p_{ij}^{\textrm{binary}}(x)),$$ 
 then we say that the coupling method is \emph{Bayes covariant}. 
 
-Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. 
-%If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_{ij}(D)$ by requiring
-%$$
-%\pi_{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
-%$$
-Let $\boldsymbol{R}=(r_{ij})$ be the matrix of binary predictions, where $r_{ij}+r_{ji}=1$. We denote by $\boldsymbol{R}^\pi=(r^\pi_{ij})$ the $K\times K$ matrix with entries satisfying 
+Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. Let $\boldsymbol{R}=(r_{ij})$ be the matrix of binary predictions, where $r_{ij}+r_{ji}=1$. We denote by $\boldsymbol{R}^\pi=(r^\pi_{ij})$ the $K\times K$ matrix with entries satisfying 
 $$
 (r^\pi_{ij}, r^\pi_{ji}) \propto \biggl(r_{ij}\frac{P'_i}{P_i}, r_{ji}\frac{P'_j}{P_j}\biggr)
 \quad
@@ -208,7 +203,7 @@ On the other hand we can apply \eqref{eq:changePrior} after coupling. Say we hav
 \begin{align}
 D \propto (p_1, \ldots, p_K).
 \end{align}
-Then we define $D^\pi$ by requiring 
+Then we define the distribution $D^\pi$ by requiring 
 \begin{align}
 D^\pi \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{def:prior:effect}
 \end{align}
