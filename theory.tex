@@ -186,14 +186,23 @@ Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1,
 \end{align}
 
 When we use a coupling method and the prior changes, we  can apply \eqref{eq:changePrior} either before or after coupling. If the results are identical for all initial pairwise data $\boldsymbol{R}$ where
-$$\boldsymbol{R} = \boldsymbol{R}(x) = (p_{ij}^{\textrm{binary}}(x),$$ 
+$$\boldsymbol{R} = \boldsymbol{R}(x) = (p_{ij}^{\textrm{binary}}(x)),$$ 
 then we say that the coupling method is \emph{Bayes covariant}. 
 
-Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_{ij}(D)$ by requiring
+Let us make this explicit. Let $\boldsymbol{v}$ be a coupling method. Denote by  $\pi$ the change of priors $\pi:\Pi \rightarrow \Pi'$. 
+%If we have a  binary classifier predicting distribution $D \propto (p, p')$ on two classes $C_i$ and $C_j$, then we define new distribution $\pi_{ij}(D)$ by requiring
+%$$
+%\pi_{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
+%$$
+Let $\boldsymbol{R}=(r_{ij})$ be the matrix of binary predictions, where $r_{ij}+r_{ji}=1$. We denote by $\boldsymbol{R}^\pi=(r^\pi_{ij})$ the $K\times K$ matrix with entries satisfying 
 $$
-\pi_{ij}(D) \propto \biggl(p \frac{P'_i}{P_i},p' \frac{P'_j}{P_j}\biggr).
+(r^\pi_{ij}, r^\pi_{ji}) \propto \biggl(r_{ij}\frac{P'_i}{P_i}, r_{ji}\frac{P'_j}{P_j}\biggr)
+\quad
+\textrm{and}
+\quad
+r^\pi_{ij}+r^\pi_{ji} = 1.
 $$
-We denote by $\boldsymbol{R}^\pi$ the $K\times K$ matrix with entries $\pi_{ij}(r_{ij})$. The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
+The value $\boldsymbol{v}(\boldsymbol{R}^\pi)$ represents the effect of change of priors if we apply \eqref{eq:changePrior} \emph{before} coupling.
 
 On the other hand we can apply \eqref{eq:changePrior} after coupling. Say we have a distribution on $K$ classes
 \begin{align}
@@ -207,7 +216,7 @@ We now say that a method is Bayes covariant if
 \begin{align}
 \boldsymbol{v}(\boldsymbol{R}^\pi)=	\bigl(\boldsymbol{v}(\boldsymbol{R})\bigr)^\pi,
 \end{align}
-for any matrix $\boldsymbol{R}$ satisfying $r_{ij}> 0$ and $r_{ij} = 1 - r_{ji}$.
+for any matrix $\boldsymbol{R}$ satisfying $r_{ij}> 0$ and $r_{ij}+r_{ji} = 1$.
 
 
 
