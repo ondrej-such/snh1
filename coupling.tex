@@ -49,10 +49,14 @@ Given an overdetermined system of equations, a common approach is to select a mi
 Such a subset corresponds to a graph $G$ on $K$ vertices where each vertex represents a class.  
 
 Let us recall several concepts from graph theory \cite{harary1969graph}. 
-A path of length $s$ in $G$ is a sequence of edges 
+A \emph{walk} of length $s$ in $G$ is a sequence of edges 
 $(C_{i_1}, C_{i_2}), (C_{i_2}, C_{i_3}), \ldots,  (C_{i_{s}}, C_{i_{s+1}})$. 
-A cycle is a path with length $s\geq 3$ such that all vertices $C_{i_1}, \ldots, C_{i_s}$ are distinct and the starting and the ending vertices coincide, i.e., $i_1 = i_{s+1}$. A tree is a graph without a cycle.
-A spanning tree is a tree for which there is a path between any pair of vertices $C_i$ and $C_j$. Such a path is necessarily unique \cite[Theorem 4.1]{harary1969graph}. 
+A \emph{path} is a walk in which all vertices $C_{i_1}, \ldots, C_{i_{s+1}}$ are distinct.
+A walk is \emph{closed} if the first and last vertex (class) coincide i.e. if $C_{i_1} = C_{i_{s+1}}$. 
+A closed walk is called a \emph{cycle} if all the classes
+$C_{i_1}, \ldots, C_{i_s}$ are distinct and $s\geq 3$. 
+The graph $G$ is said to be a \emph{tree} if it does not contain a cycle.
+The graph $G$ is said to be a spanning tree if it is a tree and  there is a path between any pair of vertices $C_i$ and $C_j$. Such a path is necessarily unique \cite[Theorem 4.1]{harary1969graph}. 
 All spanning trees have exactly $K-1$ edges. The degree of a vertex is the number of edges of the graph 
 containing the vertex. Any spanning tree has a vertex of degree one.
 
