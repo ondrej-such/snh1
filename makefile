@@ -66,6 +66,9 @@ exp2-detail.pdf: exp2-detail.R graphs theme.R
 exp2-plot2.pdf: exp2-plot2.R graphs theme.R data/exp2.csv
 		Rscript -e "source('exp2-plot2.R')"
 
+exp2-plot7.pdf: exp2-plot7.R graphs theme.R data/exp2.csv
+		Rscript -e "source('exp2-plot7.R')"
+
 exp1-plot1.pdf: exp1-plot1.R data/multi-acc.csv theme.R
 		Rscript -e "source('exp1-plot1.R')"
 
@@ -94,7 +97,7 @@ else
 endif
 
 TEX_FILES= intro.tex theory.tex experiment.tex coupling.tex discussion.tex appendix.tex tab-sep.tex tab-step2.tex tab-exp4.tex
-FIG_FILES= exp2-plot2.pdf  exp4-truth.pdf exp1-plot1.pdf
+FIG_FILES= exp2-plot2.pdf  exp4-truth.pdf exp1-plot1.pdf exp2-plot7.pdf
 
 paper.pdf: paper.tex tab-sep.tex tab-step2.tex exp2-plot2.pdf exp2-summary.pdf exp2-detail.pdf exp1-plot1.pdf exp4-truth.pdf paper.bib tab-exp4.tex 
 		pdflatex paper.tex
