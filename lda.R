@@ -713,7 +713,8 @@ cv_stack <- function(bcp,  W = gen_W(qL = length(bcp$pl)),
             score1 <- apply(scores[ix,], 2, mean)
             stopifnot(length(score1) == nrow(W))
             mscore1 <- max(score1)
-            s <- sample(which(score1 == mscore1), 1)
+	    w <- which(score1 == mscore1)
+            s <- w[sample(1:length(w), 1)]
             iy = folds == j
             correct2 <- sum(acc[iy, s])
             acc2 <- mean(acc[iy, s])

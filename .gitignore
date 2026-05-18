@@ -1,5 +1,9 @@
-paper.aux
-paper.log
-paper.dvi
-paper.out
+*.aux
+*.log
+*.dvi
+*.Rproj
+*.bbl
+*.blg
+*.out
 paper.pdf
+.Rproj.user
