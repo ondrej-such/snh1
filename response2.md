@@ -31,6 +31,8 @@ Therefore, Figure 3 does not show that the parametric family cannot represent a 
 
 While these methodological choices are mentioned in the text of Section 4.5, we agree that the shift in methodology between Table 2 and Figure 3 could be made more prominent. We have updated the last paragraph of section 4.5 to clarify this distinction by adding this sentence: "In contrast to the direct evaluations in Table 2, this performance drop reflects the practical difficulty of parameter selection and the generalization penalty inherent to cross-validation." We have also updated Figure 3 caption.
 
+To improve clarity, we have also included a new figure showing the same experiment without cross-validation. It is placed before the original Figure 3; consequently, the new figure is labeled as Figure 3, and the original Figure 3 has been renumbered as Figure 4. The text in the affected section was updated accordingly. 
+
 *6. Figure 4, it appears to me that WLW is consistently lower than radial, but this arrangement of bars makes it difficult to compare directly. In the text, you say that there is no uniform advantage, I disagree for this example.*
 
 Figure 4 compares the difference between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ for each coupling method, rather than directly comparing WLW and radial methods. We agree that the current visualization may give the impression of a consistent difference between methods, and we have clarified this point in the text. In particular, we included the following statement: "There appears to be some advantage to method $\boldsymbol{c}_2$, although it is not uniform."
