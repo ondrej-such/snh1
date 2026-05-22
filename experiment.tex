@@ -12,7 +12,7 @@ These questions will be put to test in Sections \ref{sec:exp1}--\ref{sec:exp4}. 
 
 \subsection{Datasets}
 
-It is natural to consider the benchmark datasets used in previous evaluation of coupling methods \cite{wu2004probability}. The authors considered altogether seven datasets with number of classes ranging from 3 to 26. For each dataset they extracted 40 pairs of training and testing datasets. Half of these were smaller (300 training samples and 500 testing samples) and the other half were larger (800 training samples and 1000 testing samples). In our experiments we use only the larger pairs. 
+It is natural to consider the benchmark datasets used in the previous evaluation of coupling methods \cite{wu2004probability}. The authors considered seven datasets in total, with the number of classes ranging from 3 to 26. For each dataset, they extracted 40 pairs of training and testing datasets. Half of these were smaller (300 training samples and 500 testing samples), and the other half were larger (800 training samples and 1000 testing samples). In our experiments we use only the larger pairs. 
 
 As a preliminary step we conducted analysis of linear separability of pairs of classes in the datasets. We used ECOS solver in CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
 
@@ -48,13 +48,13 @@ Small probabilities generally have very little effect on the implementation of B
 The first experiment compares the performance of the following canonical coupling methods:
 \begin{itemize}
 \item method of Wu--Lin--Weng, which is widely used in software libraries, and thus can be viewed as an orthodox choice,
-\item normal coupling, which is Bayes covariant,
-\item radial coupling, which is not Bayes covariant,
+\item the normal coupling, which is Bayes covariant,
+\item the radial coupling, which is not Bayes covariant,
 \item Hinton's oracle.
 \end{itemize}
 
 % \input{tab-multi.tex}
-The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that Wu--Lin--Weng's method has the most robust performance. On some datasets it trounces normal coupling method by a wide margin. The edge over the radial method is smaller with only mnist and usps datasets showing a significant difference for smaller values of $tol$ hyperparameter.  However in view of Theorem \ref{thm:K3} the Wu--Lin--Weng's method is not Bayes covariant, therefore we will extend the set of Bayes covariant methods beyond the canonical normal coupling.
+The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that Wu--Lin--Weng's method has the most robust performance. On some datasets it trounces the normal coupling method by a wide margin. The edge over the radial method is smaller with only mnist and usps datasets showing a significant difference for smaller values of $tol$ hyperparameter.  However in view of Theorem \ref{thm:K3} the Wu--Lin--Weng's method is not Bayes covariant, therefore we will extend the set of Bayes covariant methods beyond the canonical normal coupling.
 
 \begin{figure}
 	\includegraphics{exp1-plot1.pdf}
@@ -87,13 +87,13 @@ Note that this family includes
 \end{itemize}
 
 We do not know if this family possesses any convexity properties which would allow us to find the optimal classifier in the family.
-Therefore we select a finite subset of combinations for which $a_1, a_2, a_3$ are nonnegative rational numbers summing to one with denominator equal to 50. 
+Therefore, we select a finite subset of combinations for which $a_1, a_2, a_3$ are nonnegative rational numbers summing to one, each with a denominator equal to 50. 
 
 
 Firstly, let us evaluate whether there is \emph{any} element in this set which on
 the test set matches the accuracy of Wu--Lin--Weng's method. In order to limit
 computational cost we select 1000 three class subsets from all datasets for problems 
-where normal method was outperformed by Wu--Lin--Weng's method. 
+where the normal method was outperformed by Wu--Lin--Weng's method. 
 For each three-class classification problem we will try to match the performance
 of Wu--Lin--Weng method with a Bayes covariant method in family \eqref{eq:family}.
 We visualize the results in Figure \ref{fig:par-bc7}. The results are split according to the dataset, 
@@ -137,7 +137,7 @@ cross-validation. In order to obtain more accurate results we use repeated cross
 
 \begin{figure}[!ht]
 \includegraphics{exp2-plot2.pdf}
-\caption{Comparison of accuracy for parametric Bayes covariant methods \eqref{eq:family} vs. Wu--Lin--Weng's method. Accuracy is based on repeated five-fold cross-validation to avoid parameter selection bias, and is evaluated on the subsets where normal method $\boldsymbol{e}_3$ was outperformed by Wu-Lin-Weng's method.}
+\caption{Comparison of accuracy for parametric Bayes covariant methods \eqref{eq:family} vs. Wu--Lin--Weng's method. Accuracy is based on repeated five-fold cross-validation to avoid parameter selection bias, and is evaluated on the subsets where the normal method $\boldsymbol{e}_3$ was outperformed by Wu-Lin-Weng's method.}
 \label{fig:par-bc}
 \end{figure}
 
@@ -174,11 +174,12 @@ We have shown that there are situations when Wu--Lin--Weng's method outperforms 
 
 Let us start with some notation. Consider a classification method $\boldsymbol{c}_0$ based on coupling. Suppose the priors change, and let us denote by $\boldsymbol{c}_1$ the classification model where we apply \eqref{eq:changePrior} to binary classifiers, and by $\boldsymbol{c}_2$ the classification method when we apply \eqref{eq:changePrior} after coupling. 
 
-The first question is whether for some coupling method the difference in predictions (we call it \emph{spread}) between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ would be smaller. To gauge this question we apply change of priors by increasing tenfold the prior for every class in turn.  The averaged results are shown in Table \ref{tab:exp4}. 
+The first question is whether for some coupling method the difference in predictions (we call it \emph{spread}) between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ would be smaller. 
+To gauge this question we apply a change of priors by increasing tenfold the prior for every class in turn.  The averaged results are shown in Table \ref{tab:exp4}. 
 
 \input {tab-exp4.tex}
 
-The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
+The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for the normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
 
 \begin{figure}[!ht]
 	\includegraphics{exp4-truth.pdf}
