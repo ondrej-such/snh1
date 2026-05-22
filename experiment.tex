@@ -82,11 +82,11 @@ a_1 \boldsymbol{s}_1 \oplus a_2 \boldsymbol{s}_2 \oplus a_3 \boldsymbol{s}_3,\qu
 Note that this family includes 
 \begin{itemize}
 \item the normal coupling method \eqref{eq:normal3}  when $a_1 = a_2 = a_3 = 1/3$, 
-\item  the three arboreal methods $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ when $(a_1,a_2,a_3)$ equals to respectively
-   $(1,0,0)$, $(0,1,0)$ and $(0,0,1)$.
+\item  the three arboreal methods $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ when $(a_1,a_2,a_3)$ equals
+   $(1,0,0)$, $(0,1,0)$, and $(0,0,1)$, respectively.
 \end{itemize}
 
-We do not know if this family possessess any convexity properties which would allow us to find the optimal classifier in the family.
+We do not know if this family possesses any convexity properties which would allow us to find the optimal classifier in the family.
 Therefore we select a finite subset of combinations for which $a_1, a_2, a_3$ are nonnegative rational numbers summing to one with denominator equal to 50. 
 
 
@@ -96,7 +96,7 @@ computational cost we select 1000 three class subsets from all datasets for prob
 where normal method was outperformed by Wu--Lin--Weng's method. 
 For each three-class classification problem we will try to match the performance
 of Wu--Lin--Weng method with a Bayes covariant method in family \eqref{eq:family}.
-We visualize the results in \ref{fig:par-bc7}. The results are split according to the dataset, 
+We visualize the results in Figure \ref{fig:par-bc7}. The results are split according to the dataset, 
 since the datasets with larger number of classes will tend to have larger number of triples chosen.
 \begin{figure}[!ht]
 \includegraphics{exp2-plot7.pdf}
@@ -109,8 +109,8 @@ since the datasets with larger number of classes will tend to have larger number
 % We start by selecting 1000 three class subsets from all datasets for problems 
 % where normal method was outperformed by Wu--Lin--Weng's method.
 
-Secondly, we turn out attention whether we would be \emph{able to find} the 
-best performing classifier in the family. 
+Secondly, we turn our attention to whether we would be \emph{able to find} the 
+best-performing classifier in the family. 
 This is what would be required in practice. The standard approach is to use 
 cross-validation. In order to obtain more accurate results we use repeated cross-validation with 20 repetitions.
 % Selecting parameters for methods in family \eqref{eq:family} requires several methodological choices. 
