@@ -47,7 +47,7 @@ Small probabilities generally have very little effect on the implementation of B
 
 The first experiment compares the performance of the following canonical coupling methods:
 \begin{itemize}
-\item method of Wu--Lin--Weng, which is widely used in software libraries, and thus can be viewed as an orthodox choice,
+\item the method of Wu--Lin--Weng, which is widely used in software libraries, and thus can be viewed as an orthodox choice,
 \item the normal coupling, which is Bayes covariant,
 \item the radial coupling, which is not Bayes covariant,
 \item Hinton's oracle.
@@ -66,7 +66,7 @@ The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that Wu
  \label{sec:exp2}
 
 
-In this experiment we compare  Bayes covariant coupling methods \emph{without} parameters that could match the performance of Wu--Lin--Weng's method. We investigate  the case of three class datasets. This is a natural starting point, since it is the smallest number of classes where the question is meaningful to ask. All experiments use value of 0.05 for $tol$ hyperparameter based on results of Section \ref{sec:exp1}.  In our comparison we include the normal method, as well as the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ that are not canonical. We consider all possible triples of classes in all datasets. The resulting statistics are shown in Table \ref{tab:step2}. 
+In this experiment we compare  Bayes covariant coupling methods \emph{without} parameters that could match the performance of Wu--Lin--Weng's method. We investigate the case of three-class datasets. This is a natural starting point, since it is the smallest number of classes for which the question is meaningful. All experiments use the value of 0.05 for the $tol$ hyperparameter based on results of Section \ref{sec:exp1}.  In our comparison we include the normal method, as well as the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ that are not canonical. We consider all possible triples of classes in all datasets. The resulting statistics are shown in Table \ref{tab:step2}. 
 
 \input{tab-step2.tex}
 
