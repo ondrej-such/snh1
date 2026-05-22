@@ -122,6 +122,9 @@ sp2.pdf: springer.tex $(TEX_FILES) paper.bib $(FIG_FILES)
 		pdflatex "\\def\\mysecret{2} \\input{springer.tex}" 
 		mv springer.pdf sp2.pdf
 
+sp2.tex: final.py springer.tex
+	python3 final.py
+
 sp3.pdf: springer.tex  $(TEX_FILES) paper.bib $(FIG_FILES)
 		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
 		bibtex springer
