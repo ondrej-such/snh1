@@ -1,10 +1,16 @@
 \section{Discussion}
 
-In this paper we set out to investigate how to handle change of priors in one-vs-one probabilistic models. Let us first summarize our contributions, both theoretical and experimental.
+In this paper we set out to investigate how to handle change of priors in one-vs-one 
+probabilistic models. Let us first summarize our contributions, 
+both theoretical and experimental.
 
 \subsection{Theoretical insights}
 
-In Section \ref{sec:theory} we have formulated the theoretical basis of one-vs-one classification. In Section \ref{sec:des:exact} we put down the basis for axiomatic development of coupling methods. In complementary Section \ref{sec:des:inexact} we formulated properties of coupling methods that are likely of importance in practice.
+In Section \ref{sec:theory} we have formulated the theoretical basis of 
+one-vs-one classification. In Section \ref{sec:des:exact} we put down the basis 
+for the axiomatic development of coupling methods. 
+In complementary Section \ref{sec:des:inexact} we formulated properties 
+of coupling methods that are likely to be of importance in practice.
 
 Important examples of the coupling methods have been presented in Section \ref{sec:coupling}. We were able to provide a unifying formulation for method of Hastie--Tibshirani and Wu--Lin--Weng. We introduced the arboreal coupling methods, which are an important example of methods without parameters, albeit noncanonical. We recast the previously known normal coupling method in a new way. Although this is a canonical example of Bayes covariant coupling methods,  it is lacking in practical performance, as  we uncovered in the experimental section. This creates impetus to study more general Bayes covariant methods. The  ensembling approach we proposed in Section \ref{sec:bc2} allows one to build parametric families of Bayes covariant methods.
 
@@ -15,7 +21,7 @@ The results highlight key findings from the experimental section.
 \begin{itemize}
 	\item The orthodox method of Wu--Lin--Weng dominates others across diverse classification tasks.
 	\item The only method close to Wu--Lin--Weng is the radial coupling method.
-	\item The concern of Hinton about one-vs-one classification is unwarranted. The method that ignores binary classifiers not trained on a given sample (we call it Hinton's oracle) underperforms the method of Wu--Lin--Weng.
+	\item Hinton's concern about one-vs-one classification is unwarranted. The method that ignores binary classifiers not trained on a given sample (we call it Hinton's oracle) underperforms the method of Wu--Lin--Weng.
 	\item In more than half of the classification problems we were able to find a Bayes covariant coupling method which matches performance of the Wu--Lin--Weng method. 
 \end{itemize}
 
@@ -23,15 +29,21 @@ The results highlight key findings from the experimental section.
 
 \subsection{Practical recommendation}
 
-Let us now turn to recommendation to practitioners on how to handle a change of priors in one-vs-one probabilistic models. It is possible to choose any of the following approaches:
+Let us now turn to recommendations to practitioners on how to handle a change of priors in one-vs-one probabilistic models. It is possible to choose any of the following approaches:
 
 \begin{itemize}
-\item[1.] One can treat the decision on when to apply a change of priors---whether before or after coupling---as a boolean hyperparameter and use standard machine learning techniques to find the optimal value, or 
-\item[2.] one may opt for a Bayes covariant method, of which there are many. We note that the number of arboreal coupling methods equals to the number of spanning trees on $K$ vertices which is $K^{K-2}$ (\cite{cayley1878theorem}). Additionally, new methods can be constructed by taking weighted combinations as described in Section \ref{sec:bc2}.
+\item[1.] One can treat the decision on when to apply a change of priors---whether 
+before or after coupling---as a boolean hyperparameter and use standard machine 
+learning techniques to find the optimal value, or 
+\item[2.] one may opt for a Bayes covariant method, of which there are many. 
+We note that the number of arboreal coupling methods equals the number 
+of spanning trees on $K$ vertices which is $K^{K-2}$ (\cite{cayley1878theorem}). 
+Additionally, new methods can be constructed by taking weighted combinations 
+as described in Section \ref{sec:bc2}.
 \end{itemize}
 %\subsection{Properties of coupling methods}
 
-Finally,  for convenience we  summarize properties of parameterless coupling methods discussed in our work.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
+Finally, for convenience, we summarize the properties of the parameterless coupling methods discussed in our work.  Table \ref{tab:summaryCoupling} concisely lists the relevant properties enjoyed by each method. Note that we have split the desideratum ``simplicity of computation'' into three different aspects:
 \begin{itemize}
 	\item whether a coupling method amounts to a linear system of equations,
 	\item if the coupling method amounts to a linear system of equations, whether the equations are of a special form (e.g., a Markov matrix) that facilitates their solution,
@@ -86,7 +98,12 @@ Finally,  for convenience we  summarize properties of parameterless coupling met
 
 \subsection{Future research}
 
-Based on our findings we see two immediate pathways for future research. First, one can study arboreal methods in more detail, since these are Bayes covariant and as shown in Section \ref{sec:exp2} they often provide performance matching that of Wu--Lin--Weng's method. Secondly, there is a continuum of Bayes covariant methods which we barely sketched. Their properties, parameter selection,  and applicability to practical tasks need to be investigated in greater detail.
+Based on our findings we see two immediate pathways for future research. 
+First, one can study arboreal methods in more detail, since these are Bayes covariant 
+and as shown in Section \ref{sec:exp2} they often provide performance matching 
+that of Wu--Lin--Weng's method. Secondly, there is a continuum of Bayes covariant 
+methods which we barely sketched. Their properties, parameter selection,  
+and applicability to practical tasks need to be investigated in greater detail.
 
 
 
