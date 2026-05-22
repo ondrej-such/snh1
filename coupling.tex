@@ -35,7 +35,9 @@ $$
 $$
 
 The quadratic score is the basis of the popular Wu--Lin--Weng's method \cite{wu2004probability}. 
-Their method uses an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then the resulting optimization problem is just minimization of a quadratic form
+Their method uses an additional trick, which we term \emph{self-referentiality}. In the method of Hastie and Tibshirani, $w_{ij}$ are constants derived from observed class frequencies. However, we could use weights $w_{ij}$ that increase when the predicted probability of either class $i$ or $j$ is high. A reasonable choice would be for instance $w_{ij}= p_i + p_j$. In the case of quadratic score, 
+it is more convenient to use weights $w_{ij} = (p_i + p_j)^2$ because then 
+the resulting optimization problem is just the minimization of a quadratic form
 \begin{align*}
 \hat{\boldsymbol{p}} \stackrel{def}{=} \argmin_{\boldsymbol{p}} \sum_{i,j} (r_{ij}p_j - r_{ji}p_i)^2.
 \end{align*}
