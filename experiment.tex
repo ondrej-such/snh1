@@ -66,11 +66,25 @@ The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that Wu
  \label{sec:exp2}
 
 
-In this experiment we compare  Bayes covariant coupling methods \emph{without} parameters that could match the performance of Wu--Lin--Weng's method. We investigate the case of three-class datasets. This is a natural starting point, since it is the smallest number of classes for which the question is meaningful. All experiments use the value of 0.05 for the $tol$ hyperparameter based on results of Section \ref{sec:exp1}.  In our comparison we include the normal method, as well as the three arboreal methods $ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ that are not canonical. We consider all possible triples of classes in all datasets. The resulting statistics are shown in Table \ref{tab:step2}. 
+In this experiment, we compare  Bayes covariant coupling methods \emph{without} 
+parameters that could match the performance of Wu--Lin--Weng's method. 
+We investigate the case of three-class datasets. This is a natural starting point, 
+since it is the smallest number of classes for which the question is meaningful. 
+All experiments use the value of 0.05 for the $tol$ hyperparameter 
+based on results of Section \ref{sec:exp1}.  In our comparison we include the 
+normal method, as well as the three arboreal methods 
+$ \boldsymbol{s}_1,~ \boldsymbol{s}_2,~ \boldsymbol{s}_3$ that are not canonical. 
+We consider all possible triples of classes in all datasets. 
+The resulting statistics are shown in Table \ref{tab:step2}. 
 
 \input{tab-step2.tex}
 
-We can see that in slightly less than half of the cases (39\,\%) none of the four parameterless Bayes covariant methods was able to match the performance of Wu--Lin--Weng's method. However, in more than half of the cases (53\,\%) at least one of $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ matches its performance. This leads us to extend evaluation to Bayes covariant methods with parameters. 
+We can see that in slightly less than half of the cases (39\,\%), none of the 
+four parameterless Bayes covariant methods matched the performance of 
+Wu--Lin--Weng's method. However, in more than half of the cases (53\,\%) 
+at least one of $\boldsymbol{s}_1, \boldsymbol{s}_2, \boldsymbol{s}_3$ matches 
+its performance. This leads us to extend the evaluation to Bayes covariant methods 
+with parameters. 
 
 \subsection{Experiment: A parametric family of Bayes covariant methods}
 \label{sec:exp3}
@@ -86,13 +100,16 @@ Note that this family includes
    $(1,0,0)$, $(0,1,0)$, and $(0,0,1)$, respectively.
 \end{itemize}
 
-We do not know if this family possesses any convexity properties which would allow us to find the optimal classifier in the family.
-Therefore, we select a finite subset of combinations for which $a_1, a_2, a_3$ are nonnegative rational numbers summing to one, each with a denominator equal to 50. 
+We do not know if this family possesses any convexity properties which would 
+allow us to find the optimal classifier in the family.
+Therefore, we select a finite subset of combinations for which $a_1, a_2, a_3$ 
+are nonnegative rational numbers summing to one, each with a denominator 
+equal to 50. 
 
 
 Firstly, let us evaluate whether there is \emph{any} element in this set which on
 the test set matches the accuracy of Wu--Lin--Weng's method. In order to limit
-computational cost we select 1000 three class subsets from all datasets for problems 
+computational cost we select 1000 three-class subsets from all datasets for problems 
 where the normal method was outperformed by Wu--Lin--Weng's method. 
 For each three-class classification problem we will try to match the performance
 of Wu--Lin--Weng method with a Bayes covariant method in family \eqref{eq:family}.
@@ -112,7 +129,7 @@ since the datasets with larger number of classes will tend to have larger number
 Secondly, we turn our attention to whether we would be \emph{able to find} the 
 best-performing classifier in the family. 
 This is what would be required in practice. The standard approach is to use 
-cross-validation. In order to obtain more accurate results we use repeated cross-validation with 20 repetitions.
+cross-validation. To obtain more accurate results, we use repeated cross-validation with 20 repetitions.
 % Selecting parameters for methods in family \eqref{eq:family} requires several methodological choices. 
 % \begin{itemize}
 % \item To avoid bias in selection of parameters $a_1, a_2, a_3$ we use a subset 
@@ -170,12 +187,15 @@ In contrast to the direct evaluations in Table \ref{tab:step2}, this performance
 \subsection{Experiment: Effect of change of priors}  \label{sec:exp4}
 %\subsection{Wu--Lin--Weng's method}
 
-We have shown that there are situations when Wu--Lin--Weng's method outperforms all Bayes covariant parametric methods we considered. In this section we thus ponder the question whether some non-Bayes-covariant method would be more resilient to change of priors. We consider two facets to this question.
+We have shown that there are situations when Wu--Lin--Weng's method outperforms
+all Bayes covariant parametric methods we considered. 
+In this section, we thus ponder 
+the question whether some non-Bayes-covariant method would be more resilient to change of priors. We consider two facets to this question.
 
 Let us start with some notation. Consider a classification method $\boldsymbol{c}_0$ based on coupling. Suppose the priors change, and let us denote by $\boldsymbol{c}_1$ the classification model where we apply \eqref{eq:changePrior} to binary classifiers, and by $\boldsymbol{c}_2$ the classification method when we apply \eqref{eq:changePrior} after coupling. 
 
 The first question is whether for some coupling method the difference in predictions (we call it \emph{spread}) between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ would be smaller. 
-To gauge this question we apply a change of priors by increasing tenfold the prior for every class in turn.  The averaged results are shown in Table \ref{tab:exp4}. 
+To address this question, we apply a change of priors by increasing the prior for each class by a factor of 10.  The averaged results are shown in Table \ref{tab:exp4}. 
 
 \input {tab-exp4.tex}
 
@@ -188,8 +208,12 @@ The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbo
 \end{figure}
 
 
-The second question is whether a coupling method would more consistently provide true answers. In Figure \ref{fig:score} we show the difference of accuracies of the classification models $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ after ten-fold change of priors for 'mnist' dataset. 
-There appears to be some advantage to method $\boldsymbol{c}_2$, although it is not uniform.
+The second question is whether a coupling method would more consistently provide 
+true answers. In Figure \ref{fig:score}, we show the difference in accuracy between
+the classification models $\boldsymbol{c}_2$ and $\boldsymbol{c}_1$ after a 10-fold
+change in priors for the 'mnist' dataset. 
+There appears to be some advantage to method $\boldsymbol{c}_2$, although 
+it is not uniform.
 % Let us remark under Assumption 1 the Bayes classifier \emph{should} change prediction of any sample if the change of priors is sufficiently large. Thus to evaluate this question 
 
 
