@@ -1,6 +1,7 @@
 \section{Experiments}
 
-The choice of a coupling method is an important decision for practitioners. We aim to investigate the following interrelated questions:
+The choice of a coupling method is an important decision for practitioners. 
+We aim to investigate the following interrelated questions:
 
 \begin{itemize}
 	\item[(a)] Which coupling methods without parameters show good performance across diverse data sets? Is it the orthodox method of Wu--Lin--Weng? An experiment to answer this question is carried out in Section \ref{sec:exp1}. 
@@ -8,31 +9,50 @@ The choice of a coupling method is an important decision for practitioners. We a
 	\item[(c)] If the answer to b) is negative, is it better to apply the change of priors before or after coupling? Additionally, how serious is the impact of the lack of Bayes covariance in practice. This question is investigated in Section \ref{sec:exp4}.
 \end{itemize}
 
-These questions will be put to test in Sections \ref{sec:exp1}--\ref{sec:exp4}. The methodology of our experiments is described in the next two subsections.
+These questions will be put to test in Sections \ref{sec:exp1}--\ref{sec:exp4}. 
+The methodology of our experiments is described in the next two subsections.
 
 \subsection{Datasets}
 
-It is natural to consider the benchmark datasets used in the previous evaluation of coupling methods \cite{wu2004probability}. The authors considered seven datasets in total, with the number of classes ranging from 3 to 26. For each dataset, they extracted 40 pairs of training and testing datasets. Half of these were smaller (300 training samples and 500 testing samples), and the other half were larger (800 training samples and 1000 testing samples). In our experiments we use only the larger pairs. 
+It is natural to consider the benchmark datasets used in the previous evaluation 
+of coupling methods \cite{wu2004probability}. The authors considered seven datasets 
+in total, with the number of classes ranging from 3 to 26. For each dataset, 
+they extracted 40 pairs of training and testing datasets. Half of these were 
+smaller (300 training samples and 500 testing samples), and the other half 
+were larger (800 training samples and 1000 testing samples). In our experiments 
+we use only the larger pairs. 
 
-As a preliminary step we conducted analysis of linear separability of pairs of classes in the datasets. We used ECOS solver in CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
+As a preliminary step we conducted analysis of linear separability of pairs of classes in the datasets. 
+We used the ECOS solver in the CVXR library to solve the underlying quadratic program. The results are reported in Table \ref{tab:sep}.
 
 \input{tab-sep.tex}
 
-We can infer that except for 'waveform' dataset, majority of binary subproblems are linearly separable.
+We can infer that except for 'waveform' dataset, majority of binary subproblems 
+are linearly separable.
 
 \subsection{Classification methodology}
 
-We have opted to use LDA as a binary classification tool. Its appeal is that it is applicable even for linearly separable datasets, thus obviating additional crossvalidation step incurred by methods that use regularization (e.g. penalized logistic regression or SVM). It usually provides results close to logistic regression \cite{james2013introduction}.
+We have opted to use LDA as a binary classification tool. Its appeal is that it 
+is applicable even for linearly separable datasets, thus obviating additional 
+cross-validation step incurred by methods that use regularization 
+(e.g. penalized logistic regression or SVM). It usually provides results close 
+to logistic regression \cite{james2013introduction}.
 
-For preprocessing we first removed features that were constant across classes. Then we projected the data using PCA to the subspace for which corresponding singular values were $> tol$, where $tol$ is a hyper-parameter of an experiment. We used PCA without scaling or centering since the datasets' features were already normalized to interval $[-1,1]$. 
+For preprocessing we first removed features that were constant across classes. 
+Then we projected the data using PCA to the subspace for which corresponding 
+singular values were $> tol$, where $tol$ is a hyper-parameter of an experiment. 
+We used PCA without scaling or centering since the datasets' features were 
+already normalized to interval $[-1,1]$. 
 
-For training LDA we used MASS library in R. We implemented coupling methods in C++ using Eigen library. As arguments to the coupling methods we use log-odds:
+For training LDA, we used the MASS library in R. We implemented coupling methods in C++ using the Eigen library. As arguments to the coupling methods, we use log-odds:
 $$
 \tilde r_{ij} = \log \biggl(\frac{1}{r_{ji}} - 1\biggr).
 $$
-The resulting matrix $\tilde{\boldsymbol{R}}$ is skew symmetric (with the convention of having zeroes on the diagonal).
+The resulting matrix $\tilde{\boldsymbol{R}}$ is skew-symmetric (with the convention of having zeroes on the diagonal).
 
-This parametrization allows for precise representation of extremely small probabilities which are sometimes produced by LDA. These small probabilities might be expected given that a large fraction of binary problems is linearly separable. 
+This parametrization allows for precise representation of extremely small 
+probabilities which LDA sometimes produces. These small probabilities 
+might be expected given that a large fraction of binary problems is linearly separable. 
 
 Small probabilities generally have very little effect on the implementation of Bayes covariant methods which generally operate using log-odds. However small probabilities do affect both the method of Wu--Lin--Weng as well as radial method, because then Assumption \ref{ass:2} fails to hold. 
 
@@ -54,7 +74,14 @@ The first experiment compares the performance of the following canonical couplin
 \end{itemize}
 
 % \input{tab-multi.tex}
-The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that Wu--Lin--Weng's method has the most robust performance. On some datasets it trounces the normal coupling method by a wide margin. The edge over the radial method is smaller with only mnist and usps datasets showing a significant difference for smaller values of $tol$ hyperparameter.  However in view of Theorem \ref{thm:K3} the Wu--Lin--Weng's method is not Bayes covariant, therefore we will extend the set of Bayes covariant methods beyond the canonical normal coupling.
+The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that 
+Wu--Lin--Weng's method has the most robust performance. On some datasets 
+it trounces the normal coupling method by a wide margin. The edge over the 
+The radial method is smaller, with only mnist and usps datasets showing a 
+significant difference for smaller values of $tol$ hyperparameter.  
+However in view of Theorem \ref{thm:K3} the Wu--Lin--Weng's method is not 
+Bayes covariant, therefore we will extend the set of Bayes covariant methods 
+beyond the canonical normal coupling.
 
 \begin{figure}
 	\includegraphics{exp1-plot1.pdf}
@@ -159,8 +186,8 @@ cross-validation. To obtain more accurate results, we use repeated cross-validat
 \end{figure}
 
 The summary statistics are shown in Figure \ref{fig:par-bc}.
-We can see that only in a minority of cases we were able to find a parametric Bayes covariant coupling method matching the performance of Wu--Lin--Weng's method. 
-In contrast to the direct evaluations in Table \ref{tab:step2}, this performance drop reflects the practical difficulty of parameter selection and the generalization penalty inherent to cross-validation.
+We can see that only in the minority of cases we were able to find a parametric Bayes covariant coupling method matching the performance of Wu--Lin--Weng's method. 
+In contrast to the direct evaluations in Table \ref{tab:step2}, this performance drop reflects the practical difficulty of parameter selection and a generalization penalty inherent to cross-validation.
 
 %\subsection{Experiment: }
 %
@@ -192,14 +219,14 @@ all Bayes covariant parametric methods we considered.
 In this section, we thus ponder 
 the question whether some non-Bayes-covariant method would be more resilient to change of priors. We consider two facets to this question.
 
-Let us start with some notation. Consider a classification method $\boldsymbol{c}_0$ based on coupling. Suppose the priors change, and let us denote by $\boldsymbol{c}_1$ the classification model where we apply \eqref{eq:changePrior} to binary classifiers, and by $\boldsymbol{c}_2$ the classification method when we apply \eqref{eq:changePrior} after coupling. 
+Let us start with some notation. Consider a classification method $\boldsymbol{c}_0$ based on coupling. Suppose the priors change, and let us denote by $\boldsymbol{c}_1$ the classification model where we apply \eqref{eq:changePrior} to the binary classifiers, and by $\boldsymbol{c}_2$ the classification method when we apply \eqref{eq:changePrior} after coupling. 
 
 The first question is whether for some coupling method the difference in predictions (we call it \emph{spread}) between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ would be smaller. 
-To address this question, we apply a change of priors by increasing the prior for each class by a factor of 10.  The averaged results are shown in Table \ref{tab:exp4}. 
+To address this question, we apply the change of priors by increasing the prior for each class by a factor of 10.  The averaged results are shown in Table \ref{tab:exp4}. 
 
 \input {tab-exp4.tex}
 
-The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for the normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
+The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for the normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for the 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
 
 \begin{figure}[!ht]
 	\includegraphics{exp4-truth.pdf}
