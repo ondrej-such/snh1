@@ -98,7 +98,7 @@ One does it by finding an approximate solution of the system of equations
 %\item when probabilities are parametrized in other ways (e.g. other common parametrizations are as odds, or log-odds), the system of equations \eqref{eq:bt} is non-linear.
 %\end{itemize}
 
-Equations forming system \eqref{eq:bt2} are called Bradley--Terry equations. In parallel to Assumption \ref{ass:1} it is customary to make the following assumption on estimates $r_{ij}$.
+Equations forming system \eqref{eq:bt2} are called the Bradley--Terry equations. In parallel to Assumption \ref{ass:1}, it is customary to make the following assumption on estimates $r_{ij}$.
 
 \begin{assumption} \label{ass:2}
 For any $x$ in the feature space $r_{ij}(x) > 0$.
@@ -131,7 +131,7 @@ this section
  we will describe the following criteria that one may impose on a coupling method:
 
 \begin{itemize}
-\item unique solution (under Assumption \ref{ass:2}),
+\item a unique solution (under Assumption \ref{ass:2}),
 \item Bradley--Terry consistency,
 \item canonicity,
 \item symmetry,
@@ -179,7 +179,7 @@ We say that a coupling method $\boldsymbol{v}$ is \emph{symmetric} if
 \emph{Bayes covariance} is a notion introduced in  \cite{vsuch2016bayes}.
 It refers to the behavior of a probabilistic multiclass method built in one-vs-one fashion, when the priors change. 
 Any Bayes classifier, whether binary or multiclass, changes its prediction when the priors change (see e.g. \cite{saerens2002adjusting} equation (4)).  
-Let us recall the formula. Suppose we change priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. 
+Let us recall the formula. Suppose we change the priors from $\Pi = (P_1, \ldots, P_k)$ to $\Pi'= (P'_1, \ldots, P'_K)$. 
 Then the prediction of Bayes classifiers changes from $\boldsymbol{p}^\Pi= (p_1, \ldots, p_K)$ to the vector 
 \begin{align}
 \boldsymbol{p}^{\Pi'} \propto \biggl(p_1 \frac{P'_1}{P_1}, \ldots, p_K \frac{P'_K}{P_K}\biggr). \label{eq:changePrior}
@@ -236,9 +236,11 @@ for any matrix $\boldsymbol{R}$ satisfying $r_{ij}> 0$ and $r_{ij}+r_{ji} = 1$.
 
 In this section we describe several concepts that lack strict mathematical delineation, but may still be important to consider.
 
-\emph{Robustness---good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, he had confirmed usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
+\emph{Robustness---good accuracy on benchmark tasks} is  a strong argument to prefer a particular coupling method. This criterion is of course subjective, because there is a great variety of datasets in practice and inevitably there will be instances where any coupling method would underperform. However a good coupling method should perform robustly across a variety of datasets. A historical  example to follow is linear discriminant (LDA) of  Sir Ronald Fisher. At the time he was submitting his paper describing LDA, 
+he had confirmed the usefulness of his method not only on the famous iris dataset, but also on two separate collaborations with archaeologists \cite{barnard1935secular, martin1936study}. 
 
-\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. This issue gains expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel that requires choosing two hyper-parameters \cite{wu2004probability}. 
+\emph{Lack of parameters} is strongly beneficial for situations when the dataset is small and it would be imprudent to reserve a sizeable portion to obtain unbiased estimates of the parameters of the coupling method. 
+This issue gains in expediency when the underlying binary classification method requires crossvalidation to select some hyperparameters. For example, this is the case of support vector machines, where often one opts for RBF kernel that requires choosing two hyper-parameters \cite{wu2004probability}. 
 
 \emph{Simplicity of computation}  may refer to the computational requirement for inference. With the dramatic increase of edge computing devices, such as smartphones, a simple, fast, energy-efficient algorithm may be preferable to a better performing one which would require more computational resources. 
 
