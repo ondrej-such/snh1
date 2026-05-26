@@ -91,7 +91,6 @@ def process_ifthenelse(text: str, selected_secret: str) -> str:
 
         start = match.start()
         end = match.end()
-
         result.append(text[i:start])
 
         if is_commented_command(text, start):
@@ -107,15 +106,19 @@ def process_ifthenelse(text: str, selected_secret: str) -> str:
         true_open = end
         true_close = find_matching_brace(text, true_open)
         true_content = text[true_open + 1:true_close]
-
         cursor = true_close + 1
 
+        false_content = ""
         if cursor < len(text) and text[cursor] == "{":
-            false_close = find_matching_brace(text, cursor)
+            false_open = cursor
+            false_close = find_matching_brace(text, false_open)
+            false_content = text[false_open + 1:false_close]
             cursor = false_close + 1
 
         if secret_value != selected_secret:
             result.append(true_content)
+        else:
+            result.append(false_content)
 
         i = cursor
 
