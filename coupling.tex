@@ -113,7 +113,7 @@ For any observation belonging to class $C_t$, its result is identical to the arb
 
 In order to convert Hinton's oracle into a true classification method we can use the principle of self-referentiality.  
 Denote by $\boldsymbol{s}_i$ the prediction of the arboreal method for a sample $x$, where the underlying tree is a star centered at the class $C_i$. 
-Suppose the predictions $\boldsymbol{s}_1, \ldots, \boldsymbol{s}_K$ span the vector space $R^K$. We call this condition ``star independence''.  In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be uniquely expressed as a linear combination of $\boldsymbol{s}_i(x)$. 
+Suppose the predictions $\boldsymbol{s}_1, \ldots, \boldsymbol{s}_K$ span the vector space $\mathbb{R}^K$. We call this condition ``star independence''.  In that case the prediction $\hat{\boldsymbol{p}}$ of the method  can be uniquely expressed as a linear combination of $\boldsymbol{s}_i(x)$. 
 
 Let us now define \emph{radial} coupling method. The  method requires that if star independence holds then for the  weights we could in fact use the components of $\hat{\boldsymbol{p}}$ itself, i.e.,
 \begin{equation}
