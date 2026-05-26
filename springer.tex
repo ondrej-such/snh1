@@ -229,7 +229,6 @@ Additional methods can be formed by the way of ensembling. We compare their perf
 
 %Please refer to Journal-level guidance for any specific requirements.
 
-\ifthenelse{\not\equal{\mysecret}{2}}{
 
 \section*{Declarations}
 
@@ -238,7 +237,14 @@ Additional methods can be formed by the way of ensembling. We compare their perf
 %Ondrej Šuch and Ali Haidar were  partially supported by grants VEGA 2/0172/22 Classification using ensembles of neural networks and VEGA 2/0056/25 Cycles and edge colorings of cubic graphs. Peter Novotný did not receive support from any organization for the submitted work.
 
 \begin{itemize}
+\ifthenelse{\not\equal{\mysecret}{2}}{
 \item Ondrej Šuch and Ali Haidar were partially supported by grants VEGA 2/0172/22 Classification using ensembles of neural networks and VEGA 2/0056/25 Cycles and edge colorings of cubic graphs. Peter Novotný was partially supported by grant 036ŽU-4/2024 Analytical methods for solving mathematical problems. This work was also funded by the EU NextGenerationEU through the Recovery and Resilience Plan for Slovakia under the project 07I04-04-V05-00114 (AI-ONKO).
+}{
+}
+\ifthenelse{\not\equal{\mysecret}{1}}{
+\item \emph{Funding details have been omitted for double-blind review.}
+}{
+}
 \item Conflict of interest/Competing interests: Authors declare no competing interests.
 \item Ethics approval and consent to participate: Not applicable.
 \item Consent for publication: Not applicable.
@@ -273,8 +279,6 @@ Additional methods can be formed by the way of ensembling. We compare their perf
 %BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies}
 %\end{flushleft}
 
-}{
-}
 
 \ifthenelse{\not\equal{\mysecret}{1}}{
 
