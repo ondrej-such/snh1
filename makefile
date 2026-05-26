@@ -135,6 +135,9 @@ sp3.pdf: springer.tex  $(TEX_FILES) paper.bib $(FIG_FILES)
 		pdflatex "\\def\\mysecret{3} \\input{springer.tex}" 
 		mv springer.pdf sp3.pdf
 
+response.pdf: response.md response1.md response2.md
+	pandoc response.md response1.md response2.md -o response.pdf
+
 
 all: $(DATA300) $(DATA800) $(ADD300) $(ADD800) $(EXP3) $(EXP4)
 
