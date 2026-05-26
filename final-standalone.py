@@ -1,9 +1,9 @@
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "springer.tex"
-OUTPUT = ROOT / "sp-standalone.tex"
 
 INPUT_PATTERN = re.compile(r"\\input\{([^{}]+\.tex)\}")
 IFTHEN_PATTERN = re.compile(r"\\ifthenelse\{\\not\\equal\{\\mysecret\}\{(\d)\}\}")
@@ -79,7 +79,7 @@ def expand_inputs(text: str, base_dir: Path) -> str:
     return expand_inputs(expanded, base_dir)
 
 
-def process_ifthenelse(text: str) -> str:
+def process_ifthenelse(text: str, selected_secret: str) -> str:
     result = []
     i = 0
 
@@ -114,7 +114,7 @@ def process_ifthenelse(text: str) -> str:
             false_close = find_matching_brace(text, cursor)
             cursor = false_close + 1
 
-        if secret_value != "2":
+        if secret_value != selected_secret:
             result.append(true_content)
 
         i = cursor
@@ -123,11 +123,25 @@ def process_ifthenelse(text: str) -> str:
 
 
 def main() -> None:
+    if len(sys.argv) != 3:
+        print("Usage: python3 make_standalone.py <digit> <output.tex>", file=sys.stderr)
+        sys.exit(1)
+
+    selected_secret = sys.argv[1]
+    output_name = sys.argv[2]
+
+    if not re.fullmatch(r"\d", selected_secret):
+        print("Error: <digit> must be a single digit.", file=sys.stderr)
+        sys.exit(1)
+
+    output_path = ROOT / output_name
+
     content = read_text(SOURCE)
     content = expand_inputs(content, ROOT)
-    content = process_ifthenelse(content)
-    write_text(OUTPUT, content)
-    print(f"Success! File saved as '{OUTPUT.name}'.")
+    content = process_ifthenelse(content, selected_secret)
+    write_text(output_path, content)
+
+    print(f"Success! File saved as '{output_path.name}'.")
 
 
 if __name__ == "__main__":
