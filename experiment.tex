@@ -73,7 +73,7 @@ The first experiment compares the performance of the following canonical couplin
 \item Hinton's oracle.
 \end{itemize}
 
-% \input{tab-multi.tex}
+%\input{tab-multi.tex}
 The results are shown in Figure \ref{fig:exp1-plot1}. We can clearly see that 
 Wu--Lin--Weng's method has the most robust performance. On some datasets 
 it trounces the normal coupling method by a wide margin. The edge over the 
@@ -224,7 +224,7 @@ Let us start with some notation. Consider a classification method $\boldsymbol{c
 The first question is whether for some coupling method the difference in predictions (we call it \emph{spread}) between $\boldsymbol{c}_1$ and $\boldsymbol{c}_2$ would be smaller. 
 To address this question, we apply the change of priors by increasing the prior for each class by a factor of 10.  The averaged results are shown in Table \ref{tab:exp4}. 
 
-\input {tab-exp4.tex}
+\input{tab-exp4.tex}
 
 The results, as expected, detect no spread between $\boldsymbol{c}_1, \boldsymbol{c}_2$ for the normal coupling method. However, there is no consistent difference in spread between radial and Wu--Lin--Weng's coupling method. Spread for the radial method is lower for the 3 datasets (letter, mnist, usps), higher for 3 datasets (dna, satimage, segment) and tied for waveform dataset.
 
